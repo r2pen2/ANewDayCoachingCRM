@@ -1,5 +1,5 @@
-import {AppShell, NavLink } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings } from '@tabler/icons-react';
+import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles } from '@tabler/icons-react';
 
 
 /**
@@ -14,6 +14,7 @@ export const navigationItems = {
   DASHBOARD: "dashboard",
   INVOICES: "invoices",
   SCHEDULE: "schedule",
+  FORMS: "forms",
   SETTINGS: "settings"
 }
 
@@ -35,6 +36,10 @@ const navigationStyles = {
  * @returns {JSX.Element} The rendered component.
  */
 export function AppShellNavigator({currentTab, setCurrentTab}) {
+  
+  const exampleInvoicesBadgeNumber = 3
+  const exampleFormsBadgeNumber = 1
+
   return (    
     <AppShell.Navbar p="md">
       <NavLink
@@ -47,6 +52,13 @@ export function AppShellNavigator({currentTab, setCurrentTab}) {
       <NavLink
         label="Invoices"
         leftSection={<IconCreditCard />}
+        rightSection={
+          <Tooltip label={`You have ${exampleInvoicesBadgeNumber} outstanding invoice${exampleInvoicesBadgeNumber > 1 ? "s" : ""}.`}>
+            <Badge size="xs" color="red" circle>
+              {exampleInvoicesBadgeNumber}
+            </Badge>
+          </Tooltip>
+        }
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.INVOICES} 
         onClick={() => setCurrentTab(navigationItems.INVOICES)}
@@ -57,6 +69,20 @@ export function AppShellNavigator({currentTab, setCurrentTab}) {
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.SCHEDULE}
         onClick={() => setCurrentTab(navigationItems.SCHEDULE)}
+      />
+      <NavLink
+        label="Forms"
+        leftSection={<IconFiles />}
+        rightSection={
+          <Tooltip label={`There ${exampleFormsBadgeNumber > 1 ? "are" : "is"} ${exampleFormsBadgeNumber} form${exampleFormsBadgeNumber > 1 ? "s" : ""} for you to complete.`}>
+            <Badge size="xs" color="red" circle>
+              {exampleFormsBadgeNumber}
+            </Badge>
+          </Tooltip>
+        }
+        variant={navigationStyles.variant}
+        active={currentTab === navigationItems.FORMS}
+        onClick={() => setCurrentTab(navigationItems.FORMS)}
       />
       <NavLink
         label="Settings"
