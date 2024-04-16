@@ -3,19 +3,25 @@ import './App.css';
 import '@mantine/core/styles.css';
 
 import { createTheme, MantineProvider, AppShell, Burger, Group } from '@mantine/core';
-import { useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { AppShellNavigator, navigationItems } from './components/Navigation';
 import { AppShellHeader } from './components/Header';
 import Invoices from './tabs/Invoices';
 import Forms from './tabs/Forms';
+import Settings from './tabs/Settings';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, getCurrentUser } from './api/firebase';
+import Login from './tabs/Login';
 
 const theme = createTheme({});
+
+export const CurrentUserContext = createContext();
 
 function App() {
 
   const [burgerOpen, setBurgerOpen] = useState(false);
-
   const [currentTab, setCurrentTab] = useState("dashboard")
+  const [currentUser, setCurrentUser] = useState(null);
 
   const CurrentTab = () => {
     switch (currentTab) {
@@ -28,12 +34,20 @@ function App() {
       case navigationItems.SCHEDULE:
         return <div>Schedule</div>
       case navigationItems.SETTINGS:
-        return <div>Settings</div>
+        return <Settings />
       default:
     }
   }
 
+  /** Get the current user on load */
+  useEffect(() => { getCurrentUser(setCurrentUser); }, [])
+
+  if (!currentUser) {
+    return <MantineProvider theme={theme}><Login /></MantineProvider>
+  }
+
   return (
+    <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
     <MantineProvider theme={theme}>
       <AppShell
         header={{ height: 60 }}
@@ -47,6 +61,7 @@ function App() {
         </AppShell.Main>
       </AppShell>
     </MantineProvider>
+    </CurrentUserContext.Provider>
   );
 }
 

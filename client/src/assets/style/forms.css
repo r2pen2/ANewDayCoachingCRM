@@ -1,7 +1,10 @@
 .form-paper {
   position: relative;
-  padding-left: 1.5rem !important;
   cursor: pointer;
+}
+
+.form-title {
+  padding-left: 1.5rem !important;
 }
 
 .form-paper p {

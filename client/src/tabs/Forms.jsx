@@ -22,7 +22,7 @@ export default function Forms() {
     return (
       forms.map((form, index) => 
       <Paper key={index} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
-        <div>
+        <div className="form-title">
           <h3>{form.title}</h3>
           <p>{form.description}</p>
         </div>
