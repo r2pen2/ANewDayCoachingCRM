@@ -175,7 +175,6 @@ export default function Invoices() {
     }
 
     function getBadgeColor(invoice) {
-      console.log(invoice.pending)
       if (invoice.paid) {
         return "green";
       }
