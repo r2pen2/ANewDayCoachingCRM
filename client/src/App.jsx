@@ -6,6 +6,8 @@ import { createTheme, MantineProvider, AppShell, Burger, Group } from '@mantine/
 import { useState } from 'react';
 import { AppShellNavigator, navigationItems } from './components/Navigation';
 import { AppShellHeader } from './components/Header';
+import Invoices from './tabs/Invoices';
+import Forms from './tabs/Forms';
 
 const theme = createTheme({});
 
@@ -20,9 +22,9 @@ function App() {
       case navigationItems.DASHBOARD:
         return <div>Dashboard</div>
       case navigationItems.INVOICES:
-        return <div>Invoices</div>
+        return <Invoices />
       case navigationItems.FORMS:
-        return <div>Forms</div>
+        return <Forms />
       case navigationItems.SCHEDULE:
         return <div>Schedule</div>
       case navigationItems.SETTINGS:
@@ -39,7 +41,7 @@ function App() {
         padding="md"
       >
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 
-        <AppShellNavigator currentTab={currentTab} setCurrentTab={setCurrentTab} />
+        <AppShellNavigator currentTab={currentTab} setCurrentTab={setCurrentTab} setBurgerOpen={setBurgerOpen}/>
         <AppShell.Main>
           <CurrentTab />
         </AppShell.Main>

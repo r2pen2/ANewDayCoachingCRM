@@ -35,10 +35,15 @@ const navigationStyles = {
  * @param {function} props.setCurrentTab - A function to set the current tab.
  * @returns {JSX.Element} The rendered component.
  */
-export function AppShellNavigator({currentTab, setCurrentTab}) {
+export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
   
   const exampleInvoicesBadgeNumber = 3
   const exampleFormsBadgeNumber = 1
+
+  function updateTab(tab) {
+    setCurrentTab(tab)
+    setBurgerOpen(false)
+  }
 
   return (    
     <AppShell.Navbar p="md">
@@ -47,7 +52,7 @@ export function AppShellNavigator({currentTab, setCurrentTab}) {
         leftSection={<IconHome2 />}
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.DASHBOARD}
-        onClick={() => setCurrentTab(navigationItems.DASHBOARD)}
+        onClick={() => updateTab(navigationItems.DASHBOARD)}
       />
       <NavLink
         label="Invoices"
@@ -61,14 +66,14 @@ export function AppShellNavigator({currentTab, setCurrentTab}) {
         }
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.INVOICES} 
-        onClick={() => setCurrentTab(navigationItems.INVOICES)}
+        onClick={() => updateTab(navigationItems.INVOICES)}
       />
       <NavLink
         label="Schedule"
         leftSection={<IconCalendarEvent />}
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.SCHEDULE}
-        onClick={() => setCurrentTab(navigationItems.SCHEDULE)}
+        onClick={() => updateTab(navigationItems.SCHEDULE)}
       />
       <NavLink
         label="Forms"
@@ -82,14 +87,14 @@ export function AppShellNavigator({currentTab, setCurrentTab}) {
         }
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.FORMS}
-        onClick={() => setCurrentTab(navigationItems.FORMS)}
+        onClick={() => updateTab(navigationItems.FORMS)}
       />
       <NavLink
         label="Settings"
         leftSection={<IconSettings />}
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.SETTINGS}
-        onClick={() => setCurrentTab(navigationItems.SETTINGS)}
+        onClick={() => updateTab(navigationItems.SETTINGS)}
       />
     </AppShell.Navbar>
   )

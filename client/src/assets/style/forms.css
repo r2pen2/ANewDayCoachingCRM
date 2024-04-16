@@ -1,0 +1,21 @@
+.form-paper {
+  position: relative;
+  padding-left: 1.5rem !important;
+  cursor: pointer;
+}
+
+.form-paper p {
+  margin: 0;
+  padding: 0;
+}
+
+.form-decor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1rem;
+  height: 100%;
+  background-color: #647659;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
