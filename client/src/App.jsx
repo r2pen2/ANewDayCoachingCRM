@@ -12,6 +12,7 @@ import Settings from './tabs/Settings';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
+import Schedule from './tabs/Schedule';
 
 const theme = createTheme({});
 
@@ -32,7 +33,7 @@ function App() {
       case navigationItems.FORMS:
         return <Forms />
       case navigationItems.SCHEDULE:
-        return <div>Schedule</div>
+        return <Schedule />
       case navigationItems.SETTINGS:
         return <Settings />
       default:
