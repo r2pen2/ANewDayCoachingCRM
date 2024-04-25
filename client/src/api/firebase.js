@@ -28,10 +28,11 @@ export const auth = getAuth(app);
  * Return the current user's details
  * @param {Function} setter - React setState function 
  * */
-export async function getCurrentUser(setter) {
+export async function getCurrentUser(setter, pfpSetter) {
   auth.onAuthStateChanged((user) => {
     if (user) {
       setter(user)
+      pfpSetter(user.photoURL)
     } else {
       setter(null)
     }

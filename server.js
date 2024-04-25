@@ -2,6 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const payments = require('./routes/payments');
+const calendar = require('./routes/calendar');
+
+// Init express application
+const app = express();
 
 // Init env files
 dotenv.config();
@@ -17,6 +22,9 @@ app.use(express.static(__dirname + "/static/"));
 // BodyParser setup
 app.use(bodyParser.json({ limit: "50mb"}));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb"}));
+
+app.use("/payments", payments)
+app.use("/calendar", calendar)
 
 // Allow getting images
 app.get("/images/*", (req, res) => {

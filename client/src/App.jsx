@@ -13,16 +13,21 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth, getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
+import { getCalendarEvents } from './api/calendar.ts';
 
 const theme = createTheme({});
 
 export const CurrentUserContext = createContext();
+export const UserPFPContext = createContext();
 
 function App() {
+
+  getCalendarEvents();
 
   const [burgerOpen, setBurgerOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("dashboard")
   const [currentUser, setCurrentUser] = useState(null);
+  const [userPFP, setUserPFP] = useState(null);
 
   const CurrentTab = () => {
     switch (currentTab) {
@@ -41,13 +46,14 @@ function App() {
   }
 
   /** Get the current user on load */
-  useEffect(() => { getCurrentUser(setCurrentUser); }, [])
+  useEffect(() => { getCurrentUser(setCurrentUser, setUserPFP); }, [])
 
   if (!currentUser) {
     return <MantineProvider theme={theme}><Login /></MantineProvider>
   }
 
   return (
+    <UserPFPContext.Provider value={{userPFP, setUserPFP}}>
     <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
     <MantineProvider theme={theme}>
       <AppShell
@@ -63,6 +69,7 @@ function App() {
       </AppShell>
     </MantineProvider>
     </CurrentUserContext.Provider>
+    </UserPFPContext.Provider>
   );
 }
 

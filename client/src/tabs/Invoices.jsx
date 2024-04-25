@@ -163,15 +163,24 @@ export default function Invoices() {
     const sortedInvoices = invoices.sort((a, b) => b.date - a.date);
     const truncatedInvoices = sortedInvoices.slice((activePage - 1) * 10, (activePage - 1) * 10 + invoicesPerPage)
 
-    function markInvoicePaid(invoice) {
-      const newInvoices = [...invoices]
-      for (let i = 0; i < newInvoices.length; i++) {
-        if (newInvoices[i].id === invoice.id) {
-          newInvoices[i].pending = !newInvoices[i].pending;
-          break;
-        }
-      }
-      setInvoices(newInvoices)
+    function payInvoice(invoice) {
+
+      fetch('/payments/invoice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: `Invoice: ${getSlashDateString(invoice.date)}`, unitAmount: invoice.amount * 100, quantity: 1}),
+      }).then(res => {
+        if (res.ok) { return res.json()}
+        return res.json().then(json => Promise.reject(json))
+      }).then(({session}) => {
+        const url = session.url;
+        console.log(session);
+        window.location = url;
+      }).catch(e => {
+        console.error(e.error);
+      })
     }
 
     function getBadgeColor(invoice) {
@@ -229,8 +238,8 @@ export default function Invoices() {
                       <IconEye />
                     </ActionIcon>
                   </Tooltip>
-                  <Tooltip label={invoice.pending ? "Mark as Unpaid" : "Mark As Paid"} disabled={invoice.paid}>
-                    <ActionIcon variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => markInvoicePaid(invoice)}>
+                  <Tooltip label="Pay Invoice" disabled={invoice.paid}>
+                    <ActionIcon variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => payInvoice(invoice)}>
                       { !invoice.pending && <IconCreditCardPay /> }
                       { invoice.pending && <IconCreditCardRefund /> }
                     </ActionIcon>
@@ -273,8 +282,8 @@ export default function Invoices() {
       </div>
       <Blockquote color="blue" icon={<IconInfoCircle />} mt="xl">
         1. Maybe we want to have some sort of due date? Invoices could say <Badge color="red">3 Days Late</Badge> or something similar.<br/>
-        2. Should we have this "mark as paid" feature? The idea is for it to show up in an inbox on your end so that you can accept/reject this when it comes through.<br/>
-        3. Should we have a build in "View Invoice" feature? This would show a modal with the invoice details. At the moment, my thought is that the "View Invoice" button just opens a Google doc. The reason not to implement such a feature is that you'd have to type up the invoice in this portal too, not just wherever else you're generating them.<br/>
+        2. Accepting payments through stripe costs 2.9% + 30¢.<br/>
+        3. Should we have a build in "View Invoice" feature? This would show a modal with the invoice details. At the moment, my thought is that the "View Invoice" button just opens a Google doc or PDF. The reason not to implement such a feature is that you'd have to type up the invoice in this portal too, not just wherever else you're generating them.<br/>
       </Blockquote>
     </div>
   )
