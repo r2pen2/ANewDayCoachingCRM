@@ -1,15 +1,14 @@
-import { Blockquote, Loader, LoadingOverlay, Paper } from '@mantine/core'
+import { Loader, Paper } from '@mantine/core'
 import React, { useEffect, useRef, useState } from 'react'
 import "../assets/style/schedule.css";
-import { IconInfoCircle } from '@tabler/icons-react';
 import { mockEvents } from '../api/calendar.ts';
-import { getEventTime, getSlashDateString, getVerboseDateString } from '../api/strings.js';
+import { getEventTime, getVerboseDateString } from '../api/strings.js';
 
 const scheduleLink = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ2J3ZABQTIlgx_Exw3x8rZU6w_jmcQOhL_S99FeVu1B4BXLWwMO-XX6c_73b8p_3fyLDKiYpVWU?gv=true"
 
 const EventCard = ({event}) => {
   return (
-    <Paper w="200px" withBorder className="p-2 mt-2 mb-2" style={{cursor: "pointer"}} onClick={() => window.open(event.href, "_blank")}>
+    <Paper withBorder className="p-2 mt-2 mb-2" style={{marginRight: "1rem", cursor: "pointer", minWidth: 200}} onClick={() => window.open(event.href, "_blank")}>
       <strong>{event.summary}</strong>
       <p style={{marginBottom: 0}}>{getVerboseDateString(event.startAt)}</p>
       <p style={{marginBottom: 0}}>{getEventTime(event.startAt)} - {getEventTime(event.endAt)}</p>
@@ -43,9 +42,9 @@ export default function Schedule() {
   return [
     <div className='d-flex flex-column align-items-start justify-content-start p-4'>
       <h2>
-        My Appointments:
+        My Upcoming Appointments:
       </h2>
-      <div className="d-flex flex-row w-100" style={{overflowX: "scroll"}}>
+      <div className="d-flex flex-row w-100 event-list pb-2" style={{overflowX: "scroll", flexWrap: "nowrap"}}>
         {events.map((event, index) => <EventCard key={index} event={event} />)}
       </div>
     </div>,
