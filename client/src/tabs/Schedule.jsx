@@ -20,8 +20,6 @@ export default function Schedule() {
   
   const [events, setEvents] = useState(mockEvents);
 
-  console.log(events);
-
   const [isMounted, setIsMounted] = useState(false);
   const iframeRef = useRef(null);
 
