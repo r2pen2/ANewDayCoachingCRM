@@ -3,8 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import "../assets/style/schedule.css";
 import { mockEvents } from '../api/calendar.ts';
 import { getEventTime, getVerboseDateString } from '../api/strings.js';
-
-const scheduleLink = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ2J3ZABQTIlgx_Exw3x8rZU6w_jmcQOhL_S99FeVu1B4BXLWwMO-XX6c_73b8p_3fyLDKiYpVWU?gv=true"
+import { LinkMaster } from '../api/links.ts';
 
 const EventCard = ({event}) => {
   return (
@@ -48,7 +47,7 @@ export default function Schedule() {
     </div>,
     <div style={{height: "100vh", position: "relative"}} className="d-flex flex-column align-items-center justify-content-center">
       <LoadingNotif />
-      <iframe ref={iframeRef} onLoad={handleIframeLoad} title="Schedule" src={scheduleLink} style={{border: 0, position: "absolute"}} width="100%" height="100%" frameBorder="0" />
+      <iframe ref={iframeRef} onLoad={handleIframeLoad} title="Schedule" src={LinkMaster.schedule.calendarEmbed} style={{border: 0, position: "absolute"}} width="100%" height="100%" frameBorder="0" />
     </div>
   ]
 }
