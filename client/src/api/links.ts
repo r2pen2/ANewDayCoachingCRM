@@ -6,9 +6,11 @@ export class LinkMaster {
   /**
    * Contains payment links.
    * @property {string} venmo - The link to the venmo payment page.
+   * @property {string} zelle - The link to the zelle payment page.
    */
   static payments: any = {
-    venmo: "https://venmo.com/u/r2pen2"
+    venmo: "https://venmo.com/u/r2pen2",
+    zelle: "https://enroll.zellepay.com/qr-codes?data=eyJuYW1lIjoiSk9TRVBIIiwiYWN0aW9uIjoicGF5bWVudCIsInRva2VuIjoiNzgxODc5OTA1OCJ9"
   }
 
   /**
