@@ -11,13 +11,14 @@ const invoicesPerPage = 10;
 export default function Invoices() {
   
   const [invoices, setInvoices] = useState(exampleInvoices);
-  const [payModalOpen, setPayModalOpen] = useState(false);
+  const [currentInvoice, setCurrentInvoice] = useState(null);
 
   const InvoiceList = () => {
     
     const sortedInvoices = invoices.sort((a, b) => b.date - a.date);
     const truncatedInvoices = sortedInvoices.slice((activePage - 1) * 10, (activePage - 1) * 10 + invoicesPerPage)
 
+    //todo: This method needs to be implemented
     function payInvoice(invoice) {
 
       fetch('/payments/invoice', {
@@ -89,7 +90,7 @@ export default function Invoices() {
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
                   <Tooltip label="View Invoice">
-                    <ActionIcon variant="filled" aria-label="View">
+                    <ActionIcon variant="filled" aria-label="View" onClick={() => window.open(invoice.href, "_blank")}>
                       <IconEye />
                     </ActionIcon>
                   </Tooltip>
@@ -107,22 +108,13 @@ export default function Invoices() {
       </Table.ScrollContainer>
     )
   }
-
+  
+  /** Scroll to the top of the page when the {@link activePage} is updated */
   const [activePage, setActivePage] = useState(1);
+  useEffect(() => { document.body.scrollTop = document.documentElement.scrollTop = 0; }, [activePage])
 
-  useEffect(() => {
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
-  }, [activePage])
-
-  const unpaidInvoices = invoices.filter(i => !i.paid);
-
-  function getBalance() {
-    let c = 0;
-    for (const i of unpaidInvoices) {
-      c += i.amount;
-    }
-    return c;
-  }
+  /** Get the total balance of all unpaid invoices */  
+  function getBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + i.amount, 0); }
 
   
   const PayButton = (props) => {
@@ -189,8 +181,9 @@ export default function Invoices() {
     )
   }
 
+  /** Invoice payment modal that appears when {@link currentInvoice} is not null. */
   const PayModal = () => (
-    <Modal opened={true} onClose={() => setPayModalOpen(false)} title="Choose how you'd like to pay:" className='container-fluid'>
+    <Modal opened={currentInvoice} onClose={() => setCurrentInvoice(null)} title="Choose how you'd like to pay:" className='container-fluid'>
         <div className="row h-100 p-2">
           <PayButton method="venmo" color="#008CFF" link={LinkMaster.payments.venmo} />
           <PayButton method="zelle" color="#6D1ED4" link={LinkMaster.payments.zelle} />
