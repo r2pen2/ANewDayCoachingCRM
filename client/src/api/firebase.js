@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { User } from "./dbManager.ts";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -28,11 +29,12 @@ export const auth = getAuth(app);
  * Return the current user's details
  * @param {Function} setter - React setState function 
  * */
-export async function getCurrentUser(setter, pfpSetter) {
-  auth.onAuthStateChanged((user) => {
+export async function getCurrentUser(setter) {
+  auth.onAuthStateChanged(async (user) => {
     if (user) {
-      setter(user)
-      pfpSetter(user.photoURL)
+      const userObject = new User(user);
+      await userObject.createDocument();
+      setter(userObject);
     } else {
       setter(null)
     }

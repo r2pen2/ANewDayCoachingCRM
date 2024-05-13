@@ -1,6 +1,6 @@
 import { UserCredential } from "firebase/auth";
 import { db } from "./firebase";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { DocumentReference, doc, getDoc, setDoc } from "firebase/firestore";
 
 export class User {
   
@@ -9,32 +9,67 @@ export class User {
   invoices: string[] = [];
   admin: boolean = false;
   formAssignments: FormAssignment[] = [];
+  id: string;
+  docRef: DocumentReference;
+  email: string;
+  displayName: string;
+  pfpUrl: string;
 
+  personalData: any = {
+    displayName: "",
+    email: "",
+    pfpUrl: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+  }
 
-  constructor(firebaseUser: UserCredential) {
+  constructor(firebaseUser: any) {
     this.firebaseUser = firebaseUser;
+    this.id = firebaseUser.uid;
+    this.docRef = doc(db, `users/${this.id}`);
+    this.personalData.email = firebaseUser.email;
+    this.personalData.displayName = firebaseUser.displayName
+    this.personalData.pfpUrl = firebaseUser.photoURL;
+  }
+  
+  async setData(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      setDoc(this.docRef, {
+        invoices: this.invoices,
+        admin: this.admin,
+        formAssignments: this.formAssignments.map((formAssignment) => formAssignment.toJson()),
+        id: this.id,
+        personalData: this.personalData,
+      }).then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      })
+    })
   }
 
-  getUid(): string | null {
-    return this.firebaseUser.user.uid;
-  }
-
-  getEmail(): string | null {
-    return this.firebaseUser.user.email;
-  }
-
-  getDisplayName(): string | null {
-    return this.firebaseUser.user.displayName;
-  }
-
-  async checkIfExists(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      const docRef = doc(db, `users/${this.getUid()}`);
-      getDoc(docRef).then((doc) => {
+  async loadData(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      getDoc(this.docRef).then((doc) => {
         if (doc.exists()) {
-          resolve(true);
+          const data = doc.data();
+          if (data) {
+            this.invoices = data.invoices;
+            this.admin = data.admin;
+            this.formAssignments = data.formAssignments;
+            this.id = data.id;
+            this.email = data.email;
+            this.displayName = data.displayName;
+            this.pfpUrl = data.pfpUrl;
+            resolve();
+          } else {
+            reject("Document data is undefined");
+          }
         } else {
-          resolve(false);
+          reject("Document does not exist");
         }
       }).catch((error) => {
         reject(error);
@@ -44,17 +79,18 @@ export class User {
 
   async createDocument(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const docRef = doc(db, `users/${this.getUid()}`);
-      setDoc(docRef, {
-        invoices: this.invoices,
-        admin: this.admin,
-        formAssignments: this.formAssignments.map((formAssignment) => { return formAssignment.toJson(); })
-      }).then(() => {
-        resolve();
+      getDoc(this.docRef).then((doc) => {
+        if (doc.exists()) {
+          // This document already exists! No need to do any of this
+          resolve();
+        } else {
+          // This is a new user
+          // Create a document
+          this.setData().then(() => { resolve(); }).catch((error) => { reject(error); });
+        }
       }).catch((error) => {
         reject(error);
-      }
-      )
+      })
     })
   }
 }
