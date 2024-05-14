@@ -295,14 +295,6 @@ export default function Invoices() {
           </span>
       </div>
       <InvoiceList />
-      {/* <div className="d-flex align-items-center flex-column">
-        <Pagination style={{marginTop: "1rem"}} total={invoices.length / invoicesPerPage} value={activePage} onChange={setActivePage}/>
-      </div> */}
-      <Blockquote color="blue" icon={<IconInfoCircle />} mt="xl">
-        1. Maybe we want to have some sort of due date? Invoices could say <Badge color="red">3 Days Late</Badge> or something similar.<br/>
-        2. Accepting payments through stripe costs 2.9% + 30¢.<br/>
-        3. Should we have a build in "View Invoice" feature? This would show a modal with the invoice details. At the moment, my thought is that the "View Invoice" button just opens a Google doc or PDF. The reason not to implement such a feature is that you'd have to type up the invoice in this portal too, not just wherever else you're generating them.<br/>
-      </Blockquote>
     </div>
   )
 }
