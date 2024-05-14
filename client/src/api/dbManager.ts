@@ -10,6 +10,7 @@ export class User {
   firebaseUser: UserCredential;
   
   invoices: string[] = [];
+  unpaidInvoices: string[] = [];
   admin: boolean = false;
   formAssignments: FormAssignment[] = [];
   id: string;
@@ -46,6 +47,7 @@ export class User {
         formAssignments: this.formAssignments.map((formAssignment) => formAssignment.toJson()),
         id: this.id,
         personalData: this.personalData,
+        unpaidInvoices: this.unpaidInvoices,
       }).then(() => {
         resolve();
       }).catch((error) => {

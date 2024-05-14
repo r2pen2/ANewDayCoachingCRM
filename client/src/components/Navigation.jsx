@@ -1,5 +1,7 @@
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
 import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles } from '@tabler/icons-react';
+import { useContext } from "react";
+import { CurrentUserContext } from "../App";
 
 
 /**
@@ -37,7 +39,9 @@ const navigationStyles = {
  */
 export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
   
-  const exampleInvoicesBadgeNumber = 3
+  const {currentUser} = useContext(CurrentUserContext)
+
+  const invoiceBadgeNumber = currentUser.unpaidInvoices.length;
   const exampleFormsBadgeNumber = 1
 
   function updateTab(tab) {
@@ -58,9 +62,9 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
         label="Invoices"
         leftSection={<IconCreditCard />}
         rightSection={
-          <Tooltip label={`You have ${exampleInvoicesBadgeNumber} outstanding invoice${exampleInvoicesBadgeNumber > 1 ? "s" : ""}.`}>
+          invoiceBadgeNumber > 0 && <Tooltip label={`You have ${invoiceBadgeNumber} outstanding invoice${invoiceBadgeNumber > 1 ? "s" : ""}.`}>
             <Badge size="xs" color="red" circle>
-              {exampleInvoicesBadgeNumber}
+              {invoiceBadgeNumber}
             </Badge>
           </Tooltip>
         }

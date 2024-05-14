@@ -11,6 +11,7 @@ import Settings from './tabs/Settings';
 import { getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
+import { getTab } from './api/browser.ts';
 
 const theme = createTheme({});
 
@@ -19,7 +20,7 @@ export const CurrentUserContext = createContext();
 function App() {
 
   const [burgerOpen, setBurgerOpen] = useState(false);
-  const [currentTab, setCurrentTab] = useState("dashboard")
+  const [currentTab, setCurrentTab] = useState(getTab())
   const [currentUser, setCurrentUser] = useState(null);
 
   const CurrentTab = () => {
@@ -54,7 +55,7 @@ function App() {
         padding="md"
       >
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 
-        <AppShellNavigator currentTab={currentTab} setCurrentTab={setCurrentTab} setBurgerOpen={setBurgerOpen}/>
+        <AppShellNavigator currentTab={currentTab} setCurrentTab={(t) => {window.location.hash = t; setCurrentTab(t)}} setBurgerOpen={setBurgerOpen}/>
         <AppShell.Main>
           <CurrentTab />
         </AppShell.Main>
