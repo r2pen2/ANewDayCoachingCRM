@@ -1,6 +1,9 @@
 import { UserCredential } from "firebase/auth";
 import { db } from "./firebase";
-import { DocumentReference, doc, getDoc, setDoc } from "firebase/firestore";
+import { DocumentReference, addDoc, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+
+const rachelDocRef = doc(db, "users/rachel");
+const invoiceLimboCollectionRef = collection(db, "invoiceLimbo");
 
 export class User {
   
@@ -130,14 +133,16 @@ export class Invoice {
   static getDaysBefore(n: number) { const today = new Date(); today.setDate(today.getDate() - n); return today; }
 
   invoiceId: string;
-  invoiceNumber: string;
+  invoiceNumber: number;
   paid: boolean;
   amount: number;
   createdAt: Date;
-  paidAt: Date;
+  paidAt: Date | null = null;
   dueAt: Date;
   href: string;
   assignedTo: string;
+  docRef: DocumentReference;
+  limboId: string | null = null;
 
   /**
    * 
@@ -151,7 +156,7 @@ export class Invoice {
    * @param href - link to invoice pdf
    * @param assignedTo - firestoreId of user assigned to this invoice
    */
-  constructor(invoiceId: string, invoiceNumber: string, paid: boolean, amount: number, createdAt: Date, paidAt: Date, dueAt: Date, href: string, assignedTo: string) {
+  constructor(invoiceId: string, invoiceNumber: number, paid: boolean, amount: number, createdAt: Date, paidAt: Date | null, dueAt: Date, href: string, assignedTo: string) {
     this.invoiceId = invoiceId;
     this.invoiceNumber = invoiceNumber;
     this.paid = paid;
@@ -161,6 +166,7 @@ export class Invoice {
     this.dueAt = dueAt;
     this.href = href;
     this.assignedTo = assignedTo;
+    this.docRef = doc(db, `invoices/${this.invoiceId}`)
   }
 
   toJson() {
@@ -173,7 +179,54 @@ export class Invoice {
       paidAt: this.paidAt,
       dueAt: this.dueAt,
       href: this.href,
-      assignedTo: this.assignedTo
+      assignedTo: this.assignedTo,
+      limboId: this.limboId
     }
+  }
+
+  async setData(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      setDoc(this.docRef, this.toJson()).then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
+  tellRachelIHaveBeenPaid(): Promise<DocumentReference> {
+    return new Promise<DocumentReference>((resolve, reject) => {
+      console.log("Rachel, I have been paid!");
+      this.paidAt = new Date();
+      addDoc(invoiceLimboCollectionRef, this.toJson()).then(limboRef => {
+        resolve(limboRef);
+        this.limboId = limboRef.id;
+      });
+      this.setData();
+    })
+
+  }
+
+  tellRachelIHaveNotBeenPaid(limboRef: DocumentReference | null): void {
+    console.log("Rachel, I've made a mistake!");
+    this.paidAt = null;
+    if (!limboRef) {
+      limboRef = doc(db, `invoiceLimbo/${this.limboId}`);
+    }
+    this.limboId = null;
+    this.setData();
+    deleteDoc(limboRef);
+  }
+
+  checkLate(): boolean {
+    return this.dueAt < new Date();
+  }
+
+  getDaysLate(): number {
+    return Math.floor((new Date().getTime() - this.dueAt.getTime()) / (1000 * 60 * 60 * 24)) - 1;
+  }
+
+  checkPending(): boolean {
+    return this.paidAt !== null && !this.paid;
   }
 }

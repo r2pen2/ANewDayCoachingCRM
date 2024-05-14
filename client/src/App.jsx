@@ -11,15 +11,12 @@ import Settings from './tabs/Settings';
 import { getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
-import { getCalendarEvents } from './api/calendar.ts';
 
 const theme = createTheme({});
 
 export const CurrentUserContext = createContext();
 
 function App() {
-
-  getCalendarEvents();
 
   const [burgerOpen, setBurgerOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("dashboard")

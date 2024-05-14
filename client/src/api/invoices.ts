@@ -1,167 +1,17 @@
 import { Invoice } from "./dbManager.ts";
 
-export const exampleInvoices : any = [
-  {
-    amount: 100,
-    paid: false,
-    id: 20,
-    date: new Date(),
-    pending: false,
-  },
-  {
-    amount: 200,
-    paid: Invoice.getDaysBefore(1),
-    id: 19,
-    date: Invoice.getDaysBefore(1),
-    pending: false,
-  },
-  {
-    amount: 150,
-    paid: false,
-    id: 18,
-    date: Invoice.getDaysBefore(2),
-    pending: false,
-  },
-  {
-    amount: 300,
-    paid: Invoice.getDaysBefore(3),
-    id: 17,
-    date: Invoice.getDaysBefore(3),
-    pending: false,
-  },
-  {
-    amount: 250,
-    paid: Invoice.getDaysBefore(4),
-    id: 16,
-    date: Invoice.getDaysBefore(4),
-    pending: false,
-  },
-  {
-    amount: 180,
-    paid: false,
-    id: 15,
-    date: Invoice.getDaysBefore(5),
-    pending: false,
-  },
-  {
-    amount: 120,
-    paid: Invoice.getDaysBefore(6),
-    id: 14,
-    date: Invoice.getDaysBefore(6),
-    pending: false,
-  },
-  {
-    amount: 350,
-    paid: false,
-    id: 13,
-    date: Invoice.getDaysBefore(7),
-    pending: false,
-  },
-  {
-    amount: 280,
-    paid: Invoice.getDaysBefore(8),
-    id: 12,
-    date: Invoice.getDaysBefore(8),
-    pending: false,
-  },
-  {
-    amount: 220,
-    paid: false,
-    id: 11,
-    date: Invoice.getDaysBefore(9),
-    pending: false,
-  },
-  {
-    amount: 400,
-    paid: Invoice.getDaysBefore(10),
-    id: 10,
-    date: Invoice.getDaysBefore(10),
-    pending: false,
-  },
-  {
-    amount: 320,
-    paid: false,
-    id: 9,
-    date: Invoice.getDaysBefore(11),
-    pending: false,
-  },
-  {
-    amount: 270,
-    paid: Invoice.getDaysBefore(12),
-    id: 8,
-    date: Invoice.getDaysBefore(12),
-    pending: false,
-  },
-  {
-    amount: 190,
-    paid: false,
-    id: 7,
-    date: Invoice.getDaysBefore(13),
-    pending: false,
-  },
-  {
-    amount: 150,
-    paid: Invoice.getDaysBefore(14),
-    id: 6,
-    date: Invoice.getDaysBefore(14),
-    pending: false,
-  },
-  {
-    amount: 230,
-    paid: false,
-    id: 5,
-    date: Invoice.getDaysBefore(15),
-    pending: false,
-  },
-  {
-    amount: 380,
-    paid: Invoice.getDaysBefore(16),
-    id: 4,
-    date: Invoice.getDaysBefore(16),
-    pending: false,
-  },
-  {
-    amount: 290,
-    paid: false,
-    id: 3,
-    date: Invoice.getDaysBefore(17),
-    pending: false,
-  },
-  {
-    amount: 210,
-    paid: Invoice.getDaysBefore(18),
-    id: 2,
-    date: Invoice.getDaysBefore(18),
-    pending: false,
-  },
-  {
-    amount: 170,
-    paid: false,
-    id: 1,
-    date: Invoice.getDaysBefore(19),
-    pending: false,
-  },
-];
+const todayLimbo = new Invoice("V5pnONtawsWjkMo42ZnzsNdGTZm2", 2, false, 100, new Date(), null, new Date(), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2");
+todayLimbo.limboId = "V5pnONtawsWjkMo42ZnzsNdGTZm2";
+todayLimbo.paidAt = new Date();
+
+const late = new Invoice("V5pnONtawsWjkMo42ZnzsNdGTZm2", 1, false, 200, Invoice.getDaysBefore(7),  null, Invoice.getDaysBefore(2), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2");
+
+const dueInFuture = new Invoice("V5pnONtawsWjkMo42ZnzsdGTZm2", 3, false, 200, new Date(),  null, Invoice.getDaysBefore(-2), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2");
+const dueInFuturePaid = new Invoice("V5pnONtawsWjkMo42ZnzsdGTZm2", 4, true, 200, new Date(), new Date(), Invoice.getDaysBefore(-2), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2");
 
 export const exampleInvoicesClassed : Invoice[] = [
-  new Invoice("20", "100", false, 100, new Date(), new Date(), new Date(), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("19", "200", true, 200, Invoice.getDaysBefore(1), Invoice.getDaysBefore(1), Invoice.getDaysBefore(1), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("18", "150", false, 150, Invoice.getDaysBefore(2), Invoice.getDaysBefore(2), Invoice.getDaysBefore(2), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("17", "300", true, 300, Invoice.getDaysBefore(3), Invoice.getDaysBefore(3), Invoice.getDaysBefore(3), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("16", "250", true, 250, Invoice.getDaysBefore(4), Invoice.getDaysBefore(4), Invoice.getDaysBefore(4), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("15", "180", false, 180, Invoice.getDaysBefore(5), Invoice.getDaysBefore(5), Invoice.getDaysBefore(5), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("14", "120", true, 120, Invoice.getDaysBefore(6), Invoice.getDaysBefore(6), Invoice.getDaysBefore(6), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("13", "350", false, 350, Invoice.getDaysBefore(7), Invoice.getDaysBefore(7), Invoice.getDaysBefore(7), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("12", "280", true, 280, Invoice.getDaysBefore(8), Invoice.getDaysBefore(8), Invoice.getDaysBefore(8), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("11", "220", false, 220, Invoice.getDaysBefore(9), Invoice.getDaysBefore(9), Invoice.getDaysBefore(9), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("10", "400", true, 400, Invoice.getDaysBefore(10), Invoice.getDaysBefore(10), Invoice.getDaysBefore(10), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("9", "320", false, 320, Invoice.getDaysBefore(11), Invoice.getDaysBefore(11), Invoice.getDaysBefore(11), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("8", "270", true, 270, Invoice.getDaysBefore(12), Invoice.getDaysBefore(12), Invoice.getDaysBefore(12), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("7", "190", false, 190, Invoice.getDaysBefore(13), Invoice.getDaysBefore(13), Invoice.getDaysBefore(13), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("6", "150", true, 150, Invoice.getDaysBefore(14), Invoice.getDaysBefore(14), Invoice.getDaysBefore(14), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("5", "230", false, 230, Invoice.getDaysBefore(15), Invoice.getDaysBefore(15), Invoice.getDaysBefore(15), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("4", "380", true, 380, Invoice.getDaysBefore(16), Invoice.getDaysBefore(16), Invoice.getDaysBefore(16), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("3", "290", false, 290, Invoice.getDaysBefore(17), Invoice.getDaysBefore(17), Invoice.getDaysBefore(17), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("2", "210", true, 210, Invoice.getDaysBefore(18), Invoice.getDaysBefore(18), Invoice.getDaysBefore(18), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
-  new Invoice("1", "170", false, 170, Invoice.getDaysBefore(19), Invoice.getDaysBefore(19), Invoice.getDaysBefore(19), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2"),
+  dueInFuturePaid,
+  dueInFuture,
+  todayLimbo,
+  late,
 ];

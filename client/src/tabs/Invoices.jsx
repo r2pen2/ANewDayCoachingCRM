@@ -1,25 +1,33 @@
-import { ActionIcon, Indicator, NumberFormatter, Pagination, Tooltip, Table, Badge, Blockquote, Modal, Paper } from '@mantine/core'
-import React, { useEffect, useState } from 'react'
+import { ActionIcon, Indicator, NumberFormatter, Pagination, Tooltip, Table, Badge, Blockquote, Modal, Paper, Button, Space, Loader } from '@mantine/core'
+import React, { useContext, useEffect, useState } from 'react'
 import { getSlashDateString } from '../api/strings';
-import { IconCreditCardPay, IconCreditCardRefund, IconEye, IconInfoCircle } from '@tabler/icons-react';
+import { IconBellX, IconCreditCardPay, IconCreditCardRefund, IconEye, IconInfoCircle, IconQuestionMark } from '@tabler/icons-react';
 import '../assets/style/invoices.css';
-import { exampleInvoices } from '../api/invoices.ts';
+import { exampleInvoicesClassed } from '../api/invoices.ts';
 import { LinkMaster } from '../api/links.ts';
+import { CurrentUserContext } from '../App.jsx';
 
-const invoicesPerPage = 10;
+// const invoicesPerPage = 10;
 
 export default function Invoices() {
-  
-  const [invoices, setInvoices] = useState(exampleInvoices);
+
+  const [invoices, setInvoices] = useState(exampleInvoicesClassed);
   const [currentInvoice, setCurrentInvoice] = useState(null);
+  const [cancellingPending, setCancellingPending] = useState(false);
+  
+  const {currentUser} = useContext(CurrentUserContext)
+
+  function getBalanceExplanationVisibility() {
+    return invoices.filter(i => !i.paid && i.paidAt).length > 0;
+  }
 
   const InvoiceList = () => {
     
     const sortedInvoices = invoices.sort((a, b) => b.date - a.date);
-    const truncatedInvoices = sortedInvoices.slice((activePage - 1) * 10, (activePage - 1) * 10 + invoicesPerPage)
+    // const truncatedInvoices = sortedInvoices.slice((activePage - 1) * 10, (activePage - 1) * 10 + invoicesPerPage)
 
     //todo: This method needs to be implemented
-    function payInvoice(invoice) {
+    function payInvoice(invoice, method) {
 
       fetch('/payments/invoice', {
         method: 'POST',
@@ -43,8 +51,11 @@ export default function Invoices() {
       if (invoice.paid) {
         return "green";
       }
-      if (invoice.pending) {
+      if (invoice.paidAt) {
         return "orange";
+      }
+      if (invoice.dueAt < Date.now()) {
+        return "red";
       }
       return "yellow";
     }
@@ -53,8 +64,11 @@ export default function Invoices() {
       if (invoice.paid) {
         return `Paid on ${getSlashDateString(invoice.paid)}`;
       }
-      if (invoice.pending) {
+      if (invoice.paidAt) {
         return "Pending Approval";
+      }
+      if (invoice.checkLate()) {
+        return `${invoice.getDaysLate()} Day${invoice.getDaysLate() > 1 ? "s" : ""} Late`;
       }
       return "Unpaid";
     }
@@ -67,7 +81,10 @@ export default function Invoices() {
               No.
             </Table.Th>
             <Table.Th>
-              Date
+              Assigned
+            </Table.Th>
+            <Table.Th>
+              Due
             </Table.Th>
             <Table.Th>
               Amount
@@ -80,10 +97,11 @@ export default function Invoices() {
             </Table.Th>
           </Table.Thead>
           <Table.Tbody>
-            {truncatedInvoices.map((invoice, index) => (
+            {sortedInvoices.map((invoice, index) => (
               <Table.Tr key={index}>
-                <Table.Td>{invoice.id}</Table.Td>
-                <Table.Td>{getSlashDateString(invoice.date)}</Table.Td>
+                <Table.Td>{invoice.invoiceNumber}</Table.Td>
+                <Table.Td>{getSlashDateString(invoice.createdAt)}</Table.Td>
+                <Table.Td>{getSlashDateString(invoice.dueAt)}</Table.Td>
                 <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
                 <Table.Td>
                   <Badge color={getBadgeColor(invoice)}>{getPaidMessage(invoice)}</Badge>
@@ -94,10 +112,10 @@ export default function Invoices() {
                       <IconEye />
                     </ActionIcon>
                   </Tooltip>
-                  <Tooltip label="Pay Invoice" disabled={invoice.paid}>
-                    <ActionIcon variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => payInvoice(invoice)}>
-                      { !invoice.pending && <IconCreditCardPay /> }
-                      { invoice.pending && <IconCreditCardRefund /> }
+                  <Tooltip label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} disabled={invoice.paid}>
+                    <ActionIcon variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} }>
+                      { !invoice.checkPending() && <IconCreditCardPay /> }
+                      { invoice.checkPending() && <IconBellX /> }
                     </ActionIcon>
                   </Tooltip>
                 </Table.Td>
@@ -114,7 +132,9 @@ export default function Invoices() {
   useEffect(() => { document.body.scrollTop = document.documentElement.scrollTop = 0; }, [activePage])
 
   /** Get the total balance of all unpaid invoices */  
-  function getBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + i.amount, 0); }
+  function getUnpaidBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + i.amount, 0); }
+  function getBalance() { return invoices.filter(i => !i.paid && !i.paidAt).reduce((acc, i) => acc + i.amount, 0); }
+  function getPendingBalance() { return invoices.filter(i => !i.paid && i.paidAt).reduce((acc, i) => acc + i.amount, 0); }
 
   
   const PayButton = (props) => {
@@ -169,7 +189,7 @@ export default function Invoices() {
     }
 
     
-    const handleClick = () => { window.open(props.link, "_blank") }
+    const handleClick = () => { if (props.link) { window.open(props.link, "_blank"); } if (props.onClick) { props.onClick(); } }
     
     return (
       <div className="col-12 col-md-6 pay-button p-2" style={{ "--icon-color": getColor() }}>
@@ -182,29 +202,102 @@ export default function Invoices() {
   }
 
   /** Invoice payment modal that appears when {@link currentInvoice} is not null. */
-  const PayModal = () => (
-    <Modal opened={currentInvoice} onClose={() => setCurrentInvoice(null)} title="Choose how you'd like to pay:" className='container-fluid'>
-        <div className="row h-100 p-2">
-          <PayButton method="venmo" color="#008CFF" link={LinkMaster.payments.venmo} />
-          <PayButton method="zelle" color="#6D1ED4" link={LinkMaster.payments.zelle} />
-          <PayButton method="stripe" color="#F47216" link={LinkMaster.payments.stripe} />
-          <PayButton method="paid" color="##00BF6F" link={LinkMaster.payments.paid} />
+  const PayModal = () => {
+    
+    const [secondPage, setSecondPage] = useState(cancellingPending ? "cancel" : null);
+    const [limboRef, setLimboRef] = useState(null);
+
+    function getTitle() {
+      if (!secondPage) { return "Choose how you'd like to pay:"}
+      if (secondPage === "venmo") { return "Paying with Venmo:"}
+      if (secondPage === "mark") { return "Mark this invoice as paid:"}
+      if (secondPage === "oops") { return "Undo mark as paid:"}
+      if (secondPage === "cancel") { return "Mark as unpaid:"}
+      if (secondPage === "thanks-venmo" || secondPage === "thanks-mark") { return "Thank you!"}
+    }
+    
+    const VenmoAndMarkButtons = () => {
+
+      function handleDone() {
+        currentInvoice?.tellRachelIHaveBeenPaid().then(ref => {
+          setLimboRef(ref)
+          setSecondPage(`thanks-${secondPage}`);
+        });
+      }
+
+      if (!secondPage) { return; }
+      if (secondPage !== "venmo" && secondPage !== "mark" && secondPage !== "oops") { return; }
+      
+      const Done = () => {
+        if (secondPage === "oops") { return }
+        return <Button key="done-button" style={{marginBottom: "0.5rem"}} color="green" onClick={handleDone}>{secondPage === "venmo" ? "Done!" : "Yes, I've already paid."}</Button>
+      }
+      
+      return [
+        <Done />,
+        <Button key="back-button" onClick={() => setSecondPage(null)}>Back to Payment Options</Button>
+      ]
+    }
+
+    function handleUndoMarkPaid() {
+      currentInvoice?.tellRachelIHaveNotBeenPaid(limboRef);
+      setLimboRef(null)
+      setSecondPage("oops");
+    }
+
+    return <Modal opened={currentInvoice} onClose={() => setCurrentInvoice(null)} title={getTitle()} className='container-fluid'>
+        <div className="d-flex flex-column align-items-center">
+          <strong>Invoice #{currentInvoice?.invoiceNumber}: <NumberFormatter value={currentInvoice?.amount} prefix='$' /></strong>
+          <p style={{marginBottom: 0}}>Assigned: {getSlashDateString(currentInvoice?.createdAt)}</p>
+          <p>Due: {getSlashDateString(currentInvoice?.dueAt)}</p>
         </div>
+        {!secondPage && 
+          <div className="row h-100 p-2">
+            <PayButton method="venmo" color="#008CFF" onClick={() => setSecondPage("venmo")} link={LinkMaster.createVenmoLink(currentInvoice?.amount, currentInvoice?.invoiceNumber, currentUser.personalData.displayName)} />
+            <PayButton method="zelle" color="#6D1ED4" link={LinkMaster.payments.zelle} />
+            <PayButton method="stripe" color="#F47216" link={LinkMaster.payments.stripe} />
+            <PayButton method="paid" color="##00BF6F" onClick={() => setSecondPage("mark")} />
+          </div>
+        }
+        {secondPage && 
+          <div className="row h-100 p-2 text-center">
+            { secondPage === "venmo" && <p>Thanks for choosing to pay with <strong style={{color: "#228BE6"}}>Venmo</strong>! A new tab should have opened with your payment already filled out. Click <strong>"Done!"</strong> when the payment has been sent, and I'll let Rachel know.</p> }
+            { secondPage === "mark" && <p>Would you like me to inform Rachel that this invoice has already been paid?</p>}
+            { secondPage === "cancel" && <p>Are you sure you want to mark this invoice as unpaid and cancel the approval process?</p>}
+            { secondPage === "oops" && <p>Understood! I've marked this invoice as <strong style={{color: "#FAB005"}}>unpaid</strong>.</p>}
+            <VenmoAndMarkButtons />
+            { secondPage === "thanks-venmo" && <p>You're all set! I've let Rachel know that you paid through <strong style={{color: "#228BE6"}}>Venmo</strong>. The table will update shortly once she's approved the payment.</p> }
+            { secondPage === "thanks-mark" && <p>You're all set! I've let Rachel know that you've declared this invoice as paid. The table will update shortly once she's approved the payment.</p> }
+            { (secondPage === "thanks-venmo" || secondPage === "thanks-mark") && <Button color="red"  style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Wait! I Didn't mean to do that!</Button>}
+            { (secondPage === "cancel") && <Button color="red"  style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Mark unpaid</Button>}
+            { (secondPage === "thanks-venmo" || secondPage === "thanks-mark") && <Button color="blue" onClick={() => setCurrentInvoice(null)}>Close</Button>}
+            { (secondPage === "cancel") && <Button color="blue" onClick={() => setCurrentInvoice(null)}>Cancel</Button>}
+          </div>
+        }
     </Modal>
-  )
+  }
 
   return (
     <div>
       <div className="d-flex align-items-center flex-column">
         <h2>Invoices</h2>
         <PayModal />
-        <p>This is a list of all invoices: paid and unpaid. They are sorted by date. {invoicesPerPage} are displayed per page.</p>
-        <span className="d-flex flex-row gap-2"><p style={{fontWeight: 600}}>Oustanding Balance:</p> {<NumberFormatter value={getBalance()} prefix='$' />}</span>
+        <p>This is a list of all invoices: paid and unpaid. They are sorted by invoice number.</p>
+        <div className="d-flex flex-column gap-2">
+          <p style={{marginBottom: 0}}><strong>Outstanding Balance: </strong>{<NumberFormatter value={getBalance()} prefix='$' />}</p>
+        </div>
+        <span className="flex-row gap-2 align-items-center" style={{marginBottom: "1rem", fontWeight: 600, display: getBalanceExplanationVisibility() ? "flex" : "none"}}>
+          <p style={{marginBottom: 0, color: "#FAB005"}}>Unpaid ({<NumberFormatter value={getUnpaidBalance()} prefix='$' style={{color: "#FAB005"}} />})</p>
+          - 
+          <p style={{marginBottom: 0, color: "#FD7314"}}>Pending ({<NumberFormatter value={getPendingBalance()} prefix='$' style={{color: "#FD7314"}} />})</p>
+          =
+          {<NumberFormatter value={getBalance()} prefix='$' />}
+          </span>
       </div>
       <InvoiceList />
-      <div className="d-flex align-items-center flex-column">
+      {/* <div className="d-flex align-items-center flex-column">
         <Pagination style={{marginTop: "1rem"}} total={invoices.length / invoicesPerPage} value={activePage} onChange={setActivePage}/>
-      </div>
+      </div> */}
       <Blockquote color="blue" icon={<IconInfoCircle />} mt="xl">
         1. Maybe we want to have some sort of due date? Invoices could say <Badge color="red">3 Days Late</Badge> or something similar.<br/>
         2. Accepting payments through stripe costs 2.9% + 30¢.<br/>
