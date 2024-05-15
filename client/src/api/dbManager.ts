@@ -176,6 +176,8 @@ export class FormAssignment {
         formData: this.toJson(),
         userId: assignee
       })
+    }).catch((error) => {
+      console.error(error);
     })
   }
 }

@@ -40,13 +40,36 @@ const navigationStyles = {
 export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
   
   const {currentUser} = useContext(CurrentUserContext)
+  
+  /** Change current tab state & close the burger when a new tab is pressed */
+  function updateTab(tab) { setCurrentTab(tab); setBurgerOpen(false); }
+  
+  /** Renders the invoices badge when there are unpaid invoices */
+  const InvoicesBadge = () => {
+    /** The number to display in invoices badge */
+    const invoiceBadgeNumber = currentUser.unpaidInvoices.length;
+    /** The text to display as tooltop over forms badge */
+    const invoicesBadgeTooltipText = `You have ${invoiceBadgeNumber} outstanding invoice${invoiceBadgeNumber > 1 ? "s" : ""}.`
+    if (invoiceBadgeNumber <= 0) { return; }
+    return (
+      <Tooltip label={invoicesBadgeTooltipText}>
+        <Badge size="xs" color="red" circle>{invoiceBadgeNumber}</Badge>
+      </Tooltip>
+    )
+  }
 
-  const invoiceBadgeNumber = currentUser.unpaidInvoices.length;
-  const exampleFormsBadgeNumber = 1
-
-  function updateTab(tab) {
-    setCurrentTab(tab)
-    setBurgerOpen(false)
+  /** Renders the forms badge when there are incomplete forms */
+  const FormsBadge = () => {
+    /** The number to display in forms badge */
+    const formsBadgeNumber = currentUser.formAssignments.filter(fa => fa.completed === false).length;
+    /** The text to display as tooltop over invoices badge */
+    const formsBadgeTooltipText = `There ${formsBadgeNumber > 1 ? "are" : "is"} ${formsBadgeNumber} form${formsBadgeNumber > 1 ? "s" : ""} for you to complete.`;
+    if (formsBadgeNumber <= 0) { return; }
+    return (
+      <Tooltip label={formsBadgeTooltipText}>
+        <Badge size="xs" color="red" circle>{formsBadgeNumber}</Badge>
+      </Tooltip>
+    )
   }
 
   return (    
@@ -61,13 +84,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
       <NavLink
         label="Invoices"
         leftSection={<IconCreditCard />}
-        rightSection={
-          invoiceBadgeNumber > 0 && <Tooltip label={`You have ${invoiceBadgeNumber} outstanding invoice${invoiceBadgeNumber > 1 ? "s" : ""}.`}>
-            <Badge size="xs" color="red" circle>
-              {invoiceBadgeNumber}
-            </Badge>
-          </Tooltip>
-        }
+        rightSection={<InvoicesBadge />}
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.INVOICES} 
         onClick={() => updateTab(navigationItems.INVOICES)}
@@ -82,13 +99,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
       <NavLink
         label="Forms"
         leftSection={<IconFiles />}
-        rightSection={
-          <Tooltip label={`There ${exampleFormsBadgeNumber > 1 ? "are" : "is"} ${exampleFormsBadgeNumber} form${exampleFormsBadgeNumber > 1 ? "s" : ""} for you to complete.`}>
-            <Badge size="xs" color="red" circle>
-              {exampleFormsBadgeNumber}
-            </Badge>
-          </Tooltip>
-        }
+        rightSection={<FormsBadge />}
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.FORMS}
         onClick={() => updateTab(navigationItems.FORMS)}

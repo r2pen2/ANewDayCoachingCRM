@@ -12,8 +12,6 @@ import { db, getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
 import { getTab } from './api/browser.ts';
-import { User } from './api/dbManager.ts';
-import { doc, onSnapshot } from 'firebase/firestore';
 
 const theme = createTheme({});
 
@@ -21,14 +19,9 @@ export const CurrentUserContext = createContext();
 
 function App() {
 
-  const [burgerOpen, setBurgerOpen] = useState(false);
-  const [currentTab, setCurrentTab] = useState(getTab())
-  const [currentUser, setCurrentUser] = useState(null);
-
-  function userSetterFunction(u) {
-    console.log("Setting user...")
-    setCurrentUser(u)
-  }
+  const [burgerOpen, setBurgerOpen] = useState(false);    // State for the burger menu
+  const [currentTab, setCurrentTab] = useState(getTab()); // Get the current tab from the URL
+  const [currentUser, setCurrentUser] = useState(null);   // State for the current user
 
   const CurrentTab = () => {
     switch (currentTab) {
@@ -47,7 +40,7 @@ function App() {
   }
 
   /** Get the current user on load */
-  useEffect(() => { getCurrentUser(userSetterFunction); }, [])
+  useEffect(() => { getCurrentUser(setCurrentUser); }, [])
 
   if (!currentUser) {
     return <MantineProvider theme={theme}><Login /></MantineProvider>
