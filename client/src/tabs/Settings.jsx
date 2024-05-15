@@ -10,11 +10,10 @@ export default function Settings() {
 
   return (
     <div className="d-flex flex-column gap-2 align-items-center justify-content-center">
-      <h1>Settings</h1>
-      <p>Welcome, {currentUser.personalData.displayName}!</p>
-      <p>Here you can change your name, profile picture, and darkmode preference.</p>
+
+      <SettingsIntro currentUser={currentUser} />
+      <SettingsAvatar currentUser={currentUser} />
       
-      <Avatar src={currentUser.personalData.pfpUrl} alt={currentUser.personalData.displayName} size="xl" style={{marginBottom: "1rem"}} />
       <Button>Edit Profile</Button>
       <Button onClick={() => auth.signOut()}>Sign Out</Button>
       
@@ -24,3 +23,11 @@ export default function Settings() {
     </div>
   )
 }
+
+const SettingsIntro = ({currentUser}) => [
+  <h1 key="settings-header">Settings</h1>,
+  <p key="settings-display-name">Welcome, {currentUser.personalData.displayName}!</p>,
+  <p key="settings-directions">Here you can change your name, profile picture, and darkmode preference.</p>
+];
+
+const SettingsAvatar = ({currentUser}) => <Avatar src={currentUser.personalData.pfpUrl} alt={currentUser.personalData.displayName} size="xl" style={{marginBottom: "1rem"}} />
