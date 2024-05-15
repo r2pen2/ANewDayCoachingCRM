@@ -9,3 +9,5 @@ router.post("/submitted", (req, res) => {
   const userEmail = req.body.userEmail;
   console.log(formId, userEmail);  
 })
+
+module.exports = router;

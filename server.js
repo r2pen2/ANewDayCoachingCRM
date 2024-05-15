@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const payments = require('./routes/payments');
 const calendar = require('./routes/calendar');
-const forms = require('./routes/forms');
+const forms = require("./routes/forms")
 
 // Init express application
 const app = express();
