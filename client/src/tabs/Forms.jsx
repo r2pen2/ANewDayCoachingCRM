@@ -35,12 +35,16 @@ export default function Forms() {
           ) 
         }
 
+        const FormTitle = () => (
+          <div className="form-title">
+            <h3>{form.formTitle}</h3>
+            <p>{form.formDescription}</p>
+          </div>
+        )
+
         return (  
           <Paper key={index} onClick={() => window.open(form.assignedLink, "_blank")} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
-            <div className="form-title">
-              <h3>{form.formTitle}</h3>
-              <p>{form.formDescription}</p>
-            </div>
+            <FormTitle />
             <CompleteNotifier />
             <IncompleteNotifier />
             <div className="form-decor" />

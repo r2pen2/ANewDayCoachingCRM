@@ -11,6 +11,7 @@ import Settings from './tabs/Settings';
 import { db, getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
+import Dashboard from './tabs/Dashboard';
 import { getTab } from './api/browser.ts';
 
 const theme = createTheme({});
@@ -26,7 +27,7 @@ function App() {
   const CurrentTab = () => {
     switch (currentTab) {
       case navigationItems.DASHBOARD:
-        return <div>Dashboard</div>
+        return <Dashboard />
       case navigationItems.INVOICES:
         return <Invoices />
       case navigationItems.FORMS:
