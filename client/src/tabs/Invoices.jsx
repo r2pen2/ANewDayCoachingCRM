@@ -113,9 +113,9 @@ export default function Invoices() {
                     </ActionIcon>
                   </Tooltip>
                   <Tooltip label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} disabled={invoice.paid}>
-                    <ActionIcon variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} }>
+                    <ActionIcon color={invoice.checkPending() ? "orange" : "blue"} variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} }>
                       { !invoice.checkPending() && <IconCreditCardPay /> }
-                      { invoice.checkPending() && <IconBellX /> }
+                      { invoice.checkPending() && <IconCreditCardRefund /> }
                     </ActionIcon>
                   </Tooltip>
                 </Table.Td>
