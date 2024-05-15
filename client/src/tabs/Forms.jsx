@@ -3,34 +3,27 @@ import React, { useContext, useRef, useState } from 'react'
 import "../assets/style/forms.css"
 import { IconAlertCircle, IconCheck, IconChevronLeft, IconCircleCheck, IconCircleCheckFilled, IconHelpHexagonFilled, IconInfoCircle, IconQuestionMark } from '@tabler/icons-react'
 import { CurrentUserContext } from '../App'
-
-const formHeight = 500
-const formWidth = 6404
+import { parentGuardianForm } from '../api/forms.ts'
 
 export default function Forms() {
 
   const {currentUser} = useContext(CurrentUserContext)
 
-  const forms = {
-    PARENTGUARDIAN: {
-      title: "Parent / Guardian Application Form",
-      description: "Basic information about the student and parent or guardian.",
-      complete: false,
-      href: `https://docs.google.com/forms/d/e/1FAIpQLSeZ7lFNqQ4KYdrvgoWZ7uo9H82dJ5xXyT4wiB63xU1f23IrTw/viewform?usp=pp_url&entry.986666223=${currentUser.personalData.email}`,
-    }
-  }
+  const [forms, setForms] = useState([parentGuardianForm])
+
+  console.log(forms)
 
   const FormsList = () => {
 
     return (
-      Object.values(forms).map((form, index) => 
-      <Paper key={index} onClick={() => window.open(form.href, "_blank")} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
+      forms.map((form, index) => 
+      <Paper key={index} onClick={() => form.goWithEmailFilled()} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
         <div className="form-title">
-          <h3>{form.title}</h3>
-          <p>{form.description}</p>
+          <h3>{form.formTitle}</h3>
+          <p>{form.formDescription}</p>
         </div>
-        {form.complete && <Tooltip label="All set!"><IconCircleCheckFilled color="green" /></Tooltip>}
-        {!form.complete && <Tooltip label="This form has not been completed."><IconAlertCircle color="orange" /></Tooltip>}
+        {form.completed && <Tooltip label="All set!"><IconCircleCheckFilled color="green" /></Tooltip>}
+        {!form.completed && <Tooltip label="This form has not been completed."><IconAlertCircle color="orange" /></Tooltip>}
         <div className="form-decor" />
       </Paper>)
     )
@@ -47,6 +40,7 @@ export default function Forms() {
           <FormsList />
         </div>
       </div>
+      <Button onClick={() => parentGuardianForm.assign(currentUser.id)}>Assign Parent Form To Self</Button>
     </div>
   )
 }

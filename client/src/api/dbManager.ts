@@ -103,16 +103,38 @@ export class User {
 export class FormAssignment {
   formId: string;
   formTitle: string;
-  assignedDate: Date;
-  dueDate: Date;
+  formDescription: string;
+  assignedDate: Date | null;
+  dueDate: Date | null;
   completed: boolean;
-  completedDate: Date;
-  assignedTo: string;
-  started: boolean;
+  completedDate: Date | null;
+  assignedTo: string | null;
   comment: string | null;
   priority: number;
-  lastModified: Date;
+  href: string;
+  assignedLink: string | null;
 
+  static PRIORITIES = {
+    LOW: 0,
+    MEDIUM: 1,
+    HIGH: 2,
+  }
+
+  constructor(formId: string, formTitle: string, formDescription: string, href: string) {
+    this.formId = formId;
+    this.formTitle = formTitle;
+    this.assignedDate = null;
+    this.dueDate = null;
+    this.completed = false;
+    this.completedDate = null;
+    this.assignedTo = null;
+    this.comment = null;
+    this.priority = FormAssignment.PRIORITIES.LOW;
+    this.formDescription = formDescription;
+    this.href = href;
+    this.assignedLink = null;
+  }
+  
   toJson() {
     return {
       formId: this.formId,
@@ -122,11 +144,40 @@ export class FormAssignment {
       completed: this.completed,
       completedDate: this.completedDate,
       assignedTo: this.assignedTo,
-      started: this.started,
       comment: this.comment,
       priority: this.priority,
-      lastModified: this.lastModified
+      formDescription: this.formDescription,
+      href: this.href,
+      assignedLink: this.assignedLink,
     }
+  }
+
+  setPriority(priority: number): void {
+    this.priority = priority;
+  }
+
+  setDueDate(dueDate: Date): void {
+    this.dueDate = dueDate;
+  }
+
+  addComment(comment: string): void {
+    this.comment = comment;
+  }
+  
+  assign(assignee: string): void {
+    this.assignedDate = new Date();
+    this.assignedTo = assignee;
+    this.assignedLink = this.href + assignee;
+    fetch("https://www.crm.joed.dev/forms/assign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        formData: this.toJson(),
+        userId: assignee
+      })
+    })
   }
 }
 

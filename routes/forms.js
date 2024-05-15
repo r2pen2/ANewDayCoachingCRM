@@ -7,17 +7,37 @@ router.use(bodyParser.json());
 
 router.post("/submitted", (req, res) => {
   const formId = req.body.formId;
-  const userEmail = req.body.userEmail;
-  db.collection("users").where("personalData.email", "==", userEmail).get().then((querySnapshot) => {
-    querySnapshot.docs.forEach((doc) => {
-      const user = doc.data();
-      if (user.forms) {
-        user.forms.push(formId);
-      } else {
-        user.forms = [formId];
+  const userId = req.body.userId;
+  db.collection("users").doc(userId).get().then((docSnap) => {
+    
+    const user = docSnap.data();
+
+    for (const formAssignment of user.formAssignments) {
+      if (formAssignment.formId === formId) {
+        formAssignment.completed = true;
+        formAssignment.completedDate = new Date();
       }
-      db.collection("users").doc(doc.id).set(user);
+    }
+    
+    db.collection("users").doc(userId).set(user);
+  });
+})
+
+router.post("/assign", (req, res) => {
+  
+  const formData = req.body.formData;
+  const userId = req.body.userId;
+
+  console.log(`Assigning form ${formData.formId} to user ${userId}...`)
+
+  db.collection("users").doc(userId).get().then((docSnap) => {
+    const user = docSnap.data();
+
+    user.formAssignments.push({
+      formData
     });
+
+    db.collection("users").doc(userId).set(user);
   });
 })
 
