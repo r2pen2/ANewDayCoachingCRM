@@ -41,8 +41,16 @@ router.post("/assign", (req, res) => {
 
     // Check if the form is already assigned & uncompleted
     const userHasFormInList = user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId).length > 0;
-    const userHasFormCompleted = user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId)[0].completed;
-    if (userHasFormInList && !userHasFormCompleted) { return; }
+    const existingForm = user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId)[0];
+    
+    if (userHasFormInList && !existingForm.completed) { return; }
+    
+    if (userHasFormInList && existingForm.completed) {
+      // Mark the form as uncompleted
+      existingForm.completed = false;
+      db.collection("users").doc(userId).set(user);
+      return;
+    }
     
     // Add the form
     user.formAssignments.push(formData);
