@@ -1,6 +1,6 @@
 import { UserCredential } from "firebase/auth";
 import { db } from "./firebase";
-import { DocumentReference, addDoc, collection, deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
+import { DocumentReference, addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 
 const rachelDocRef = doc(db, "users/rachel");
 const invoiceLimboCollectionRef = collection(db, "invoiceLimbo");
@@ -56,33 +56,7 @@ export class User {
     })
   }
 
-  async loadData(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      getDoc(this.docRef).then((doc) => {
-        if (doc.exists()) {
-          const data = doc.data();
-          if (data) {
-            this.invoices = data.invoices;
-            this.admin = data.admin;
-            this.formAssignments = data.formAssignments;
-            this.id = data.id;
-            this.email = data.email;
-            this.displayName = data.displayName;
-            this.pfpUrl = data.pfpUrl;
-            resolve();
-          } else {
-            reject("Document data is undefined");
-          }
-        } else {
-          reject("Document does not exist");
-        }
-      }).catch((error) => {
-        reject(error);
-      })
-    })
-  }
-
-  fillData(data: any): void {
+  fillData(data: any): User {
     this.invoices = data.invoices;
     this.admin = data.admin;
     this.formAssignments = data.formAssignments;
@@ -90,23 +64,30 @@ export class User {
     this.email = data.email;
     this.displayName = data.displayName;
     this.pfpUrl = data.pfpUrl;
+    return this;
   }
 
-  async createDocument(): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
+  async createDocument(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       getDoc(this.docRef).then((doc) => {
-        if (doc.exists()) {
-          // This document already exists! No need to do any of this
-          this.fillData(doc.data())
-          resolve(this);
-        } else {
-          // This is a new user
-          // Create a document
-          this.setData().then(() => { resolve(this); }).catch((error) => { reject(error); });
-        }
+        if (doc.exists()) { resolve(); } else { this.setData().then(() => { resolve(); }).catch((error) => { reject(error); }); }
       }).catch((error) => {
         reject(error);
       })
+    })
+  }
+
+  /** Need to be able to create a shallow clione so that state can update */
+  clone(): User { return new User(this.firebaseUser).fillData(this); }
+
+  subscribe(setter: Function) {
+    onSnapshot(this.docRef, (doc) => {
+      if (doc.exists()) {
+        this.fillData(doc.data());
+        // We need to create a clone of this User object so that the state actually updates
+        const cloneUser = this.clone()
+        setter(cloneUser);
+      }
     })
   }
 }
@@ -196,11 +177,6 @@ export class FormAssignment {
         userId: assignee
       })
     })
-  }
-
-  goWithIdFilled():void {
-    if (!this.assignedLink) { return; }
-    window.open(this.assignedLink, "_blank");
   }
 }
 

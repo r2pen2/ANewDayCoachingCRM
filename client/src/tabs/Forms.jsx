@@ -3,7 +3,7 @@ import React, { useContext, useRef, useState } from 'react'
 import "../assets/style/forms.css"
 import { IconAlertCircle, IconCheck, IconChevronLeft, IconCircleCheck, IconCircleCheckFilled, IconHelpHexagonFilled, IconInfoCircle, IconQuestionMark } from '@tabler/icons-react'
 import { CurrentUserContext } from '../App'
-import { parentGuardianForm } from '../api/forms.ts'
+import { parentGuardianForm, webHookTestForm } from '../api/forms.ts'
 
 export default function Forms() {
 
@@ -14,16 +14,19 @@ export default function Forms() {
   const FormsList = () => {
 
     return (
-      forms.map((form, index) => 
-      <Paper key={index} onClick={() => form.goWithIdFilled()} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
-        <div className="form-title">
-          <h3>{form.formTitle}</h3>
-          <p>{form.formDescription}</p>
-        </div>
-        {form.completed && <Tooltip label="All set!"><IconCircleCheckFilled color="green" /></Tooltip>}
-        {!form.completed && <Tooltip label="This form has not been completed."><IconAlertCircle color="orange" /></Tooltip>}
-        <div className="form-decor" />
-      </Paper>)
+      forms.map((form, index) => {
+        return (  
+          <Paper key={index} onClick={() => window.open(form.assignedLink, "_blank")} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
+            <div className="form-title">
+              <h3>{form.formTitle}</h3>
+              <p>{form.formDescription}</p>
+            </div>
+            {form.completed && <Tooltip label="All set!"><IconCircleCheckFilled color="green" /></Tooltip>}
+            {!form.completed && <Tooltip label="This form has not been completed."><IconAlertCircle color="orange" /></Tooltip>}
+            <div className="form-decor" />
+          </Paper>
+        )
+      })
     )
   }
 
@@ -38,7 +41,10 @@ export default function Forms() {
           <FormsList />
         </div>
       </div>
-      <Button onClick={() => parentGuardianForm.assign(currentUser.id)}>Assign Parent Form To Self</Button>
+      <div className="d-flex flex-row gap-2">    
+        <Button onClick={() => parentGuardianForm.assign(currentUser.id)}>Assign Parent Form To Self</Button>
+        <Button onClick={() => webHookTestForm.assign(currentUser.id)}>Assign Webhook Form To Self</Button>
+      </div>
     </div>
   )
 }

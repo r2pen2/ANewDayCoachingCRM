@@ -34,7 +34,7 @@ export async function getCurrentUser(setter) {
     if (user) {
       const userObject = new User(user);
       await userObject.createDocument();
-      setter(userObject);
+      userObject.subscribe(setter)
     } else {
       setter(null)
     }

@@ -14,6 +14,9 @@ router.post("/submitted", (req, res) => {
 
     for (const formAssignment of user.formAssignments) {
       if (formAssignment.formId === formId) {
+        
+        console.log(`Marking form ${formId} as completed for user ${userId}...`)
+
         formAssignment.completed = true;
         formAssignment.completedDate = new Date();
       }

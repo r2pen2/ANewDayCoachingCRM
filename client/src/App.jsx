@@ -8,10 +8,12 @@ import { AppShellHeader } from './components/Header';
 import Invoices from './tabs/Invoices';
 import Forms from './tabs/Forms';
 import Settings from './tabs/Settings';
-import { getCurrentUser } from './api/firebase';
+import { db, getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
 import { getTab } from './api/browser.ts';
+import { User } from './api/dbManager.ts';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const theme = createTheme({});
 
@@ -22,6 +24,11 @@ function App() {
   const [burgerOpen, setBurgerOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState(getTab())
   const [currentUser, setCurrentUser] = useState(null);
+
+  function userSetterFunction(u) {
+    console.log("Setting user...")
+    setCurrentUser(u)
+  }
 
   const CurrentTab = () => {
     switch (currentTab) {
@@ -40,7 +47,7 @@ function App() {
   }
 
   /** Get the current user on load */
-  useEffect(() => { getCurrentUser(setCurrentUser); }, [])
+  useEffect(() => { getCurrentUser(userSetterFunction); }, [])
 
   if (!currentUser) {
     return <MantineProvider theme={theme}><Login /></MantineProvider>
