@@ -34,6 +34,9 @@ router.post("/assign", (req, res) => {
   console.log(`Assigning form ${formData.formId} to user ${userId}...`)
 
   db.collection("users").doc(userId).get().then((docSnap) => {
+    
+    if (!docSnap.exists()) { return; }
+
     const user = docSnap.data();
 
     // Check if the form is already assigned
