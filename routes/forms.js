@@ -33,8 +33,13 @@ router.post("/assign", (req, res) => {
   db.collection("users").doc(userId).get().then((docSnap) => {
     const user = docSnap.data();
 
+    // Check if the form is already assigned
+    if (user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId).length > 0) { return; }
+    
+    // Add the form
     user.formAssignments.push(formData);
 
+    // Push changes
     db.collection("users").doc(userId).set(user);
   });
 })

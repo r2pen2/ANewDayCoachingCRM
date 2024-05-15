@@ -11,13 +11,11 @@ export default function Forms() {
 
   const [forms, setForms] = useState(currentUser.formAssignments)
 
-  console.log(currentUser)
-
   const FormsList = () => {
 
     return (
       forms.map((form, index) => 
-      <Paper key={index} onClick={() => form.goWithEmailFilled()} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
+      <Paper key={index} onClick={() => form.goWithIdFilled()} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
         <div className="form-title">
           <h3>{form.formTitle}</h3>
           <p>{form.formDescription}</p>

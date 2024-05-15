@@ -197,6 +197,11 @@ export class FormAssignment {
       })
     })
   }
+
+  goWithIdFilled():void {
+    if (!this.assignedLink) { return; }
+    window.open(this.assignedLink, "_blank");
+  }
 }
 
 export class Invoice {
