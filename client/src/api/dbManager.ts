@@ -168,6 +168,9 @@ export class FormAssignment {
     this.assignedDate = new Date();
     this.assignedTo = assignee;
     this.assignedLink = this.href + assignee;
+
+    console.log(`Assigned ${this.formId} to ${assignee}`)
+
     fetch("https://www.crm.joed.dev/forms/assign", {
       method: "POST",
       headers: {

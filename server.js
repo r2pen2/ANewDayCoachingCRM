@@ -17,6 +17,9 @@ app.listen(3008, () => {
     console.log('Now listening on port ' + 3008);
 });
 
+// Cors
+app.use(cors());
+
 // Serve static files
 app.use(express.static(__dirname + "/static/"));
 
