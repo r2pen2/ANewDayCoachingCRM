@@ -35,7 +35,7 @@ router.post("/assign", (req, res) => {
 
   db.collection("users").doc(userId).get().then((docSnap) => {
     
-    if (!docSnap.exists()) { return; }
+    if (!docSnap.exists) { return; }
 
     const user = docSnap.data();
 
