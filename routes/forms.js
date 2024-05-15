@@ -33,9 +33,7 @@ router.post("/assign", (req, res) => {
   db.collection("users").doc(userId).get().then((docSnap) => {
     const user = docSnap.data();
 
-    user.formAssignments.push({
-      formData
-    });
+    user.formAssignments.push(formData);
 
     db.collection("users").doc(userId).set(user);
   });

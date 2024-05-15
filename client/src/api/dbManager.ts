@@ -82,16 +82,27 @@ export class User {
     })
   }
 
-  async createDocument(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  fillData(data: any): void {
+    this.invoices = data.invoices;
+    this.admin = data.admin;
+    this.formAssignments = data.formAssignments;
+    this.id = data.id;
+    this.email = data.email;
+    this.displayName = data.displayName;
+    this.pfpUrl = data.pfpUrl;
+  }
+
+  async createDocument(): Promise<User> {
+    return new Promise<User>((resolve, reject) => {
       getDoc(this.docRef).then((doc) => {
         if (doc.exists()) {
           // This document already exists! No need to do any of this
-          resolve();
+          this.fillData(doc.data())
+          resolve(this);
         } else {
           // This is a new user
           // Create a document
-          this.setData().then(() => { resolve(); }).catch((error) => { reject(error); });
+          this.setData().then(() => { resolve(this); }).catch((error) => { reject(error); });
         }
       }).catch((error) => {
         reject(error);
@@ -164,10 +175,14 @@ export class FormAssignment {
     this.comment = comment;
   }
   
-  assign(assignee: string): void {
-    this.assignedDate = new Date();
-    this.assignedTo = assignee;
-    this.assignedLink = this.href + assignee;
+  assign(assignee: string, comment?: string, priority?: number): void {
+    
+    this.assignedDate = new Date();               // Set assignment date
+    this.assignedTo = assignee;                   // Set assignee
+    this.assignedLink = this.href + assignee;     // Set link to form
+
+    if (comment) { this.comment = comment; }      // Add comment if specified
+    if (priority) { this.priority = priority; }   // Add priority if specified
 
     console.log(`Assigned ${this.formId} to ${assignee}`)
 

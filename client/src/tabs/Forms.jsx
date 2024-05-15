@@ -9,9 +9,9 @@ export default function Forms() {
 
   const {currentUser} = useContext(CurrentUserContext)
 
-  const [forms, setForms] = useState([parentGuardianForm])
+  const [forms, setForms] = useState(currentUser.formAssignments)
 
-  console.log(forms)
+  console.log(currentUser)
 
   const FormsList = () => {
 
