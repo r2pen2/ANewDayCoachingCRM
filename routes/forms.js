@@ -39,8 +39,10 @@ router.post("/assign", (req, res) => {
 
     const user = docSnap.data();
 
-    // Check if the form is already assigned
-    if (user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId).length > 0) { return; }
+    // Check if the form is already assigned & uncompleted
+    const userHasFormInList = user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId).length > 0;
+    const userHasFormCompleted = user.formAssignments.filter(formAssignment => formAssignment.formId === formData.formId)[0].completed;
+    if (userHasFormInList && !userHasFormCompleted) { return; }
     
     // Add the form
     user.formAssignments.push(formData);
