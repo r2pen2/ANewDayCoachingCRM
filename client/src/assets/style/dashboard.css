@@ -1,0 +1,19 @@
+.indicator-container button {
+  background: #647659;
+  &[data-active] {
+    width: 40px;
+  }
+  transition: all 0.5s ease;
+}
+
+.mantine-Carousel-indicators {
+  bottom: 0 !important;
+}
+
+.indicator-container {
+  padding-bottom: 1rem;
+}
+
+.favorite-button {
+  cursor: pointer;
+}
