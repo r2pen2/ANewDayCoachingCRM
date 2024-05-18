@@ -16,11 +16,11 @@ db.collection("tools").onSnapshot((querySnapshot) => {
 });
 
 router.post("/create", (req, res) => {
-  const formId = req.body.title;
+  const toolId = req.body.title;
   const userId = req.body.description;
 
   db.collection("tools").add({
-    title: formId,
+    title: toolId,
     description: userId
   }).then((docRef) => {
     console.log(`Created tool with ID: ${docRef.id}`);
@@ -30,6 +30,18 @@ router.post("/create", (req, res) => {
     res.json({ error: error });
   });
 })
+
+router.post("/delete", (req, res) => {
+  const toolId = req.body.toolId;
+
+  db.collection("tools").doc(toolId).delete().then(() => {
+    console.log(`Deleted tool with ID: ${toolId}`);
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error("Error deleting document: ", error);
+    res.json({ error: error });
+  });
+}
 
 router.get("/", (req, res) => {
   res.json(allTools);
