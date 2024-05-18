@@ -12,6 +12,7 @@ db.collection("tools").onSnapshot((querySnapshot) => {
   allTools = {};
   querySnapshot.forEach((doc) => {
     allTools[doc.id] = doc.data();
+    allTools[doc.id].id = doc.id;
   });
 });
 
