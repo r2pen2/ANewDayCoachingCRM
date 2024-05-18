@@ -44,6 +44,33 @@ router.post("/delete", (req, res) => {
   });
 })
 
+router.post("/assign-multiple", (req, res) => {
+  const toolId = req.body.toolId;
+  const users = req.body.users;
+  const title = req.body.title;
+  const description = req.body.description;
+
+  for (const userId of users) {
+    db.collection("users").doc(userId).get().then((docSnap) => {
+      if (!docSnap.exists) { return; }
+  
+      const user = docSnap.data();
+  
+      const tool = {
+        id: toolId,
+        title: title,
+        description: description
+      }
+
+      if (!user.tools) { user.tools = {}; }
+      user.tools[toolId] = tool;
+  
+      // Push changes
+      db.collection("users").doc(userId).set(user);
+    });
+  }
+})
+
 router.get("/", (req, res) => {
   res.json(allTools);
 })

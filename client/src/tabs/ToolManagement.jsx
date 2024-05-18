@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Modal, Table, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
 import { Tool, User } from '../api/dbManager.ts';
 import { IconSearch, IconTrash, IconUser, IconUserShare } from '@tabler/icons-react';
@@ -23,6 +23,10 @@ export default function ToolManagement() {
   const [allTools, setAllTools] = React.useState({});
   const [allUsers, setAllUsers] = React.useState({});
 
+  const [userQuery, setUserQuery] = React.useState("");
+
+  const [assignees, setAssignees] = React.useState([]);
+
   React.useEffect(() => {
     Tool.fetchAll().then((tools) => {
       setAllTools(tools);
@@ -30,16 +34,70 @@ export default function ToolManagement() {
     User.fetchAll().then((users) => {
       setAllUsers(users);
     })
-  })
+  }, [])
 
   const UserSearchResults = () => {
-    const query = document.getElementById("user-query").value;
-    const users = Object.values(allUsers).filter((user) => { return user.displayName.includes(query) || user.email.includes(query) });
+
+    let users = Object.values(allUsers);
+
+    if (userQuery.length > 0) {
+      users = users.filter((user) => { return user.personalData.displayName.includes(userQuery) || user.personalData.email.includes(userQuery) })
+    }
+
+    // Let's sort alphabetically by displayName, too
+    users.sort((a, b) => a.personalData.displayName.localeCompare(b.personalData.displayName))
+
+    if (users.length === 0) {
+      return <Text>No users found.</Text>
+    }
 
     return (
-      <Table.ScrollContainer minWidth={500} type="native">
+      users.map((user, index) => {
 
-      </Table.ScrollContainer>
+        function toggleAssignee() {
+          if (assignees.includes(user.id)) {
+            setAssignees(assignees.filter((id) => id !== user.id))
+          } else {
+            setAssignees([...assignees, user.id])
+          }
+        }
+
+        return (
+          <Paper onClick={toggleAssignee} className="d-flex mb-2 flex-row justify-content-between align-items-center p-2" withBorder style={{cursor: "pointer"}} >
+            <div className="d-flex flex-row align-items-center justify-content-center">
+              <Avatar src={user.personalData.pfpUrl} alt={user.personalData.displayName} />
+              <Text style={{marginLeft: "0.5rem"}}>{user.personalData.displayName}</Text>
+            </div>
+            <Tooltip label={`Assign "${currentTool?.title}" to ${user.personalData.displayName}`} >
+              <Checkbox checked={assignees.includes(user.id)} />
+            </Tooltip>
+          </Paper>
+        )
+      })
+    )
+  }
+
+  const Assignees = () => {
+    if (assignees.length === 0) { return; }
+    
+    function assignToAssignees() {
+      Tool.assignToMultiple(currentTool.title, currentTool.description, currentTool.id, assignees).then((success) => {
+        if (success) {
+          setUserSearchMenuOpen(false);
+        }
+      })
+    }
+
+    return (
+      <div className="d-flex flex-row justify-content-end align-items-center p-2">
+        <AvatarGroup>
+          {assignees.map((userId, index) => {
+            const user = allUsers[userId];
+            return <Tooltip key={index} label={user.personalData.displayName}><Avatar src={user.personalData.pfpUrl} alt={user.personalData.displayName} /></Tooltip>
+          })}
+        </AvatarGroup>
+        <Button style={{marginLeft: "1rem"}} onClick={assignToAssignees}>Done</Button>
+      </div>
     )
   }
 
@@ -107,8 +165,9 @@ export default function ToolManagement() {
       </Table.ScrollContainer>
       <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`Assign "${currentTool?.title}" to Users:`}>
         <p>Search for a user to assign the tool to:</p>
-        <TextInput id="user-query" placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
+        <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
         <UserSearchResults />
+        <Assignees />
       </Modal>
     </div>
   )
