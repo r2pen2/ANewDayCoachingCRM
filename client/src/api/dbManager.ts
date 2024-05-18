@@ -321,4 +321,24 @@ export class Tool {
       })
     })
   }
+
+  static async delete(id: string): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      fetch(hostname + "/tools/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: id
+        })
+      }).then((res) => {
+        res.json().then((data) => {
+          resolve(data.success);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
 }

@@ -41,7 +41,7 @@ router.post("/delete", (req, res) => {
     console.error("Error deleting document: ", error);
     res.json({ error: error });
   });
-}
+})
 
 router.get("/", (req, res) => {
   res.json(allTools);
