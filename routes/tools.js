@@ -5,10 +5,11 @@ const db = require('../firebase');
 
 router.use(bodyParser.json());
 
-const allTools = {};
+let allTools = {};
 
 /** Update tools when a change is detected */
 db.collection("tools").onSnapshot((querySnapshot) => {
+  allTools = {};
   querySnapshot.forEach((doc) => {
     allTools[doc.id] = doc.data();
   });
