@@ -1,5 +1,5 @@
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools } from '@tabler/icons-react';
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconForms } from '@tabler/icons-react';
 import { useContext } from "react";
 import { CurrentUserContext } from "../App";
 
@@ -19,7 +19,8 @@ export const navigationItems = {
   SCHEDULE: "schedule",
   FORMS: "forms",
   SETTINGS: "settings",
-  TOOLS: "tools"
+  ADMINTOOLS: "tools-admin",
+  ADMINFORMS: "forms-admin",
 }
 
 /**
@@ -78,13 +79,21 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
     if (!currentUser.admin) { return; }
     return [
       <NavLink
-        key="tools-nav"
+        key="admin-tools-nav"
         label="Manage Tools"
         leftSection={<IconTools />}
         variant={navigationStyles.variant}
-        active={currentTab === navigationItems.TOOLS}
-        onClick={() => updateTab(navigationItems.TOOLS)}
-      />
+        active={currentTab === navigationItems.ADMINTOOLS}
+        onClick={() => updateTab(navigationItems.ADMINTOOLS)}
+      />,
+      <NavLink
+        key="admin-forms-nav"
+        label="Manage Forms"
+        leftSection={<IconFiles />}
+        variant={navigationStyles.variant}
+        active={currentTab === navigationItems.ADMINFORMS}
+        onClick={() => updateTab(navigationItems.ADMINFORMS)}
+      />,
     ]
   }
 
