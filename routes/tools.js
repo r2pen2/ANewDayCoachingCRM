@@ -87,8 +87,8 @@ router.post("/assign-multiple", (req, res) => {
   db.collection("tools").doc(toolId).get().then((docSnap) => {
     if (!docSnap.exists) { return; }
     const tool = docSnap.data();
-    if (!tool.users) { tool.users = []; }
-    tool.users = tool.users.push(users);
+    if (!tool.assignedTo) { tool.assignedTo = []; }
+    tool.users = tool.assignedTo.push(users);
     db.collection("tools").doc(toolId).set(tool);
   }).then(() => {
     res.json({ success: true });
