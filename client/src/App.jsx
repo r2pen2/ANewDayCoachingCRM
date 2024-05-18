@@ -13,6 +13,7 @@ import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
 import Dashboard from './tabs/Dashboard';
 import { getTab } from './api/browser.ts';
+import ToolManagement from './tabs/ToolManagement.jsx';
 
 const theme = createTheme({});
 
@@ -36,6 +37,8 @@ function App() {
         return <Schedule />
       case navigationItems.SETTINGS:
         return <Settings />
+      case navigationItems.TOOLS:
+        return <ToolManagement />
       default:
     }
   }

@@ -1,5 +1,5 @@
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles } from '@tabler/icons-react';
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools } from '@tabler/icons-react';
 import { useContext } from "react";
 import { CurrentUserContext } from "../App";
 
@@ -11,13 +11,15 @@ import { CurrentUserContext } from "../App";
  * @property {string} INVOICES - The invoice page's tab ID.
  * @property {string} SCHEDULE - The schedule page's tab ID.
  * @property {string} SETTINGS - The settings page's tab ID.
+ * @property {string} TOOLS - The tools page's tab ID.
  */
 export const navigationItems = {
   DASHBOARD: "dashboard",
   INVOICES: "invoices",
   SCHEDULE: "schedule",
   FORMS: "forms",
-  SETTINGS: "settings"
+  SETTINGS: "settings",
+  TOOLS: "tools"
 }
 
 /**
@@ -72,6 +74,20 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
     )
   }
 
+  const AdminTabs = () => {
+    if (!currentUser.admin) { return; }
+    return [
+      <NavLink
+        key="tools-nav"
+        label="Manage Tools"
+        leftSection={<IconTools />}
+        variant={navigationStyles.variant}
+        active={currentTab === navigationItems.TOOLS}
+        onClick={() => updateTab(navigationItems.TOOLS)}
+      />
+    ]
+  }
+
   return (    
     <AppShell.Navbar p="md">
       <NavLink
@@ -111,6 +127,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
         active={currentTab === navigationItems.SETTINGS}
         onClick={() => updateTab(navigationItems.SETTINGS)}
       />
+      <AdminTabs />
     </AppShell.Navbar>
   )
 }

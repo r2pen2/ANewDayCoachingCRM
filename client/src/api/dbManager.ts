@@ -4,6 +4,9 @@ import { DocumentReference, addDoc, collection, deleteDoc, doc, getDoc, onSnapsh
 
 const rachelDocRef = doc(db, "users/rachel");
 const invoiceLimboCollectionRef = collection(db, "invoiceLimbo");
+const toolsCollectionRef = collection(db, "tools");
+
+export const hostname = "https://www.crm.joed.dev"
 
 export class User {
   
@@ -167,7 +170,7 @@ export class FormAssignment {
 
     console.log(`Assigned ${this.formId} to ${assignee}`)
 
-    fetch("https://www.crm.joed.dev/forms/assign", {
+    fetch(hostname + "/forms/assign", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -282,5 +285,40 @@ export class Invoice {
 
   checkPending(): boolean {
     return this.paidAt !== null && !this.paid;
+  }
+}
+
+export class Tool {
+  static async createOnDatabase(title: string, description: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      fetch(hostname + "/tools/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title: title,
+          description: description
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data.id);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
+  static async fetchAll(): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      fetch(hostname + "/tools").then((response) => {
+        response.json().then((data) => {
+          resolve(data);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
   }
 }

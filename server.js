@@ -4,7 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const payments = require('./routes/payments');
 const calendar = require('./routes/calendar');
-const forms = require("./routes/forms")
+const forms = require("./routes/forms");
+const { tools } = require('./client/src/api/tools');
 
 // Init express application
 const app = express();
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "50mb"}));
 app.use("/payments", payments)
 app.use("/calendar", calendar)
 app.use("/forms", forms)
+app.use("/tools", tools)
 
 // Allow getting images
 app.get("/images/*", (req, res) => {
