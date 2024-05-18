@@ -5,7 +5,7 @@ const cors = require('cors');
 const payments = require('./routes/payments');
 const calendar = require('./routes/calendar');
 const forms = require("./routes/forms");
-const { tools } = require('./client/src/api/tools');
+const tools = require('./routes/tools');
 
 // Init express application
 const app = express();
