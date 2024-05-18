@@ -6,6 +6,7 @@ const payments = require('./routes/payments');
 const calendar = require('./routes/calendar');
 const forms = require("./routes/forms");
 const tools = require('./routes/tools');
+const users = require('./routes/users');
 
 // Init express application
 const app = express();
@@ -32,6 +33,7 @@ app.use("/payments", payments)
 app.use("/calendar", calendar)
 app.use("/forms", forms)
 app.use("/tools", tools)
+app.use("/users", users)
 
 // Allow getting images
 app.get("/images/*", (req, res) => {
