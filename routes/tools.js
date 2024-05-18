@@ -35,8 +35,21 @@ router.post("/create", (req, res) => {
 router.post("/delete", (req, res) => {
   const toolId = req.body.toolId;
 
+  // Remove tool from all users
+  for (const userId of allTools[toolId].users) {
+    db.collection("users").doc(userId).get().then((docSnap) => {
+      if (!docSnap.exists) { return; }
+      const user = docSnap.data();
+      delete user.tools[toolId];
+      // Push changes
+      db.collection("users").doc(userId).set(user);
+    });
+  }
+
+  // Delete the tool itself
   db.collection("tools").doc(toolId).delete().then(() => {
-    console.log(`Deleted tool with ID: ${toolId}`);
+    // console.log(`Deleted tool with ID: ${toolId}`);
+    // Delete tool from all users
     res.json({ success: true });
   }).catch((error) => {
     console.error("Error deleting document: ", error);
