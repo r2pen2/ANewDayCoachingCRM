@@ -29,6 +29,7 @@ export default function ToolManagement() {
 
   React.useEffect(() => {
     Tool.fetchAll().then((tools) => {
+      // Sort these by their title field
       setAllTools(tools);
     })
     User.fetchAll().then((users) => {
@@ -124,7 +125,7 @@ export default function ToolManagement() {
             </Table.Th>
           </Table.Thead>
           <Table.Tbody>
-            {Object.values(allTools).map((tool, index) => {
+            {Object.values(allTools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => {
               
               function handleDelete() {
                 Tool.delete(tool.id).then((success) => {
