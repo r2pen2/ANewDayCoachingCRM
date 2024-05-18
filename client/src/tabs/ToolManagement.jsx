@@ -1,6 +1,7 @@
-import { Button, Table, TextInput } from '@mantine/core';
+import { ActionIcon, Button, Modal, Table, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
-import { Tool } from '../api/dbManager.ts';
+import { Tool, User } from '../api/dbManager.ts';
+import { IconSearch, IconTrash, IconUser, IconUserShare } from '@tabler/icons-react';
 
 export default function ToolManagement() {
   
@@ -15,14 +16,32 @@ export default function ToolManagement() {
   }
 
   const [assignDialogOpen, setAssignDialogOpen] = React.useState(false);
+  const [userSearchMenuOpen, setUserSearchMenuOpen] = React.useState(false);
+
+  const [currentTool, setCurrentTool] = React.useState(null);
 
   const [allTools, setAllTools] = React.useState({});
+  const [allUsers, setAllUsers] = React.useState({});
 
   React.useEffect(() => {
     Tool.fetchAll().then((tools) => {
       setAllTools(tools);
     })
+    User.fetchAll().then((users) => {
+      setAllUsers(users);
+    })
   })
+
+  const UserSearchResults = () => {
+    const query = document.getElementById("user-query").value;
+    const users = Object.values(allUsers).filter((user) => { return user.displayName.includes(query) || user.email.includes(query) });
+
+    return (
+      <Table.ScrollContainer minWidth={500} type="native">
+
+      </Table.ScrollContainer>
+    )
+  }
 
   return (
 
@@ -50,7 +69,6 @@ export default function ToolManagement() {
             {Object.values(allTools).map((tool, index) => {
               
               function handleDelete() {
-                console.log(tool)
                 Tool.delete(tool.id).then((success) => {
                   if (success) { 
                     Tool.fetchAll().then((tools) => {
@@ -61,6 +79,9 @@ export default function ToolManagement() {
               }
               
               function handleAssign() {
+                setCurrentTool(tool)
+                setAssignDialogOpen(true);
+                setUserSearchMenuOpen(true);
               }
 
               return (
@@ -72,14 +93,23 @@ export default function ToolManagement() {
                   {tool.description}
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
-                  <Button onClick={handleDelete}>Delete</Button>
-                  <Button onClick={handleAssign}>Assign To User</Button>
+                  <Tooltip label={`Delete "${tool.title}"`}>
+                    <ActionIcon onClick={handleDelete} color="red"><IconTrash /></ActionIcon>
+                  </Tooltip>
+                  <Tooltip label={`Assign "${tool.title}"`}>
+                    <ActionIcon onClick={handleAssign}><IconUserShare /></ActionIcon>
+                  </Tooltip>
                 </Table.Td>
               </Table.Tr>
             )})}
           </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
+      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`Assign "${currentTool?.title}" to Users:`}>
+        <p>Search for a user to assign the tool to:</p>
+        <TextInput id="user-query" placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
+        <UserSearchResults />
+      </Modal>
     </div>
   )
 }

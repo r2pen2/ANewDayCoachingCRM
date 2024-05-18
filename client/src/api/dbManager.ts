@@ -59,6 +59,18 @@ export class User {
     })
   }
 
+  static async fetchAll(): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      fetch(hostname + "/users").then((response) => {
+        response.json().then((data) => {
+          resolve(data);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
   fillData(data: any): User {
     this.invoices = data.invoices;
     this.admin = data.admin;
