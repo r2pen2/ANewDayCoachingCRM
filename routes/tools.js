@@ -82,6 +82,20 @@ router.post("/assign-multiple", (req, res) => {
       db.collection("users").doc(userId).set(user);
     });
   }
+
+  // Add users to the tool
+  db.collection("tools").doc(toolId).get().then((docSnap) => {
+    if (!docSnap.exists) { return; }
+    const tool = docSnap.data();
+    if (!tool.users) { tool.users = []; }
+    tool.users = tool.users.push(users);
+    db.collection("tools").doc(toolId).set(tool);
+  }).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error("Error assigning tool to users: ", error);
+    res.json({ error: error });
+  });
 })
 
 router.get("/", (req, res) => {
