@@ -19,9 +19,9 @@ export default function Forms() {
   useEffect(() => {
     if (!currentUser) { return; }
     fetch(`${hostname}/forms/confetti?userId=${currentUser.id}`).then(res => res.json()).then(data => {
-      if (data.confetti) {
+      if (data.formId) {
         setConfettiLeft(confettiLeft + dConfetti);
-        setThanksModalOpen(data.formTitle)
+        setThanksModalOpen(data.formId)
       }
     })
   }, [currentUser, confettiLeft]);
@@ -78,16 +78,16 @@ export default function Forms() {
     </hgroup>
   )
 
-  const ThanksModal = () => (
-    <Modal opened={thanksModalOpen} onClose={() => setThanksModalOpen(null)} title="Thanks!">
-      <Text>You've completed the {getFormById(thanksModalOpen)?.formTitle}! 🎉</Text>
-    </Modal>
-  )
+  // const ThanksModal = () => (
+  //   <Modal opened={thanksModalOpen} onClose={() => setThanksModalOpen(null)} title="Thanks!">
+  //     <Text>You've completed the {getFormById(thanksModalOpen)?.formTitle}! 🎉</Text>
+  //   </Modal>
+  // )
   
   return (
     <div>
-      <ThanksModal />
       <Confetti recycle={false} numberOfPieces={confettiLeft} />
+      {/* <ThanksModal /> */}
       <Header />
       <div className="container-fluid">
         <div className="row">
