@@ -56,7 +56,12 @@ router.post("/assign", (req, res) => {
     user.formAssignments.push(formData);
 
     // Push changes
-    db.collection("users").doc(userId).set(user);
+    db.collection("users").doc(userId).set(user).then(() => {
+      res.json({ success: true });
+    }).catch((error) => {
+      console.error(error);
+      res.json({ success: false });
+    });
   });
 })
 
