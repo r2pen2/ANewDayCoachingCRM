@@ -5,3 +5,11 @@ export const parentGuardianForm: FormAssignment = new FormAssignment("parentGuar
 export const webHookTestForm: FormAssignment = new FormAssignment("webhookTestForm", "Webhook Test Form", "A form designed to validate functionality of Webooks interacting with Firestore Database.", "https://docs.google.com/forms/d/e/1FAIpQLScE6pUzztBY-mbD6NrQl6R-qeDLAJOp2_QWR0uUR7NyMu_TJg/viewform?usp=pp_url&entry.1520732463=");
 
 export const allForms: FormAssignment[] = [parentGuardianForm, webHookTestForm];
+
+export function getFormById(id: string): FormAssignment | null {
+  switch(id) {
+    case parentGuardianForm.formId: return parentGuardianForm;
+    case webHookTestForm.formId: return webHookTestForm;
+    default: return null;
+  }
+}

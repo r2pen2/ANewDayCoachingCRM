@@ -1,9 +1,11 @@
-import { Paper, Text, Tooltip } from '@mantine/core'
+import { Modal, Paper, Text, Tooltip } from '@mantine/core'
 import React, { useContext, useEffect, useState } from 'react'
 import "../assets/style/forms.css"
 import { IconAlertCircle, IconCircleCheckFilled } from '@tabler/icons-react'
 import { CurrentUserContext } from '../App'
 import Confetti from "react-confetti"
+import { FormAssignment, hostname } from '../api/dbManager.ts'
+import { getFormById } from '../api/forms.ts'
 
 const dConfetti = 500;
 
@@ -12,16 +14,17 @@ export default function Forms() {
   const {currentUser} = useContext(CurrentUserContext)
   
   const [confettiLeft, setConfettiLeft] = useState(0);
+  const [thanksModalOpen, setThanksModalOpen] = useState(null);
 
   useEffect(() => {
     if (!currentUser) { return; }
-    fetch(`/forms/confetti?userId=${currentUser.id}`).then(res => res.json()).then(data => {
+    fetch(`${hostname}/forms/confetti?userId=${currentUser.id}`).then(res => res.json()).then(data => {
       if (data.confetti) {
         setConfettiLeft(confettiLeft + dConfetti);
+        setThanksModalOpen(data.formTitle)
       }
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, [currentUser, confettiLeft]);
 
   const FormsList = () => {
 
@@ -68,16 +71,24 @@ export default function Forms() {
     )
   }
 
+  const Header = () => (
+    <hgroup className="d-flex align-items-center flex-column">
+      <h2>Forms</h2>
+      <p>This is a list of all forms assigned to a given client The client can use this page to fill them out for the first time, confirm that they've been filled, and view them at any point.</p>
+    </hgroup>
+  )
+
+  const ThanksModal = () => (
+    <Modal opened={thanksModalOpen} onClose={() => setThanksModalOpen(null)} title="Thanks!">
+      <Text>You've completed the {getFormById(thanksModalOpen)?.formTitle}! 🎉</Text>
+    </Modal>
+  )
+  
   return (
     <div>
-      <Confetti
-        recycle={false}
-        numberOfPieces={confettiLeft}
-      />
-      <div className="d-flex align-items-center flex-column">
-        <h2>Forms</h2>
-        <p>This is a list of all forms assigned to a given client The client can use this page to fill them out for the first time, confirm that they've been filled, and view them at any point.</p>
-      </div>
+      <ThanksModal />
+      <Confetti recycle={false} numberOfPieces={confettiLeft} />
+      <Header />
       <div className="container-fluid">
         <div className="row">
           <FormsList />

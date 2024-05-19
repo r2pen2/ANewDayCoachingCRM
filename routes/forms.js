@@ -9,10 +9,10 @@ const confettiRecipients = {}
 
 router.get("/confetti", (req, res) => {
   if (confettiRecipients[req.query.userId]) {
-    res.json({ confetti: true });
+    res.json({ formId: confettiRecipients[req.query.userId] });
     delete confettiRecipients[req.query.userId];
   } else {
-    res.json({ confetti: false });
+    res.json({ formId: null });
   }
 })
 
@@ -30,7 +30,7 @@ router.post("/submitted", (req, res) => {
 
         formAssignment.completed = true;
         formAssignment.completedDate = new Date();
-        confettiRecipients[userId] = true;
+        confettiRecipients[userId] = formId;
       }
     }
     
