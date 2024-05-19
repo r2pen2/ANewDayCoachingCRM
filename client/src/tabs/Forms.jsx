@@ -1,18 +1,27 @@
-import { Modal, Paper, Text, Tooltip } from '@mantine/core'
+// Library Imports
+import {Paper, Text, Tooltip } from '@mantine/core'
 import React, { useContext, useEffect, useState } from 'react'
-import "../assets/style/forms.css"
 import { IconAlertCircle, IconCircleCheckFilled } from '@tabler/icons-react'
-import { CurrentUserContext } from '../App'
 import Confetti from "react-confetti"
-import { FormAssignment, hostname } from '../api/dbManager.ts'
-import { getFormById } from '../api/forms.ts'
 
+// Component Imports
+import { CurrentUserContext } from '../App'
+
+// API Imports
+import { hostname } from '../api/dbManager.ts'
+
+// Style Imports
+import "../assets/style/forms.css"
+
+/** How much confetti to add when a form is completed */
 const dConfetti = 500;
 
 export default function Forms() {
 
+  /** Current user */
   const {currentUser} = useContext(CurrentUserContext)
   
+  /** How much confetti to throw */
   const [confettiLeft, setConfettiLeft] = useState(0);
 
   useEffect(() => {
@@ -24,12 +33,13 @@ export default function Forms() {
     })
   }, [currentUser, confettiLeft]);
 
+  /** List of all forms. Clicking a form brings the user to the Google Form in a new tab */
   const FormsList = () => {
 
-    
     return (
       currentUser.formAssignments.map((form, index) => {
         
+        /** Component that displays a "Incomplete" message when the form is incomplete */
         const IncompleteNotifier = () => {
           if (form.completed) { return; }
           return (
@@ -40,6 +50,7 @@ export default function Forms() {
           )
         }
 
+        /** Component that displays a "Complete" message when the form has been completed */
         const CompleteNotifier = () => {
           if (!form.completed) { return; }
           return (
@@ -50,6 +61,7 @@ export default function Forms() {
           ) 
         }
 
+        /** This is the left content on the form card: title and description */
         const FormTitle = () => (
           <div className="form-title">
             <h3>{form.formTitle}</h3>
@@ -62,13 +74,14 @@ export default function Forms() {
             <FormTitle />
             <CompleteNotifier />
             <IncompleteNotifier />
-            <div className="form-decor" />
+            <div className="form-decor" style={{backgroundColor: form.completed ? "#008000" : "#ffa500"}} />
           </Paper>
         )
       })
     )
   }
 
+  /** Header that describes the Forms page */
   const Header = () => (
     <hgroup className="d-flex align-items-center flex-column">
       <h2>Forms</h2>
