@@ -5,6 +5,17 @@ const db = require('../firebase');
 
 router.use(bodyParser.json());
 
+const confettiRecipients = {}
+
+router.get("/confetti", (req, res) => {
+  if (confettiRecipients[req.query.userId]) {
+    res.json({ confetti: true });
+    delete confettiRecipients[req.query.userId];
+  } else {
+    res.json({ confetti: false });
+  }
+})
+
 router.post("/submitted", (req, res) => {
   const formId = req.body.formId;
   const userId = req.body.userId;
@@ -19,6 +30,7 @@ router.post("/submitted", (req, res) => {
 
         formAssignment.completed = true;
         formAssignment.completedDate = new Date();
+        confettiRecipients[userId] = true;
       }
     }
     

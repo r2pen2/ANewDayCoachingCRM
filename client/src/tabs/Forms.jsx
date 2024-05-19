@@ -1,18 +1,27 @@
-import { Blockquote, Button, Modal, Paper, Text, Tooltip } from '@mantine/core'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Paper, Text, Tooltip } from '@mantine/core'
+import React, { useContext, useEffect, useState } from 'react'
 import "../assets/style/forms.css"
-import { IconAlertCircle, IconCheck, IconChevronLeft, IconCircleCheck, IconCircleCheckFilled, IconHelpHexagonFilled, IconInfoCircle, IconQuestionMark } from '@tabler/icons-react'
+import { IconAlertCircle, IconCircleCheckFilled } from '@tabler/icons-react'
 import { CurrentUserContext } from '../App'
-import { parentGuardianForm, webHookTestForm } from '../api/forms.ts'
-// import Confetti from "react-confetti"
+import Confetti from "react-confetti"
 
-// const dConfetti = 500;
+const dConfetti = 500;
 
 export default function Forms() {
 
   const {currentUser} = useContext(CurrentUserContext)
   
-  // const [confettiLeft, setConfettiLeft] = useState(0);
+  const [confettiLeft, setConfettiLeft] = useState(0);
+
+  useEffect(() => {
+    if (!currentUser) { return; }
+    fetch(`/forms/confetti?userId=${currentUser.id}`).then(res => res.json()).then(data => {
+      if (data.confetti) {
+        setConfettiLeft(confettiLeft + dConfetti);
+      }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const FormsList = () => {
 
@@ -61,10 +70,10 @@ export default function Forms() {
 
   return (
     <div>
-      {/* <Confetti
+      <Confetti
         recycle={false}
         numberOfPieces={confettiLeft}
-      /> */}
+      />
       <div className="d-flex align-items-center flex-column">
         <h2>Forms</h2>
         <p>This is a list of all forms assigned to a given client The client can use this page to fill them out for the first time, confirm that they've been filled, and view them at any point.</p>
