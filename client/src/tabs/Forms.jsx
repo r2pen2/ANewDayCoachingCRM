@@ -1,13 +1,18 @@
 import { Blockquote, Button, Modal, Paper, Text, Tooltip } from '@mantine/core'
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import "../assets/style/forms.css"
 import { IconAlertCircle, IconCheck, IconChevronLeft, IconCircleCheck, IconCircleCheckFilled, IconHelpHexagonFilled, IconInfoCircle, IconQuestionMark } from '@tabler/icons-react'
 import { CurrentUserContext } from '../App'
 import { parentGuardianForm, webHookTestForm } from '../api/forms.ts'
+// import Confetti from "react-confetti"
+
+// const dConfetti = 500;
 
 export default function Forms() {
 
   const {currentUser} = useContext(CurrentUserContext)
+  
+  // const [confettiLeft, setConfettiLeft] = useState(0);
 
   const FormsList = () => {
 
@@ -56,6 +61,10 @@ export default function Forms() {
 
   return (
     <div>
+      {/* <Confetti
+        recycle={false}
+        numberOfPieces={confettiLeft}
+      /> */}
       <div className="d-flex align-items-center flex-column">
         <h2>Forms</h2>
         <p>This is a list of all forms assigned to a given client The client can use this page to fill them out for the first time, confirm that they've been filled, and view them at any point.</p>
