@@ -65,4 +65,50 @@ router.post("/assign", (req, res) => {
   });
 })
 
+
+router.post("/unassign", (req, res) => {
+  
+  const formId = req.body.formId;
+  const userId = req.body.userId;
+
+  db.collection("users").doc(userId).get().then((docSnap) => {
+    
+    if (!docSnap.exists) { return; }
+
+    const user = docSnap.data();
+    
+    // Add the form
+    user.formAssignments.filter(fa => fa.formId !== formId);
+
+    // Push changes
+    db.collection("users").doc(userId).set(user).then(() => {
+      res.json({ success: true });
+    }).catch((error) => {
+      console.error(error);
+      res.json({ success: false });
+    });
+  });
+})
+
+router.post("/incomplete", (req, res) => {
+  const formId = req.body.formId;
+  const userId = req.body.userId;
+  db.collection("users").doc(userId).get().then((docSnap) => {
+    
+    const user = docSnap.data();
+
+    for (const formAssignment of user.formAssignments) {
+      if (formAssignment.formId === formId) {
+        
+        console.log(`Marking form ${formId} as incomplete for user ${userId}...`)
+
+        formAssignment.completed = false;
+        formAssignment.completedDate = null;
+      }
+    }
+    
+    db.collection("users").doc(userId).set(user);
+  });
+})
+
 module.exports = router;

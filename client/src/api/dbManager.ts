@@ -117,15 +117,8 @@ export class FormAssignment {
   completedDate: Date | null;
   assignedTo: string | null;
   comment: string | null;
-  // priority: number;
   href: string;
   assignedLink: string | null;
-
-  // static PRIORITIES = {
-  //   LOW: 0,
-  //   MEDIUM: 1,
-  //   HIGH: 2,
-  // }
 
   constructor(formId: string, formTitle: string, formDescription: string, href: string) {
     this.formId = formId;
@@ -135,8 +128,6 @@ export class FormAssignment {
     this.completed = false;
     this.completedDate = null;
     this.assignedTo = null;
-    // this.comment = null;
-    // this.priority = FormAssignment.PRIORITIES.LOW;
     this.formDescription = formDescription;
     this.href = href;
     this.assignedLink = null;
@@ -151,41 +142,25 @@ export class FormAssignment {
       completed: this.completed,
       completedDate: this.completedDate,
       assignedTo: this.assignedTo,
-      // comment: this.comment,
-      // priority: this.priority,
       formDescription: this.formDescription,
       href: this.href,
       assignedLink: this.assignedLink,
     }
   }
 
-  // setPriority(priority: number): void {
-  //   this.priority = priority;
-  // }
-
   setDueDate(dueDate: Date): void {
     this.dueDate = dueDate;
   }
 
-  // addComment(comment: string): void {
-  //   this.comment = comment;
-  // }
-  
   /**
    * Assign a form to a user
    * @param assignee - userId of assignee
-   * @param comment - personalized comment for this form
    */
   assign(assignee: string): Promise<boolean> {
     
     this.assignedDate = new Date();               // Set assignment date
     this.assignedTo = assignee;                   // Set assignee
     this.assignedLink = this.href + assignee;     // Set link to form
-
-    // if (comment) { this.comment = comment; }      // Add comment if specified
-    // if (priority) { this.priority = priority; }   // Add priority if specified
-
-    console.log(`Assigned ${this.formId} to ${assignee}`)
 
     return new Promise<boolean>((resolve, reject) => {
       fetch(hostname + "/forms/assign", {
@@ -205,11 +180,79 @@ export class FormAssignment {
     })
   }
 
+    /**
+   * Unassign a form from a user
+   * @param assignee - userId of assignee
+   */
+    unassign(assignee: string): Promise<boolean> {
+  
+      return new Promise<boolean>((resolve, reject) => {
+        fetch(hostname + "/forms/unassign", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            formId: this.formId,
+            userId: assignee
+          })
+        }).then((response) => {
+          response.json().then((data) => {
+            resolve(data.success);
+          })
+        }).catch((error) => { console.error(error); reject(error) })
+      })
+    }
+
+    /**
+   * Mark a form as incomplete on a user
+   * @param assignee - userId of assignee
+   */
+    incomplete(assignee: string): Promise<boolean> {
+  
+      return new Promise<boolean>((resolve, reject) => {
+        fetch(hostname + "/forms/incomplete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            formId: this.formId,
+            userId: assignee
+          })
+        }).then((response) => {
+          response.json().then((data) => {
+            resolve(data.success);
+          })
+        }).catch((error) => { console.error(error); reject(error) })
+      })
+    }
+
   assignToMultiple(userIds: string[]): Promise<boolean> {
     return new Promise<boolean>(async (resolve, reject) => {
       let success = true;
       for (const userId of userIds) {
         success = success && await this.assign(userId);
+      }
+      if (success) { resolve(true); } else { reject(false); }
+    });
+  }
+
+  unassignToMultiple(userIds: string[]): Promise<boolean> {
+    return new Promise<boolean>(async (resolve, reject) => {
+      let success = true;
+      for (const userId of userIds) {
+        success = success && await this.unassign(userId);
+      }
+      if (success) { resolve(true); } else { reject(false); }
+    });
+  }
+
+  incompleteToMultiple(userIds: string[]): Promise<boolean> {
+    return new Promise<boolean>(async (resolve, reject) => {
+      let success = true;
+      for (const userId of userIds) {
+        success = success && await this.incomplete(userId);
       }
       if (success) { resolve(true); } else { reject(false); }
     });

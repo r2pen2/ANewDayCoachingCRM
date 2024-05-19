@@ -1,7 +1,7 @@
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
 import { FormAssignment, User } from '../api/dbManager.ts';
-import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
+import { IconAlertCircle, IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 import { allForms } from '../api/forms.ts';
 import "../assets/style/formsAdmin.css"
 
@@ -44,27 +44,34 @@ export default function FormManagement() {
     return (
       users.map((user, index) => {
 
-        function userHasForm() { return allUsers[user.id].formAssignments.includes(currentForm.id); }
+        const userHasForm = allUsers[user.id].formAssignments.includes(currentForm.id);
+        const userCompletedForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId)[0]?.completed;
 
         function toggleAssignee() {
-
-          if (disablePaper) { return; }
-
-          if (assignees.includes(user.id)) {
-            setAssignees(assignees.filter((id) => id !== user.id))
-          } else {
-            setAssignees([...assignees, user.id])
-          }
+          if (disablePaper) { return; } // Don't do anything if there are incompatibilities
+          // Otherwise add / remove the user from assignees
+          if (assignees.includes(user.id)) { setAssignees(assignees.filter((id) => id !== user.id)) } else { setAssignees([...assignees, user.id]) }
         }
+
+
+        /** Whether the assignMode is "Assign" and the user already has the form assigned */
+        const assignIncompatibility = userHasForm && assignMode === "Assign";
+        /** Whether the assignMode is "Unassign" and the user does not have the form assigned */
+        const unassignIncompatibility = !userHasForm && assignMode === "Unassign";
+        /** Whether the assignMode is "Incomplete" and the user has not completed the form */
+        const incompleteIncompatibility = !userCompletedForm && assignMode === "Incomplete";
 
         function getTooltipLabel() {
-          if (userHasForm() && assignMode === "Assign") { return `${user.personalData.displayName} already has this form assigned.` }
-          if (!userHasForm() && assignMode === "Unassign") { return `${user.personalData.displayName} does not have this form assigned.` }
-          return `Assign "${currentForm?.formTitle}" to ${user.personalData.displayName}`
+          if (assignIncompatibility) { return `${user.personalData.displayName} already has this form assigned.` }
+          if (unassignIncompatibility) { return `${user.personalData.displayName} does not have this form assigned.` }
+          if (incompleteIncompatibility) { return `${user.personalData.displayName} has not completed this form.` }
+          if (assignMode === "Assign") { return `Assign "${currentForm?.formTitle}" to ${user.personalData.displayName}` }
+          if (assignMode === "Unassign") { return `Unassign "${currentForm?.formTitle}" from ${user.personalData.displayName}` }
+          if (assignMode === "Incomplete") { return `Mark "${currentForm?.formTitle}" as incomplete for ${user.personalData.displayName}` }
         }
 
-        /** Whether to disable the paper */
-        const disablePaper = (userHasForm() && assignMode === "Assign") || (!userHasForm() && assignMode === "Unassign");
+        /** Disable the paper and checkbox if there are any incompatibilities at all */
+        const disablePaper = assignIncompatibility || unassignIncompatibility || incompleteIncompatibility;
 
         /** Whether to display checkbox as checked */
         const checked = assignees.includes(user.id);
@@ -76,7 +83,7 @@ export default function FormManagement() {
               <Text style={{marginLeft: "0.5rem"}}>{user.personalData.displayName}</Text>
             </div>
             <Tooltip label={getTooltipLabel()} >
-              <Checkbox checked={checked} disabled={disablePaper}/>
+              <Checkbox readOnly checked={checked} disabled={disablePaper}/>
             </Tooltip>
           </Paper>
         )
@@ -87,13 +94,34 @@ export default function FormManagement() {
   const Assignees = () => {
     if (assignees.length === 0) { return; }
     
-    function assignToAssignees() {
+    function handleDone() {
 
-      currentForm.assignToMultiple(assignees).then((success) => {
-        if (success) {
-          setUserSearchMenuOpen(false);
-        }
-      })
+      if (assignMode === "Assign") {
+        currentForm.assignToMultiple(assignees).then((success) => {
+          if (success) {
+            setUserSearchMenuOpen(false);
+          }
+        })
+        return;
+      }
+
+      if (assignMode === "Unssign") {
+        currentForm.unassignToMultiple(assignees).then((success) => {
+          if (success) {
+            setUserSearchMenuOpen(false);
+          }
+        })
+        return;
+      }
+
+      if (assignMode === "Incomplete") {
+        currentForm.incompleteToMultiple(assignees).then((success) => {
+          if (success) {
+            setUserSearchMenuOpen(false);
+          }
+        })
+        return;
+      }
 
     }
 
@@ -105,12 +133,21 @@ export default function FormManagement() {
             return <Tooltip key={index} label={user.personalData.displayName}><Avatar src={user.personalData.pfpUrl} alt={user.personalData.displayName} /></Tooltip>
           })}
         </AvatarGroup>
-        <Button style={{marginLeft: "1rem"}} onClick={assignToAssignees}>Done</Button>
+        <Button style={{marginLeft: "1rem"}} onClick={handleDone}>Done</Button>
       </div>
     )
   }
 
-  const ModalHelpText = () => <Text style={{marginBottom: "1rem"}}>{assignMode === "Assign" ? "Select users to assign this form to." : "Select users to unassign this form from."}</Text>;
+  function getModalHelpText() {
+    if (assignMode === "Assign")      { return "Select users to assign the form to." }
+    if (assignMode === "Unassign")    { return "Select users to unassign the form from." }
+    if (assignMode === "Incomplete")  { return "Select users to mark the form as incomplete for." }
+  }
+
+  function getModalTitle() {
+    if (assignMode === "Incomplete")  { return `Mark "${currentForm?.formTitle}" as Incomplete For Users:` }
+    return `${assignMode} "${currentForm?.formTitle}" to Users:`
+  }
 
   return (
 
@@ -133,19 +170,27 @@ export default function FormManagement() {
             {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {
               
               function handleAssign() {
-                if (assignMode === "Unssign") { setAssignees([]) }
-                if (currentForm.formId !== form.formId) { setAssignees([]) }
+                if (assignMode !== null && assignMode !== "Assign") { setAssignees([]) }
+                if (currentForm?.formId !== form.formId) { setAssignees([]) }
                 setCurrentForm(form);
                 setUserSearchMenuOpen(true);
                 setAssignMode("Assign");
               }
               
               function handleUnassign() {
-                if (assignMode === "Assign") { setAssignees([]) }
-                if (currentForm.formId !== form.formId) { setAssignees([]) }
+                if (assignMode !== null && assignMode !== "Unssign") { setAssignees([]) }
+                if (currentForm?.formId !== form.formId) { setAssignees([]) }
                 setCurrentForm(form);
                 setUserSearchMenuOpen(true);
                 setAssignMode("Unassign");
+              }
+
+              function handleIncomplete() {
+                if (assignMode !== null && assignMode !== "Incomplete") { setAssignees([]) }
+                if (currentForm?.formId !== form.formId) { setAssignees([]) }
+                setCurrentForm(form);
+                setUserSearchMenuOpen(true);
+                setAssignMode("Incomplete");
               }
 
               return (
@@ -163,14 +208,17 @@ export default function FormManagement() {
                   <Tooltip label={`Unassign "${form.formTitle}"`}>
                     <ActionIcon color="red" onClick={handleUnassign}><IconUserCancel /></ActionIcon>
                   </Tooltip>
+                  <Tooltip label={`Mark "${form.formTitle}" as Incomplete`}>
+                    <ActionIcon color="orange" onClick={handleIncomplete}><IconAlertCircle /></ActionIcon>
+                  </Tooltip>
                 </Table.Td>
               </Table.Tr>
             )})}
           </Table.Tbody>
         </Table>
       </Table.ScrollContainer>
-      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`${assignMode} "${currentForm?.formTitle}" to Users:`}>
-        <ModalHelpText />
+      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={getModalTitle()}>
+        <Text style={{marginBottom: "1rem"}}>{getModalHelpText()}</Text>
         <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
         <UserSearchResults />
         <Assignees />

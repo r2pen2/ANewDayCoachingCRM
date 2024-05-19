@@ -70,7 +70,7 @@ export default function ToolManagement() {
               <Text style={{marginLeft: "0.5rem"}}>{user.personalData.displayName}</Text>
             </div>
             <Tooltip label={`Assign "${currentTool?.title}" to ${user.personalData.displayName}`} >
-              <Checkbox checked={assignees.includes(user.id)} />
+              <Checkbox readOnly checked={assignees.includes(user.id)} />
             </Tooltip>
           </Paper>
         )

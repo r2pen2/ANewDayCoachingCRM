@@ -65,10 +65,6 @@ export default function Forms() {
           <FormsList />
         </div>
       </div>
-      <div className="d-flex flex-row gap-2">    
-        <Button onClick={() => parentGuardianForm.assign(currentUser.id)}>Assign Parent Form To Self</Button>
-        <Button onClick={() => webHookTestForm.assign(currentUser.id)}>Assign Webhook Form To Self</Button>
-      </div>
     </div>
   )
 }
