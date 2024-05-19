@@ -64,7 +64,7 @@ export default function ToolManagement() {
         }
 
         return (
-          <Paper onClick={toggleAssignee} className="d-flex mb-2 flex-row justify-content-between align-items-center p-2" withBorder style={{cursor: "pointer"}} >
+          <Paper key={index} onClick={toggleAssignee} className="d-flex mb-2 flex-row justify-content-between align-items-center p-2" withBorder style={{cursor: "pointer"}} >
             <div className="d-flex flex-row align-items-center justify-content-center">
               <Avatar src={user.personalData.pfpUrl} alt={user.personalData.displayName} />
               <Text style={{marginLeft: "0.5rem"}}>{user.personalData.displayName}</Text>

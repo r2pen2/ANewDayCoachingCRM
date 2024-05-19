@@ -44,7 +44,7 @@ export default function FormManagement() {
     return (
       users.map((user, index) => {
 
-        const userHasForm = allUsers[user.id].formAssignments.includes(currentForm.id);
+        const userHasForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId).length > 0;
         const userCompletedForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId)[0]?.completed;
 
         function toggleAssignee() {
@@ -77,7 +77,7 @@ export default function FormManagement() {
         const checked = assignees.includes(user.id);
         
         return (
-          <Paper onClick={toggleAssignee} className={`d-flex mb-2 flex-row justify-content-between align-items-center p-2 user-assignment-paper ${disablePaper ? "disabled" : ""}`} withBorder style={{cursor: "pointer"}} >
+          <Paper key={index} onClick={toggleAssignee} className={`d-flex mb-2 flex-row justify-content-between align-items-center p-2 user-assignment-paper ${disablePaper ? "disabled" : ""}`} withBorder style={{cursor: "pointer"}} >
             <div className="d-flex flex-row align-items-center justify-content-center">
               <Avatar src={user.personalData.pfpUrl} alt={user.personalData.displayName} />
               <Text style={{marginLeft: "0.5rem"}}>{user.personalData.displayName}</Text>
@@ -105,7 +105,7 @@ export default function FormManagement() {
         return;
       }
 
-      if (assignMode === "Unssign") {
+      if (assignMode === "Unassign") {
         currentForm.unassignToMultiple(assignees).then((success) => {
           if (success) {
             setUserSearchMenuOpen(false);
