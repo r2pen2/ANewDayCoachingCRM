@@ -138,6 +138,7 @@ export default function ToolManagement() {
               }
               
               function handleAssign() {
+                if (currentTool?.title !== tool.title) { setAssignees([]) }
                 setCurrentTool(tool)
                 setAssignDialogOpen(true);
                 setUserSearchMenuOpen(true);
