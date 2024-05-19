@@ -78,7 +78,7 @@ router.post("/unassign", (req, res) => {
     const user = docSnap.data();
     
     // Remove the form
-    user.formAssignments.filter(fa => fa.formId !== formId);
+    user.formAssignments = user.formAssignments.filter(fa => fa.formId !== formId);
 
     // Push changes
     db.collection("users").doc(userId).set(user).then(() => {
