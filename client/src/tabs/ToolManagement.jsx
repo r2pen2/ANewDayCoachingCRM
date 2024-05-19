@@ -11,11 +11,9 @@ export default function ToolManagement() {
     const description = document.getElementById("description").value;
     Tool.createOnDatabase(name, description).then((toolId) => {
       console.log(`Created tool with ID: ${toolId}`);
-      setAssignDialogOpen(true);
     })
   }
 
-  const [assignDialogOpen, setAssignDialogOpen] = React.useState(false);
   const [userSearchMenuOpen, setUserSearchMenuOpen] = React.useState(false);
 
   const [currentTool, setCurrentTool] = React.useState(null);
@@ -140,7 +138,6 @@ export default function ToolManagement() {
               function handleAssign() {
                 if (currentTool?.title !== tool.title) { setAssignees([]) }
                 setCurrentTool(tool)
-                setAssignDialogOpen(true);
                 setUserSearchMenuOpen(true);
               }
 
