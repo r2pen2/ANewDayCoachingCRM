@@ -43,7 +43,7 @@ router.post("/delete", (req, res) => {
 
       const user = allUsers[userId]
 
-      console.log(user)
+      console.log(allUsers)
 
       delete user.tools[toolId];
       db.collection("users").doc(user.id).set(user);
