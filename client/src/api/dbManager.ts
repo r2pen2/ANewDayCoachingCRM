@@ -419,8 +419,9 @@ export class Tool {
     })
   }
 
-  static assignToMultiple(title: string, description: string, toolId: string, users: string[]): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  static assignToMultiple(title: string, description: string, toolId: string, users: string[]): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      console.log("Assigning to multiple users")
       fetch(hostname + "/tools/assign-multiple", {
         method: "POST",
         headers: {
@@ -434,7 +435,7 @@ export class Tool {
         })
       }).then((response) => {
         response.json().then((data) => {
-          resolve(data.success);
+          resolve(data);
         })
       }).catch((error) => {
         reject(error);
@@ -442,8 +443,8 @@ export class Tool {
     })
   }
 
-  static unassignMultiple(toolId: string, users: string[]): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  static unassignMultiple(toolId: string, users: string[]): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
       fetch(hostname + "/tools/unassign-multiple", {
         method: "POST",
         headers: {
@@ -455,7 +456,7 @@ export class Tool {
         })
       }).then((response) => {
         response.json().then((data) => {
-          resolve(data.success);
+          resolve(data);
         })
       }).catch((error) => {
         reject(error);
@@ -475,8 +476,8 @@ export class Tool {
     })
   }
 
-  static async delete(id: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  static async delete(id: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
       fetch(hostname + "/tools/delete", {
         method: "POST",
         headers: {
@@ -487,7 +488,7 @@ export class Tool {
         })
       }).then((res) => {
         res.json().then((data) => {
-          resolve(data.success);
+          resolve(data);
         })
       }).catch((error) => {
         reject(error);

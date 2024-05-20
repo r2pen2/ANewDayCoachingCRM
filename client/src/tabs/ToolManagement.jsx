@@ -15,9 +15,10 @@ export default function ToolManagement() {
     const description = document.getElementById("description").value;
     Tool.createOnDatabase(name, description).then((toolId) => {
       notifSuccess("Tool Created", `Created "${name}"`);
-      fetchTools();
       setCurrentTool({title: name, description: description, id: toolId})
       setUserSearchMenuOpen(true);
+      setAssignMode("Assign");
+      fetchTools();
     })
   }
 
@@ -102,22 +103,22 @@ export default function ToolManagement() {
     
     function handleDone() {
       if (assignMode === "Assign") {
-        Tool.assignToMultiple(currentTool.title, currentTool.description, currentTool.id, assignees).then((success) => {
-          if (success) {
+        Tool.assignToMultiple(currentTool.title, currentTool.description, currentTool.id, assignees).then((data) => {
+          if (data) {
             setUserSearchMenuOpen(false);
             setAssignees([]);
             notifSuccess("Tool Assigned", `Assigned "${currentTool.title}" to ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
-            fetchTools();
+            setAllTools(data);
           }
         })
         return;
       }
-      Tool.unassignMultiple(currentTool.id, assignees).then((success) => {
-        if (success) {
+      Tool.unassignMultiple(currentTool.id, assignees).then((data) => {
+        if (data) {
           setUserSearchMenuOpen(false);
           setAssignees([]);
           notifSuccess("Tool Unassigned", `Unassigned "${currentTool.title}" from ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
-          fetchTools();
+          setAllTools(data);
         }
       })
     }

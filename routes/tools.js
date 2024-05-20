@@ -48,9 +48,8 @@ router.post("/delete", (req, res) => {
 
   // Delete the tool itself
   db.collection("tools").doc(toolId).delete().then(() => {
-    // console.log(`Deleted tool with ID: ${toolId}`);
     // Delete tool from all users
-    res.json({ success: true });
+    res.json(allTools);
   }).catch((error) => {
     console.error("Error deleting document: ", error);
     res.json({ error: error });
@@ -68,11 +67,9 @@ router.post("/assign-multiple", async (req, res) => {
     const tool = { id: toolId, title: title, description: description, starred: false };
     if (!user.tools) { user.tools = {}; }
     user.tools[toolId] = tool;
-    await setUser(user).then(() => console.log(`Assigned tool ${toolId} to user ${userId}`));
+    await setUser(user);
   }
 
-  // Add users to the tool
-  console.log("Updating tool document...")
   db.collection("tools").doc(toolId).get().then((docSnap) => {
     if (!docSnap.exists) { return; }
     const tool = docSnap.data();
@@ -80,14 +77,14 @@ router.post("/assign-multiple", async (req, res) => {
     tool.assignedTo = tool.assignedTo.concat(users);
     db.collection("tools").doc(toolId).set(tool);
   }).then(() => {
-    res.json({ success: true });
+    res.json(allTools);
   }).catch((error) => {
     console.error("Error assigning tool to users: ", error);
     res.json({ error: error });
   });
 })
 
-router.post("/unassign-multiple", (req, res) => {
+router.post("/unassign-multiple", async (req, res) => {
   const toolId = req.body.toolId;
   const users = req.body.users;
   
@@ -95,7 +92,7 @@ router.post("/unassign-multiple", (req, res) => {
     const user = getUser(userId);
     if (!user.tools) { user.tools = {}; }
     delete user.tools[toolId];
-    setUser(user);
+    await setUser(user);
   }
 
   // Remove users from the tool
@@ -106,7 +103,7 @@ router.post("/unassign-multiple", (req, res) => {
     tool.assignedTo = tool.assignedTo.filter((userId) => !users.includes(userId));
     db.collection("tools").doc(toolId).set(tool);
   }).then(() => {
-    res.json({ success: true });
+    res.json(allTools);
   }).catch((error) => {
     console.error("Error unassign tool from users: ", error);
     res.json({ error: error });
