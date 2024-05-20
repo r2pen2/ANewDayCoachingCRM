@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const db = require('../firebase');
-const { getAllUsers } = require('./users');
+const { getAllUsers, getUser, setUser } = require('./users');
 
 router.use(bodyParser.json());
 
@@ -40,12 +40,9 @@ router.post("/delete", (req, res) => {
   if (allTools[toolId].assignedTo) {
     // Remove tool from all users
     for (const userId of allTools[toolId].assignedTo) {
-
-      const allUsers = getAllUsers();
-      const user = allUsers[userId]
-
+      const user = getUser(userId);
       delete user.tools[toolId];
-      db.collection("users").doc(user.id).set(user);
+      setUser(user);
     }
   }
 
@@ -67,24 +64,11 @@ router.post("/assign-multiple", (req, res) => {
   const description = req.body.description;
 
   for (const userId of users) {
-    db.collection("users").doc(userId).get().then((docSnap) => {
-      if (!docSnap.exists) { return; }
-  
-      const user = docSnap.data();
-  
-      const tool = {
-        id: toolId,
-        title: title,
-        description: description,
-        starred: false
-      }
-
-      if (!user.tools) { user.tools = {}; }
-      user.tools[toolId] = tool;
-  
-      // Push changes
-      db.collection("users").doc(userId).set(user);
-    });
+    const user = getUser(userId);
+    const tool = { id: toolId, title: title, description: description, starred: false };
+    if (!user.tools) { user.tools = {}; }
+    user.tools[toolId] = tool;
+    setUser(user);
   }
 
   // Add users to the tool
@@ -107,17 +91,10 @@ router.post("/unassign-multiple", (req, res) => {
   const users = req.body.users;
   
   for (const userId of users) {
-    db.collection("users").doc(userId).get().then((docSnap) => {
-      if (!docSnap.exists) { return; }
-  
-      const user = docSnap.data();
-
-      if (!user.tools) { user.tools = {}; }
-      delete user.tools[toolId];
-  
-      // Push changes
-      db.collection("users").doc(userId).set(user);
-    });
+    const user = getUser(userId);
+    if (!user.tools) { user.tools = {}; }
+    delete user.tools[toolId];
+    setUser(user);
   }
 
   // Remove users from the tool
@@ -139,18 +116,9 @@ router.post("/user-star", (req, res) => {
   const toolId = req.body.toolId;
   const userId = req.body.userId;
 
-  db.collection("users").doc(userId).get().then((docSnap) => {
-    if (!docSnap.exists) { return; }
-    const user = docSnap.data();
-    user.tools[toolId].starred = !user.tools[toolId].starred;
-    // Push changes
-    db.collection("users").doc(userId).set(user);
-  }).then(() => {
-    res.json({ success: true });
-  }).catch((error) => {
-    console.error("Error starring tool for user: ", error);
-    res.json({ error: error });
-  });
+  const user = getUser(userId);
+  user.tools[toolId].starred = !user.tools[toolId].starred;
+  setUser(user);
 })
 
 router.get("/", (req, res) => { res.json(allTools); })

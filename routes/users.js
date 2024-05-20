@@ -49,5 +49,7 @@ router.get("/search-tools", (req, res) => {
 })
 
 function getAllUsers() { return allUsers }
+function getUser(id) { return allUsers[id]; }
+function setUser(user) { db.collection("users").doc(user.id).set(user) }
 
-module.exports = { router, getAllUsers };
+module.exports = { router, getAllUsers, getUser, setUser };
