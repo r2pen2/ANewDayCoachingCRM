@@ -421,7 +421,6 @@ export class Tool {
 
   static assignToMultiple(title: string, description: string, toolId: string, users: string[]): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      console.log("Assigning to multiple users")
       fetch(hostname + "/tools/assign-multiple", {
         method: "POST",
         headers: {

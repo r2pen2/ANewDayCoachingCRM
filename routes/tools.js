@@ -70,13 +70,10 @@ router.post("/assign-multiple", async (req, res) => {
     await setUser(user);
   }
 
-  db.collection("tools").doc(toolId).get().then((docSnap) => {
-    if (!docSnap.exists) { return; }
-    const tool = docSnap.data();
-    if (!tool.assignedTo) { tool.assignedTo = []; }
-    tool.assignedTo = tool.assignedTo.concat(users);
-    db.collection("tools").doc(toolId).set(tool);
-  }).then(() => {
+  const tool = allTools[toolId];
+  if (!tool.assignedTo) { tool.assignedTo = []; }
+  tool.assignedTo = tool.assignedTo.concat(users);
+  db.collection("tools").doc(toolId).set(tool).then(() => {
     res.json(allTools);
   }).catch((error) => {
     console.error("Error assigning tool to users: ", error);

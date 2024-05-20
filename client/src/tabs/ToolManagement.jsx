@@ -13,12 +13,12 @@ export default function ToolManagement() {
     event.preventDefault();
     const name = document.getElementById("name").value;
     const description = document.getElementById("description").value;
-    Tool.createOnDatabase(name, description).then((toolId) => {
+    Tool.createOnDatabase(name, description).then(async (toolId) => {
+      await fetchTools();
       notifSuccess("Tool Created", `Created "${name}"`);
       setCurrentTool({title: name, description: description, id: toolId})
       setUserSearchMenuOpen(true);
       setAssignMode("Assign");
-      fetchTools();
     })
   }
 
@@ -38,7 +38,7 @@ export default function ToolManagement() {
   const [assignMode, setAssignMode] = React.useState(null);
 
   /** Fetch all tools from database */
-  function fetchTools() { Tool.fetchAll().then((tools) => { setAllTools(tools); }) }
+  async function fetchTools() { await Tool.fetchAll().then((tools) => { setAllTools(tools); }) }
 
   /** Fetch tools and users on component mount */
   React.useEffect(() => {
