@@ -68,10 +68,11 @@ router.post("/assign-multiple", async (req, res) => {
     const tool = { id: toolId, title: title, description: description, starred: false };
     if (!user.tools) { user.tools = {}; }
     user.tools[toolId] = tool;
-    await setUser(user);
+    await setUser(user).then(() => console.log(`Assigned tool ${toolId} to user ${userId}`));
   }
 
   // Add users to the tool
+  console.log("Updating tool document...")
   db.collection("tools").doc(toolId).get().then((docSnap) => {
     if (!docSnap.exists) { return; }
     const tool = docSnap.data();
