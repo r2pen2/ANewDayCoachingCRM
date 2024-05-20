@@ -1,6 +1,7 @@
 import { UserCredential } from "firebase/auth";
 import { db } from "./firebase";
 import { DocumentReference, addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
+import { navigationItems } from "../components/Navigation";
 
 const rachelDocRef = doc(db, "users/rachel");
 const invoiceLimboCollectionRef = collection(db, "invoiceLimbo");
@@ -73,9 +74,17 @@ export class User {
     })
   }
 
-  static async fetchSearch(): Promise<any[]> {
+  static async fetchSearch(navPage: string): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
-      fetch(hostname + "/users/search-list").then((response) => {
+      
+      let endpoint = ""
+      if (navPage === navigationItems.ADMINFORMS) {
+        endpoint = "search-forms";
+      } else if (navPage === navigationItems.ADMINTOOLS) {
+        endpoint = "search-tools";
+      }
+
+      fetch(hostname + `/users/${endpoint}`).then((response) => {
         response.json().then((data) => {
           resolve(data);
         })

@@ -22,6 +22,7 @@ export default function FormManagement() {
 
   React.useEffect(() => {
     User.fetchSearch().then((users) => {
+      console.log(users)
       setAllUsers(users);
     })
   }, [])

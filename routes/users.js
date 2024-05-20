@@ -16,7 +16,7 @@ db.collection("users").onSnapshot((querySnapshot) => {
   });
 });
 
-router.get("/search-list", (req, res) => {
+router.get("/search-forms", (req, res) => {
   const resUsers = {}
   for (const userId of Object.keys(allUsers)) {
     const u = allUsers[userId];
@@ -25,7 +25,24 @@ router.get("/search-list", (req, res) => {
         displayName: u.personalData.displayName,
         email: u.personalData.email
       },
-      id: u.id
+      id: u.id,
+      formAssignments: u.formAssignments
+    }
+  }
+  res.json(resUsers);
+})
+
+router.get("/search-tools", (req, res) => {
+  const resUsers = {}
+  for (const userId of Object.keys(allUsers)) {
+    const u = allUsers[userId];
+    resUsers[userId] = {
+      personalData: {
+        displayName: u.personalData.displayName,
+        email: u.personalData.email
+      },
+      id: u.id,
+      tools: u.tools
     }
   }
   res.json(resUsers);

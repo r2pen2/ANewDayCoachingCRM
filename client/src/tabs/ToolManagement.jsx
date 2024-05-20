@@ -3,6 +3,7 @@ import React from 'react'
 import { Tool, User } from '../api/dbManager.ts';
 import { IconSearch, IconTrash, IconUser, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 import "../assets/style/toolsAdmin.css"
+import { navigationItems } from '../components/Navigation.jsx';
 
 export default function ToolManagement() {
   
@@ -37,7 +38,7 @@ export default function ToolManagement() {
   /** Fetch tools and users on component mount */
   React.useEffect(() => {
     Tool.fetchAll().then((tools) => { setAllTools(tools); })
-    User.fetchSearch().then((users) => { setAllUsers(users); })
+    User.fetchSearch(navigationItems.ADMINTOOLS).then((users) => { setAllUsers(users); })
   }, [])
 
   const UserSearchResults = () => {
