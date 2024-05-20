@@ -18,7 +18,7 @@ db.collection("users").onSnapshot((querySnapshot) => {
 
 router.get("/search-list", (req, res) => {
   const resUsers = {}
-  for (const userId in allUsers) {
+  for (const userId of Object.keys(allUsers)) {
     const u = allUsers[userId];
     resUsers[userId] = {
       personalData: {

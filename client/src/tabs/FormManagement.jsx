@@ -21,7 +21,7 @@ export default function FormManagement() {
   const [assignMode, setAssignMode] = React.useState(null);
 
   React.useEffect(() => {
-    User.fetchAll().then((users) => {
+    User.fetchSearch().then((users) => {
       setAllUsers(users);
     })
   }, [])
