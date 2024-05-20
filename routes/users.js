@@ -14,6 +14,7 @@ db.collection("users").onSnapshot((querySnapshot) => {
     allUsers[doc.id] = doc.data();
     allUsers[doc.id].id = doc.id;
   });
+  console.log(allUsers)
 });
 
 router.get("/search-forms", (req, res) => {
