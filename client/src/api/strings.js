@@ -16,6 +16,10 @@ export function getSlashDateString(date) {
   return `${month + 1}/${day}/${year}`
 }
 
+export function getTimeString(date) {
+  return `${date.getHours() % 12}:${date.getMinutes()}${date.getHours() >= 13 ? "PM" : "AM"}`
+}
+
 /**
  * Formats a UTC date string so that it's easier to read
  * @param {Date} date string representing a UTC date
@@ -58,6 +62,4 @@ export function getEventTime(date) {
 
   // Format and return string
   return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-  
-  
 }

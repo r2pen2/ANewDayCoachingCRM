@@ -1,7 +1,6 @@
 import { Invoice } from "./dbManager.ts";
 
 const todayLimbo = new Invoice("V5pnONtawsWjkMo42ZnzsNdGTZm2", 2, false, 100, new Date(), null, new Date(), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2");
-todayLimbo.limboId = "V5pnONtawsWjkMo42ZnzsNdGTZm2";
 todayLimbo.paidAt = new Date();
 
 const late = new Invoice("V5pnONtawsWjkMo42ZnzsNdGTZm2", 1, false, 200, Invoice.getDaysBefore(7),  null, Invoice.getDaysBefore(2), "https://www.joed.dev/", "V5pnONtawsWjkMo42ZnzsNdGTZm2");

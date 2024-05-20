@@ -347,7 +347,7 @@ export class Invoice {
       dueAt: this.dueAt,
       href: this.href,
       assignedTo: this.assignedTo,
-      limbo: this.limbo
+      limbo: this.limbo,
     }
   }
 
@@ -372,7 +372,6 @@ export class Invoice {
         reject(error);
       })
     })
-
   }
 
   tellRachelIHaveNotBeenPaid(): void {
@@ -393,9 +392,14 @@ export class Invoice {
   checkPending(): boolean {
     return this.limbo !== null;
   }
+}
 
-  static getLimbo(): Promise<Invoice[]> {
-    return new Promise<Invoice[]>((resolve, reject) => {
+export class LimboInvoice extends Invoice {
+  
+  userDisplayName: string;
+
+  static getAll(): Promise<LimboInvoice[]> {
+    return new Promise<LimboInvoice[]>((resolve, reject) => {
       fetch(hostname + "/invoices/limbo").then((response) => {
         response.json().then((data) => {
 
@@ -404,8 +408,65 @@ export class Invoice {
             const createdAt = createDate(d.createdAt);
             const dueAt = createDate(d.dueAt);
             const paidAt = d.paidAt ? createDate(d.paidAt) : null;
-            return new Invoice(d.invoiceId, d.invoiceNumber, d.paid, d.amount, createdAt, paidAt, dueAt, d.href, d.assignedTo)
+            const invoice = new LimboInvoice(d.invoiceId, d.invoiceNumber, d.paid, d.amount, createdAt, paidAt, dueAt, d.href, d.assignedTo);
+            invoice.userDisplayName = d.userDisplayName;
+            invoice.limbo = d.limbo;
+            return invoice;
           }));
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
+  generateMemo(): string {
+    if (this.limbo === "Venmo") { return `${this.userDisplayName}'s ANDC Invoice No.${this.invoiceNumber}`; }
+    return "Error: Memo not generated."
+  }
+
+  getPlatformColor(): string {
+    if (this.limbo === "Paid")    { return "#00BF6F"; }  // This is a Paid invoice
+    if (this.limbo === "Venmo")   { return "#008CFF"; }  // This is a Venmo payment
+    if (this.limbo === "Zelle")   { return "#6D1ED4"; }  // This is a Zelle payment
+    return "black";
+  }
+
+  async accept(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      fetch(hostname + "/invoices/limbo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoiceId: this.invoiceId,
+          action: "accept"
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve();
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
+  async reject(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      fetch(hostname + "/invoices/limbo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoiceId: this.invoiceId,
+          action: "reject"
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve();
         })
       }).catch((error) => {
         reject(error);

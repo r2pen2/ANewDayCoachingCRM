@@ -35,6 +35,27 @@ router.get("/limbo", (req, res) => {
   res.json(limboInvoices);
 })
 
-function getAllInvoices() { return allInvoices }
+router.post("/limbo", (req, res) => {
+  const action = req.body.action;
+  const invoiceId = req.body.invoiceId;
+  const invoice = allInvoices[invoiceId];
+  if (!invoice) { res.send("Error: Invoice not found"); return; }
+  if (action === "accept") {
+    invoice.paid = true;
+  } else {
+    invoice.paid = false;
+    invoice.paidAt = null;
+  }
+  invoice.limbo = null;
+  setInvoice(invoice).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error(error);
+    res.json({ success: false });
+  });
+})
 
-module.exports = { router, getAllInvoices };
+function getAllInvoices() { return allInvoices }
+async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then(() => { resolve(); }).catch((error) => { reject(error); }); }) }
+
+module.exports = { router, getAllInvoices, setInvoice };

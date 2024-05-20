@@ -1,15 +1,16 @@
 import React from 'react'
-import { Invoice } from '../api/dbManager.ts'
-import { Table } from '@mantine/core'
-import { getSlashDateString } from '../api/strings.js'
+import { LimboInvoice } from '../api/dbManager.ts'
+import { ActionIcon, Button, Table, Tooltip } from '@mantine/core'
+import { getSlashDateString, getTimeString } from '../api/strings.js'
+import { IconCheck, IconX } from '@tabler/icons-react'
 
 export default function InvoiceLimbo() {
   
+  function fetchInvoices() { LimboInvoice.getAll().then((invoices) => { setInvoices(invoices) }) }
+
   const [invoices, setInvoices] = React.useState([])
   React.useState(() => {
-    Invoice.getLimbo().then((invoices) => {
-      setInvoices(invoices)
-    })
+    fetchInvoices()
   }, [])
 
   return (
@@ -20,7 +21,7 @@ export default function InvoiceLimbo() {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>
-                Date Submitted
+                Timestamp
               </Table.Th>
               <Table.Th>
                 Submitted By
@@ -39,12 +40,24 @@ export default function InvoiceLimbo() {
           
           <Table.Tbody>
             {Object.values(invoices).sort((a, b) => a.paidAt - b.paidAt).map((invoice, index) => {
+              
+              function handleAccept() { invoice.accept().then(() => fetchInvoices()) }
+              function handleReject() { invoice.reject().then(() => fetchInvoices()) }
+
               return (
                 <Table.Tr key={index}>
-                  <Table.Td>{getSlashDateString(invoice.paidAt)}</Table.Td>
+                  <Table.Td>{getSlashDateString(invoice.paidAt)} {getTimeString(invoice.paidAt)}</Table.Td>
                   <Table.Td>{invoice.userDisplayName}</Table.Td>
-                  <Table.Td>{invoice.limbo}</Table.Td>
-                  <Table.Td>{invoice.memo}</Table.Td>
+                  <Table.Td><strong style={{color: invoice.getPlatformColor()}}>{invoice.limbo}</strong></Table.Td>
+                  <Table.Td>{invoice.generateMemo()}</Table.Td>
+                  <Table.Td className='d-flex gap-2'>
+                    <Tooltip label="Accept">
+                      <ActionIcon color="green" onClick={handleAccept}><IconCheck /></ActionIcon>
+                    </Tooltip>
+                    <Tooltip label="Reject">
+                      <ActionIcon color="red" onClick={handleReject}><IconX /></ActionIcon>
+                    </Tooltip>
+                  </Table.Td>
                 </Table.Tr>
               )
             })}

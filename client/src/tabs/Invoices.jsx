@@ -206,7 +206,7 @@ export default function Invoices() {
           <PayButton method="venmo"   color="#008CFF"   link={venmoLink}  onClick={() => setSecondPage("venmo")}  />
           <PayButton method="zelle"   color="#6D1ED4"   link={LinkMaster.payments.zelle} />
           <PayButton method="stripe"  color="#F47216"   link={LinkMaster.payments.stripe} />
-          <PayButton method="paid"    color="##00BF6F"                    onClick={() => setSecondPage("mark")}   />
+          <PayButton method="paid"    color="#00BF6F"                    onClick={() => setSecondPage("mark")}   />
         </div>
       )
     }
