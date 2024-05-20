@@ -138,15 +138,20 @@ export default function ToolManagement() {
       <Table.ScrollContainer minWidth={500} type="native">
         <Table striped>
           <Table.Thead>
-            <Table.Th>
-              Name
-            </Table.Th>
-            <Table.Th>
-              Description
-            </Table.Th>
-            <Table.Th>
-              Actions
-            </Table.Th>
+            <Table.Tr>
+              <Table.Th>
+                Name
+              </Table.Th>
+              <Table.Th>
+                Description
+              </Table.Th>
+              <Table.Th>
+                Users
+              </Table.Th>
+              <Table.Th>
+                Actions
+              </Table.Th>
+            </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {Object.values(allTools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => {
@@ -179,7 +184,10 @@ export default function ToolManagement() {
               }
 
               /** Confirm deletion of tool */
-              function confirmDelete() { if (window.confirm(`Are you sure you want to delete "${tool.title}"?`)) { handleDelete(); } }
+              function confirmDelete() { 
+                const numAssigned = tool.assignedTo.length;
+                if (window.confirm(`Are you sure you want to delete "${tool.title}"? It's assigned to ${numAssigned} user${numAssigned !== 1 ? "s" : '' }.`)) { handleDelete(); }
+              }
 
               return (
                 <Table.Tr key={index}>
@@ -188,6 +196,9 @@ export default function ToolManagement() {
                   </Table.Td>
                   <Table.Td>
                     {tool.description}
+                  </Table.Td>
+                  <Table.Td>
+                    {tool.assignedTo.length}
                   </Table.Td>
                   <Table.Td className='d-flex gap-2'>
                     <Tooltip label={`Delete "${tool.title}"`}>

@@ -1,16 +1,21 @@
 import { Paper, Table, Tooltip } from '@mantine/core'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
 
 import "../assets/style/dashboard.css"
 
-import { tools } from '../api/tools.ts'
 import { getSlashDateString } from '../api/strings.js'
 import { IconStar } from '@tabler/icons-react';
+import { Tool } from '../api/dbManager.ts';
+import { CurrentUserContext } from '../App.jsx';
 
 export default function Dashboard() {
   
+  const {currentUser} = useContext(CurrentUserContext)
+
+  const tools = Object.values(currentUser.tools);
+
   const ToolsList = () => (
     <Carousel
       slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
@@ -21,7 +26,7 @@ export default function Dashboard() {
       dragFree
       className="indicator-container"
     >
-      {tools.map((tool, index) => <ToolCard key={index} tool={tool} />)}
+      {tools.map((tool, index) => <ToolCard currentUser={currentUser} key={index} tool={tool} />)}
     </Carousel>
   )
 
@@ -38,16 +43,9 @@ export default function Dashboard() {
   )
 }
 
-const ToolCard = ({tool}) => {
-  
-  function starTool() {
-    console.log(`Starting ${tool.title}`)
-    tool.starred = !tool.starred;
-  }
+const ToolCard = ({tool, currentUser}) => {
 
-  function getLabel() {
-    return (tool.starred ? "Unfavorite" : "Favorite") + ` "${tool.title}"`
-  }
+  function getLabel() { return (tool.starred ? "Unfavorite" : "Favorite") + ` "${tool.title}"` }
 
   return (
     <Carousel.Slide style={{marginTop: "1rem", marginBottom: "1rem"}}>
@@ -61,7 +59,7 @@ const ToolCard = ({tool}) => {
       >
         <div className="d-flex justify-content-between">
           <strong>{tool.title}</strong>
-          <Tooltip label={getLabel()} onClick={starTool}>
+          <Tooltip label={getLabel()} onClick={() => Tool.star(tool.id, currentUser.id)}>
             <IconStar className='favorite-button' fill={tool.starred ? "gold" : "transparent"} stroke={tool.starred ? "gold" : "black"} />
           </Tooltip>
         </div>
@@ -77,27 +75,29 @@ const Tracker = () => {
     <Table.ScrollContainer minWidth={500} type="native">
     <Table striped>
       <Table.Thead>
-        <Table.Th>
-          Subject
-        </Table.Th>
-        <Table.Th>
-          Assignment
-        </Table.Th>
-        <Table.Th>
-          Status
-        </Table.Th>
-        <Table.Th>
-          Est Time
-        </Table.Th>
-        <Table.Th>
-          Priority
-        </Table.Th>
-        <Table.Th>
-          Start Date
-        </Table.Th>
-        <Table.Th>
-          Due Date
-        </Table.Th>
+        <Table.Tr>
+          <Table.Th>
+            Subject
+          </Table.Th>
+          <Table.Th>
+            Assignment
+          </Table.Th>
+          <Table.Th>
+            Status
+          </Table.Th>
+          <Table.Th>
+            Est Time
+          </Table.Th>
+          <Table.Th>
+            Priority
+          </Table.Th>
+          <Table.Th>
+            Start Date
+          </Table.Th>
+          <Table.Th>
+            Due Date
+          </Table.Th>
+        </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
         <Table.Tr key={1}>

@@ -156,15 +156,17 @@ export default function FormManagement() {
       <Table.ScrollContainer minWidth={500} type="native">
         <Table striped>
           <Table.Thead>
-            <Table.Th>
-              Name
-            </Table.Th>
-            <Table.Th>
-              Description
-            </Table.Th>
-            <Table.Th>
-              Actions
-            </Table.Th>
+            <Table.Tr>
+              <Table.Th>
+                Name
+              </Table.Th>
+              <Table.Th>
+                Description
+              </Table.Th>
+              <Table.Th>
+                Actions
+              </Table.Th>
+            </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {

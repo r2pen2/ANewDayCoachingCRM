@@ -36,6 +36,13 @@ export default function Forms() {
   /** List of all forms. Clicking a form brings the user to the Google Form in a new tab */
   const FormsList = () => {
 
+    if (currentUser.formAssignments.length < 1) { 
+      return <div className="text-center">
+        <Text size='7rem' style={{marginBottom: "2rem"}}>😴</Text>
+        <Text>There's nothing for you to complete!</Text>
+      </div>
+    }
+
     return (
       currentUser.formAssignments.map((form, index) => {
         

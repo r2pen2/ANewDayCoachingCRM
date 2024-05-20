@@ -21,6 +21,7 @@ export class User {
   email: string;
   displayName: string;
   pfpUrl: string;
+  tools: any[] = [];
 
   personalData: any = {
     displayName: "",
@@ -51,6 +52,7 @@ export class User {
         id: this.id,
         personalData: this.personalData,
         unpaidInvoices: this.unpaidInvoices,
+        tools: this.tools
       }).then(() => {
         resolve();
       }).catch((error) => {
@@ -79,6 +81,9 @@ export class User {
     this.email = data.email;
     this.displayName = data.displayName;
     this.pfpUrl = data.pfpUrl;
+    this.personalData = data.personalData;
+    this.unpaidInvoices = data.unpaidInvoices;
+    this.tools = data.tools;
     return this;
   }
 
@@ -468,6 +473,19 @@ export class Tool {
         })
       }).catch((error) => {
         reject(error);
+      })
+    })
+  }
+
+  static star(toolId: string, userId: string): void {
+    fetch(hostname + "/tools/user-star", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: userId,
+        toolId: toolId
       })
     })
   }

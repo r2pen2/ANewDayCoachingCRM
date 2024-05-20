@@ -18,11 +18,11 @@ db.collection("tools").onSnapshot((querySnapshot) => {
 
 router.post("/create", (req, res) => {
   const toolId = req.body.title;
-  const userId = req.body.description;
+  const description = req.body.description;
 
   db.collection("tools").add({
     title: toolId,
-    description: userId,
+    description: description,
     assignedTo: []
   }).then((docRef) => {
     console.log(`Created tool with ID: ${docRef.id}`);
@@ -75,7 +75,8 @@ router.post("/assign-multiple", (req, res) => {
       const tool = {
         id: toolId,
         title: title,
-        description: description
+        description: description,
+        starred: false
       }
 
       if (!user.tools) { user.tools = {}; }
@@ -132,6 +133,19 @@ router.post("/unassign-multiple", (req, res) => {
     console.error("Error unassign tool from users: ", error);
     res.json({ error: error });
   });
+})
+
+router.post("/user-star", (req, res) => {
+  const toolId = req.body.title;
+  const userId = req.body.description;
+
+  db.collection("users").doc(userId).get().then((docSnap) => {
+    if (!docSnap.exists) { return; }
+    const user = docSnap.data();
+    user.tools[toolId].starred = !user.tools[toolId].starred;
+    // Push changes
+    db.collection("users").doc(userId).set(user);
+  })
 })
 
 router.get("/", (req, res) => { res.json(allTools); })
