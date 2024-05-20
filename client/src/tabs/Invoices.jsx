@@ -142,7 +142,14 @@ export default function Invoices() {
     }
 
     /** When a payment method is clicked, open the href associated & propagate the onClick event */
-    const handleClick = () => { if (props.link) { window.open(props.link, "_blank"); } if (props.onClick) { props.onClick(); } setSelectedMethod(props.method) }
+    const handleClick = () => {
+      if (props.onClick) { 
+        props.onClick(); 
+      }
+      if (props.link) { 
+        window.open(props.link, "_blank"); 
+      }
+    }
     
     return (
       <div className="col-12 col-md-6 pay-button p-2" style={{ "--icon-color": getColor() }}>
@@ -156,12 +163,6 @@ export default function Invoices() {
 
   /** Invoice payment modal that appears when {@link currentInvoice} is not null. */
   const PayModal = () => {
-
-    function handleTellRachelIveBeenPaid() {
-      setSecondPage(`thanks-${secondPage}`);
-      fetchInvoices();
-      notifSuccess("Marked Paid", 'Your invoice has been marked as "paid" and is pending approval.');
-    }
     
     const [secondPage, setSecondPage] = useState(cancellingPending ? "cancel" : null);
 
@@ -182,7 +183,14 @@ export default function Invoices() {
       if (secondPage !== "venmo" && secondPage !== "mark" && secondPage !== "oops") { return; } // If somehow we're on the wrong page, don't show these action buttons
       
       /** When the done button is pressed, tell Rachel that this invoice is paid & go to the right page */
-      function handleDone() { currentInvoice?.tellRachelIHaveBeenPaid(selectedMethod).then(() => handleTellRachelIveBeenPaid() ); }
+      function handleDone() { 
+        currentInvoice?.tellRachelIHaveBeenPaid(secondPage).then(() => {
+          setSecondPage(`thanks-${secondPage}`);
+          fetchInvoices();
+          setCurrentInvoice(null);
+          notifSuccess("Marked Paid", 'Your invoice has been marked as "paid" and is pending approval.');
+        } );
+      }
       
       const DoneButton = () => {
         if (secondPage === "oops") { return; } // Don't show the done button if we're undoing a mark
@@ -190,7 +198,7 @@ export default function Invoices() {
       }
       
       return [
-        <DoneButton />,
+        <DoneButton key="done-button" />,
         <Button key="back-button" onClick={() => setSecondPage(null)}>Back to Payment Options</Button>
       ]
     }

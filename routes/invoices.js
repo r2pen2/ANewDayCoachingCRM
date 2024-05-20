@@ -80,7 +80,12 @@ router.post("/create", (req, res) => {
 })
 
 router.post("/update", (req, res) => {
-  setInvoice(req.body.invoice)
+  setInvoice(req.body.invoice).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error(error);
+    res.json({ success: false });
+  });
 })
 
 function getAllInvoices() { return allInvoices }

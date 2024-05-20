@@ -361,6 +361,7 @@ export class Invoice {
           invoice: this.toJson()
         })
       }).then((response) => {
+        console.log(response);
         response.json().then((data) => {
           resolve();
         })
@@ -370,14 +371,17 @@ export class Invoice {
     })
   }
 
-  tellRachelIHaveBeenPaid(platform: string): Promise<boolean> {
+  async tellRachelIHaveBeenPaid(platform: string): Promise<boolean> {
     platform = platform.substring(0, 1).toUpperCase() + platform.substring(1);
     return new Promise<boolean>((resolve, reject) => {
       this.paidAt = new Date();
       this.limbo = platform;
+      console.log("setting");
       this.setData().then(() => {
+        console.log("set");
         resolve(true);
       }).catch((error) => {
+        console.log("err");
         reject(error);
       })
     })
