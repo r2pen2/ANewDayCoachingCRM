@@ -110,15 +110,9 @@ router.post("/unassign-multiple", (req, res) => {
       if (!docSnap.exists) { return; }
   
       const user = docSnap.data();
-  
-      const tool = {
-        id: toolId,
-        title: title,
-        description: description
-      }
 
       if (!user.tools) { user.tools = {}; }
-      user.tools[toolId] = tool;
+      delete user.tools[toolId];
   
       // Push changes
       db.collection("users").doc(userId).set(user);

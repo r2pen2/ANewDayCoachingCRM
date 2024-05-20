@@ -56,6 +56,7 @@ export default function ToolManagement() {
 
         /** Toggle a userId's existance in assignee array */
         function toggleAssignee() {
+          if (disablePaper) { return; } // Don't do anything if there are incompatibilities
           if (assignees.includes(user.id)) { setAssignees(assignees.filter((id) => id !== user.id)); return; }
           setAssignees([...assignees, user.id])
         }
