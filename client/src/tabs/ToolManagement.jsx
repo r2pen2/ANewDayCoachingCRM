@@ -11,6 +11,9 @@ export default function ToolManagement() {
     const description = document.getElementById("description").value;
     Tool.createOnDatabase(name, description).then((toolId) => {
       console.log(`Created tool with ID: ${toolId}`);
+      Tool.fetchAll().then((tools) => {
+        setAllTools(tools);
+      })
     })
   }
 
