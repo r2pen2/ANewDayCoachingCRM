@@ -57,7 +57,7 @@ router.post("/delete", (req, res) => {
   });
 })
 
-router.post("/assign-multiple", (req, res) => {
+router.post("/assign-multiple", async (req, res) => {
   const toolId = req.body.toolId;
   const users = req.body.users;
   const title = req.body.title;
@@ -68,8 +68,7 @@ router.post("/assign-multiple", (req, res) => {
     const tool = { id: toolId, title: title, description: description, starred: false };
     if (!user.tools) { user.tools = {}; }
     user.tools[toolId] = tool;
-    console.log(user);
-    setUser(user);
+    await setUser(user);
   }
 
   // Add users to the tool
