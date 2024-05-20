@@ -1,6 +1,6 @@
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
-import { FormAssignment, User } from '../api/dbManager.ts';
+import { FormAssignment, User } from '../api/db/dbManager.ts';
 import { IconAlertCircle, IconSearch, IconTrash, IconUserCancel, IconUserShare, IconX } from '@tabler/icons-react';
 import { allForms } from '../api/forms.ts';
 import "../assets/style/formsAdmin.css"

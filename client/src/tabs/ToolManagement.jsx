@@ -1,6 +1,6 @@
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
-import { Tool, User } from '../api/dbManager.ts';
+import { Tool, User } from '../api/db/dbManager.ts';
 import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 import "../assets/style/toolsAdmin.css"
 import { navigationItems } from '../components/Navigation.jsx';

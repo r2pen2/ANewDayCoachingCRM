@@ -8,7 +8,7 @@ import Confetti from "react-confetti"
 import { CurrentUserContext } from '../App'
 
 // API Imports
-import { hostname } from '../api/dbManager.ts'
+import { hostname } from '../api/db/dbManager.ts'
 
 // Style Imports
 import "../assets/style/forms.css"
