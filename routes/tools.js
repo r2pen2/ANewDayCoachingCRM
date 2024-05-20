@@ -23,7 +23,7 @@ router.post("/create", (req, res) => {
   db.collection("tools").add({
     title: toolId,
     description: userId,
-    users: []
+    assignedTo: []
   }).then((docRef) => {
     console.log(`Created tool with ID: ${docRef.id}`);
     res.json({ id: docRef.id });
@@ -91,7 +91,7 @@ router.post("/assign-multiple", (req, res) => {
     if (!docSnap.exists) { return; }
     const tool = docSnap.data();
     if (!tool.assignedTo) { tool.assignedTo = []; }
-    tool.assignedTo = tool.assignedTo.push(users);
+    tool.assignedTo.push(users);
     db.collection("tools").doc(toolId).set(tool);
   }).then(() => {
     res.json({ success: true });
