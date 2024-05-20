@@ -6,6 +6,7 @@ import { getSlashDateString, getTimeString } from '../api/strings.js'
 import { IconCheck, IconMoneybag, IconSearch, IconX } from '@tabler/icons-react'
 import { navigationItems } from '../components/Navigation.jsx'
 import '@mantine/dates/styles.css';
+import { notifSuccess } from '../components/Notifications.jsx'
 
 
 export default function InvoiceManagement() {
@@ -17,7 +18,7 @@ export default function InvoiceManagement() {
   const [userQuery, setUserQuery] = React.useState("");
   const [dueDate, setDueDate] = React.useState(null)
   const [createMenuOpen, setCreateMenuOpen] = React.useState(false);
-  React.useState(() => {
+  React.useEffect(() => {
     fetchInvoices()
     User.fetchSearch(navigationItems.ADMINFORMS).then((users) => { setAllUsers(users); })
   }, [])
@@ -30,7 +31,10 @@ export default function InvoiceManagement() {
     const amount = document.getElementById("amount").value
     
     if (window.confirm(`Send ${selectedUser.personalData.displayName} an invoice for $${amount}?`)) {
-      Invoice.create(href, amount, selectedUser, dueDate).then(() => fetchInvoices())
+      Invoice.create(href, amount, selectedUser, dueDate).then(() => {
+        fetchInvoices()
+        notifSuccess("Invoice Created", `Invoice sent to ${selectedUser.personalData.displayName}`)
+      })
     }
 
   }
@@ -57,7 +61,7 @@ export default function InvoiceManagement() {
     return (
       users.map((user, index) => {
         return (
-          <Paper key={index} onClick={() => setSelectedUser(user)} className={`d-flex mb-2 flex-row justify-content-between align-items-center p-2`} withBorder style={{cursor: "pointer"}} >
+          <Paper key={index} onClick={() => {setSelectedUser(user); checkSubmitReady()}} className={`d-flex mb-2 flex-row justify-content-between align-items-center p-2`} withBorder style={{cursor: "pointer"}} >
             <div className="d-flex flex-row align-items-center justify-content-center">
               <Avatar src={user.personalData.pfpUrl} alt={user.personalData.displayName} />
               <Text style={{marginLeft: "0.5rem"}}>{user.personalData.displayName}</Text>
@@ -71,12 +75,16 @@ export default function InvoiceManagement() {
   function handleSearchChange(event) {
     if (selectedUser) { setSelectedUser(null) }
     setUserQuery(event.target.value)
-    checkSubmitReady()
   }
 
   const [submitReady, setSubmitReady] = React.useState(false)
 
   function checkSubmitReady() {
+    setTimeout(() => {
+      const href = document.getElementById("href").value;
+      const amount = document.getElementById("amount").value;
+      setSubmitReady(selectedUser && href.length > 0 && amount.length > 0 && dueDate !== null);
+    }, 0);
     setSubmitReady(selectedUser && document.getElementById("href").value.length > 0 && document.getElementById("amount").value.length > 0 && dueDate !== null)
   }
 
@@ -88,7 +96,7 @@ export default function InvoiceManagement() {
         <form onSubmit={createInvoice} className="gap-2 d-flex flex-column">
           <TextInput id="href" label="Link" placeholder="Enter a link to the invoice" required onChange={checkSubmitReady} />
           <NumberInput id="amount" label="Amount" placeholder="Enter the invoice amount" required leftSection="$" onChange={checkSubmitReady} />
-          <DateInput value={dueDate} required label="Due Date" placeholder="Due date" onChange={setDueDate} />
+          <DateInput value={dueDate} required label="Due Date" placeholder="Due date" onChange={(v) => {setDueDate(v); checkSubmitReady()}} />
           <TextInput label="User" required style={{marginBottom: "1rem"}} value={selectedUser ? selectedUser.personalData.displayName : userQuery} onChange={handleSearchChange} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
           <UserSearchResults />
           <div className="d-flex flex-row justify-content-end align-items-center p-2 gap-2">

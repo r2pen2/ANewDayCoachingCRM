@@ -26,4 +26,13 @@ export class LinkMaster {
   static createVenmoLink(amount: number, invoiceNumber: number, displayName: string): string {
     return `https://venmo.com/?txn=pay&audience=private&recipients=${LinkMaster.venmoUser}&amount=${amount}&note=${displayName}'s%20ANDC%20Invoice%20No.${invoiceNumber}`
   }
+
+  static ensureAbsoluteUrl(url: string) {
+    // Check if the URL starts with http://, https://, or // (protocol-relative URL)
+    if (!/^https?:\/\//i.test(url) && !/^\/\//.test(url)) {
+        // If not, prepend "https://" to the URL
+        url = "https://" + url;
+    }
+    return url;
+}
 }

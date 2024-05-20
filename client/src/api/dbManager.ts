@@ -371,8 +371,8 @@ export class Invoice {
   }
 
   tellRachelIHaveBeenPaid(platform: string): Promise<boolean> {
+    platform = platform.substring(0, 1).toUpperCase() + platform.substring(1);
     return new Promise<boolean>((resolve, reject) => {
-      console.log("Rachel, I have been paid!");
       this.paidAt = new Date();
       this.limbo = platform;
       this.setData().then(() => {
@@ -423,6 +423,18 @@ export class Invoice {
         reject(error);
       })
     })    
+  }
+
+  static async getForUser(userId: string): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      fetch(hostname + `/invoices?userId=${userId}`).then((response) => {
+        response.json().then((data) => {
+          resolve(data.map((d: any) => new Invoice(d.id, d.invoiceNumber, d.paid, d.amount, d.createdAt, d.paidAt, d.dueAt, d.href, d.assignedTo) ));
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
   }
 }
 

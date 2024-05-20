@@ -3,45 +3,37 @@ import React, { useContext, useEffect, useState } from 'react'
 import { getSlashDateString } from '../api/strings';
 import { IconBellX, IconCreditCardPay, IconCreditCardRefund, IconEye, IconInfoCircle, IconQuestionMark } from '@tabler/icons-react';
 import '../assets/style/invoices.css';
-import { exampleInvoicesClassed } from '../api/invoices.ts';
 import { LinkMaster } from '../api/links.ts';
 import { CurrentUserContext } from '../App.jsx';
+import { Invoice } from '../api/dbManager.ts';
+import { notifSuccess } from '../components/Notifications.jsx';
 
 // const invoicesPerPage = 10;
 
 export default function Invoices() {
 
-  const [invoices, setInvoices] = useState(exampleInvoicesClassed);
+  const [invoices, setInvoices] = useState([]);
   const [currentInvoice, setCurrentInvoice] = useState(null);
   const [cancellingPending, setCancellingPending] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(null);
   
   const {currentUser} = useContext(CurrentUserContext)
+
+  function fetchInvoices() { 
+    Invoice.getForUser(currentUser.id).then((invoices) => {
+      setInvoices(invoices);
+    })
+  }
+
+  useEffect(() => {
+    Invoice.getForUser(currentUser.id).then((invoices) => {
+      setInvoices(invoices);
+    })
+  }, [currentUser.id])
 
   const InvoiceList = () => {
     
     const sortedInvoices = invoices.sort((a, b) => b.date - a.date);
-    // const truncatedInvoices = sortedInvoices.slice((activePage - 1) * 10, (activePage - 1) * 10 + invoicesPerPage)
-
-    //todo: This method needs to be implemented
-    function payInvoice(invoice, method) {
-
-      fetch('/payments/invoice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: `Invoice: ${getSlashDateString(invoice.date)}`, unitAmount: invoice.amount * 100, quantity: 1}),
-      }).then(res => {
-        if (res.ok) { return res.json()}
-        return res.json().then(json => Promise.reject(json))
-      }).then(({session}) => {
-        const url = session.url;
-        console.log(session);
-        window.location = url;
-      }).catch(e => {
-        console.error(e.error);
-      })
-    }
 
     function getBadgeColor(invoice) {
       if (invoice.paid) { return "green"; }             // This is paid
@@ -92,7 +84,7 @@ export default function Invoices() {
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
                   <Tooltip label="View Invoice">
-                    <ActionIcon variant="filled" aria-label="View" onClick={() => window.open(invoice.href, "_blank")}>
+                    <ActionIcon variant="filled" aria-label="View" onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")}>
                       <IconEye />
                     </ActionIcon>
                   </Tooltip>
@@ -150,7 +142,7 @@ export default function Invoices() {
     }
 
     /** When a payment method is clicked, open the href associated & propagate the onClick event */
-    const handleClick = () => { if (props.link) { window.open(props.link, "_blank"); } if (props.onClick) { props.onClick(); } }
+    const handleClick = () => { if (props.link) { window.open(props.link, "_blank"); } if (props.onClick) { props.onClick(); } setSelectedMethod(props.method) }
     
     return (
       <div className="col-12 col-md-6 pay-button p-2" style={{ "--icon-color": getColor() }}>
@@ -164,6 +156,12 @@ export default function Invoices() {
 
   /** Invoice payment modal that appears when {@link currentInvoice} is not null. */
   const PayModal = () => {
+
+    function handleTellRachelIveBeenPaid() {
+      setSecondPage(`thanks-${secondPage}`);
+      fetchInvoices();
+      notifSuccess("Marked Paid", 'Your invoice has been marked as "paid" and is pending approval.');
+    }
     
     const [secondPage, setSecondPage] = useState(cancellingPending ? "cancel" : null);
 
@@ -184,7 +182,7 @@ export default function Invoices() {
       if (secondPage !== "venmo" && secondPage !== "mark" && secondPage !== "oops") { return; } // If somehow we're on the wrong page, don't show these action buttons
       
       /** When the done button is pressed, tell Rachel that this invoice is paid & go to the right page */
-      function handleDone() { currentInvoice?.tellRachelIHaveBeenPaid().then(() => { setSecondPage(`thanks-${secondPage}`); }); }
+      function handleDone() { currentInvoice?.tellRachelIHaveBeenPaid(selectedMethod).then(() => handleTellRachelIveBeenPaid() ); }
       
       const DoneButton = () => {
         if (secondPage === "oops") { return; } // Don't show the done button if we're undoing a mark
