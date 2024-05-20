@@ -16,6 +16,7 @@ import { getTab } from './api/browser.ts';
 import ToolManagement from './tabs/ToolManagement.jsx';
 import FormManagement from './tabs/FormManagement.jsx';
 import {Notifications} from "@mantine/notifications"
+import InvoiceLimbo from './tabs/InvoiceLimbo.jsx';
 
 export const CurrentUserContext = createContext();
 
@@ -41,6 +42,8 @@ function App() {
         return <ToolManagement />
       case navigationItems.ADMINFORMS:
         return <FormManagement />
+      case navigationItems.INVOICELIMBO:
+        return <InvoiceLimbo />
       default:
     }
   }

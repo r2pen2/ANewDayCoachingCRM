@@ -29,6 +29,9 @@ router.get("/", (req, res) => {
 
 router.get("/limbo", (req, res) => {
   const limboInvoices = Object.values(allInvoices).filter(invoice => invoice.limbo);
+  for (const invoice of limboInvoices) {
+    invoice.userDisplayName = allUsers[invoice.assignedTo].personalData.displayName;
+  }
   res.json(limboInvoices);
 })
 

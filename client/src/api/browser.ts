@@ -4,6 +4,7 @@ export function getTab() {
   
   if (window.location.hash.includes("tools-admin")) return navigationItems.ADMINTOOLS
   if (window.location.hash.includes("forms-admin")) return navigationItems.ADMINFORMS
+  if (window.location.hash.includes("invoice-inbox")) return navigationItems.INVOICELIMBO
   if (window.location.hash.includes("dashboard")) return navigationItems.DASHBOARD
   if (window.location.hash.includes("invoices")) return navigationItems.INVOICES
   if (window.location.hash.includes("settings")) return navigationItems.SETTINGS

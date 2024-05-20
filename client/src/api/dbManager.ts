@@ -1,13 +1,11 @@
 import { UserCredential } from "firebase/auth";
 import { db } from "./firebase";
-import { DocumentReference, addDoc, collection, deleteDoc, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
+import { DocumentReference, doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import { navigationItems } from "../components/Navigation";
 
-const rachelDocRef = doc(db, "users/rachel");
-const invoiceLimboCollectionRef = collection(db, "invoiceLimbo");
-const toolsCollectionRef = collection(db, "tools");
-
 export const hostname = "https://www.crm.joed.dev"
+
+function createDate(d: any): Date { return new Date(d._seconds * 1000 + d._nanoseconds / 1000000) }
 
 export class User {
   
@@ -311,7 +309,7 @@ export class Invoice {
   href: string;
   assignedTo: string;
   docRef: DocumentReference;
-  limbo: boolean = false;
+  limbo: string | null = null;
 
   /**
    * 
@@ -363,11 +361,11 @@ export class Invoice {
     })
   }
 
-  tellRachelIHaveBeenPaid(): Promise<boolean> {
+  tellRachelIHaveBeenPaid(platform: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       console.log("Rachel, I have been paid!");
       this.paidAt = new Date();
-      this.limbo = true;
+      this.limbo = platform;
       this.setData().then(() => {
         resolve(true);
       }).catch((error) => {
@@ -380,7 +378,7 @@ export class Invoice {
   tellRachelIHaveNotBeenPaid(): void {
     console.log("Rachel, I've made a mistake!");
     this.paidAt = null;
-    this.limbo = false;
+    this.limbo = null;
     this.setData();
   }
 
@@ -393,7 +391,26 @@ export class Invoice {
   }
 
   checkPending(): boolean {
-    return this.paidAt !== null && !this.paid;
+    return this.limbo !== null;
+  }
+
+  static getLimbo(): Promise<Invoice[]> {
+    return new Promise<Invoice[]>((resolve, reject) => {
+      fetch(hostname + "/invoices/limbo").then((response) => {
+        response.json().then((data) => {
+
+          
+          resolve(data.map((d: any) => {
+            const createdAt = createDate(d.createdAt);
+            const dueAt = createDate(d.dueAt);
+            const paidAt = d.paidAt ? createDate(d.paidAt) : null;
+            return new Invoice(d.invoiceId, d.invoiceNumber, d.paid, d.amount, createdAt, paidAt, dueAt, d.href, d.assignedTo)
+          }));
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
   }
 }
 
