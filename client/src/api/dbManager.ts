@@ -5,8 +5,6 @@ import { navigationItems } from "../components/Navigation";
 
 export const hostname = "https://www.crm.joed.dev"
 
-function createDate(d: any): Date { return new Date(d._seconds * 1000 + d._nanoseconds / 1000000) }
-
 export class User {
   
   firebaseUser: UserCredential;
@@ -21,6 +19,7 @@ export class User {
   displayName: string;
   pfpUrl: string;
   tools: any[] = [];
+  numUnpaidInvoices: number = 0;
 
   personalData: any = {
     displayName: "",
@@ -103,6 +102,7 @@ export class User {
     this.personalData = data.personalData;
     this.unpaidInvoices = data.unpaidInvoices;
     this.tools = data.tools;
+    this.numUnpaidInvoices = data.numUnpaidInvoices;
     return this;
   }
 
@@ -395,11 +395,11 @@ export class Invoice {
   }
 
   checkLate(): boolean {
-    return this.dueAt < new Date();
+    return new Date(this.dueAt) < new Date();
   }
 
   getDaysLate(): number {
-    return Math.floor((new Date().getTime() - this.dueAt.getTime()) / (1000 * 60 * 60 * 24)) - 1;
+    return Math.floor((new Date().getTime() - new Date(this.dueAt).getTime()) / (1000 * 60 * 60 * 24));
   }
 
   checkPending(): boolean {
@@ -453,10 +453,7 @@ export class LimboInvoice extends Invoice {
 
           
           resolve(data.map((d: any) => {
-            const createdAt = createDate(d.createdAt);
-            const dueAt = createDate(d.dueAt);
-            const paidAt = d.paidAt ? createDate(d.paidAt) : null;
-            const invoice = new LimboInvoice(d.id, d.invoiceNumber, d.paid, d.amount, createdAt, paidAt, dueAt, d.href, d.assignedTo);
+            const invoice = new LimboInvoice(d.id, d.invoiceNumber, d.paid, d.amount, d.createdAt, d.paidAt, d.dueAt, d.href, d.assignedTo);
             invoice.userDisplayName = d.userDisplayName;
             invoice.limbo = d.limbo;
             return invoice;

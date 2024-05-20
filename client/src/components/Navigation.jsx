@@ -51,7 +51,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
   /** Renders the invoices badge when there are unpaid invoices */
   const InvoicesBadge = () => {
     /** The number to display in invoices badge */
-    const invoiceBadgeNumber = currentUser.unpaidInvoices.length;
+    const invoiceBadgeNumber = currentUser.numUnpaidInvoices;
     /** The text to display as tooltop over forms badge */
     const invoicesBadgeTooltipText = `You have ${invoiceBadgeNumber} outstanding invoice${invoiceBadgeNumber > 1 ? "s" : ""}.`
     if (invoiceBadgeNumber <= 0) { return; }

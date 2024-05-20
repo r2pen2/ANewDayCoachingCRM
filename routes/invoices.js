@@ -42,6 +42,10 @@ router.post("/limbo", (req, res) => {
   if (!invoice) { res.send("Error: Invoice not found"); return; }
   if (action === "accept") {
     invoice.paid = true;
+    // Lower num unpaid invoices
+    const user = getUser(invoice.assignedTo);
+    user.numUnpaidInvoices--;
+    setUser(user)
   } else {
     invoice.paid = false;
     invoice.paidAt = null;
@@ -59,6 +63,7 @@ router.post("/create", (req, res) => {
   const invoice = req.body.invoice;
 
   const user = getUser(invoice.assignedTo);
+  user.numUnpaidInvoices++;
   if (invoice.invoiceNumber === -1) {
     invoice.invoiceNumber = user.invoices.length + 1;
   }

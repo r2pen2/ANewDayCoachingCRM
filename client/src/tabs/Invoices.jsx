@@ -15,7 +15,6 @@ export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
   const [currentInvoice, setCurrentInvoice] = useState(null);
   const [cancellingPending, setCancellingPending] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(null);
   
   const {currentUser} = useContext(CurrentUserContext)
 
@@ -24,7 +23,7 @@ export default function Invoices() {
       setInvoices(invoices);
     })
   }
-
+  
   useEffect(() => {
     Invoice.getForUser(currentUser.id).then((invoices) => {
       setInvoices(invoices);
@@ -33,17 +32,17 @@ export default function Invoices() {
 
   const InvoiceList = () => {
     
-    const sortedInvoices = invoices.sort((a, b) => b.date - a.date);
+    const sortedInvoices = invoices.sort((a, b) => b.invoiceNumber - a.invoiceNumber);
 
     function getBadgeColor(invoice) {
       if (invoice.paid) { return "green"; }             // This is paid
       if (invoice.paidAt) { return "orange"; }          // This is pending approval
-      if (invoice.dueAt < Date.now()) { return "red"; } // This is late
+      if (invoice.checkLate()) { return "red"; }        // This is late
       return "yellow";                                  // This is just unpaid
     }
 
     function getPaidMessage(invoice) {
-      if (invoice.paid) { return `Paid on ${getSlashDateString(invoice.paid)}`; }                                     // This is paid
+      if (invoice.paid) { return `Paid on ${getSlashDateString(invoice.paidAt)}`; }                                     // This is paid
       if (invoice.paidAt) { return "Pending Approval"; }                                                              // This is pending approval
       if (invoice.checkLate()) { return `${invoice.getDaysLate()} Day${invoice.getDaysLate() > 1 ? "s" : ""} Late`; } // This is late
       return "Unpaid";                                                                                                // This is just unpaid
@@ -53,24 +52,26 @@ export default function Invoices() {
       <Table.ScrollContainer minWidth={500} type="native">
         <Table striped>
           <Table.Thead>
-            <Table.Th>
-              No.
-            </Table.Th>
-            <Table.Th>
-              Assigned
-            </Table.Th>
-            <Table.Th>
-              Due
-            </Table.Th>
-            <Table.Th>
-              Amount
-            </Table.Th>
-            <Table.Th>
-              Status
-            </Table.Th>
-            <Table.Th>
-              Actions
-            </Table.Th>
+            <Table.Tr>
+              <Table.Th>
+                No.
+              </Table.Th>
+              <Table.Th>
+                Assigned
+              </Table.Th>
+              <Table.Th>
+                Due
+              </Table.Th>
+              <Table.Th>
+                Amount
+              </Table.Th>
+              <Table.Th>
+                Status
+              </Table.Th>
+              <Table.Th>
+                Actions
+              </Table.Th>
+            </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {sortedInvoices.map((invoice, index) => (
@@ -104,11 +105,11 @@ export default function Invoices() {
   }
   
   /** Get the total balance of all unpaid invoices */  
-  function getUnpaidBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + i.amount, 0); }
+  function getUnpaidBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + parseInt(i.amount), 0); }
   /** Get the total balance of all unpaid invoices minus those that are pending */
-  function getBalance() { return invoices.filter(i => !i.paid && !i.paidAt).reduce((acc, i) => acc + i.amount, 0); }
+  function getBalance() { return invoices.filter(i => !i.paid && !i.paidAt).reduce((acc, i) => acc + parseInt(i.amount), 0); }
   /** Get the total balance of all pending invoices */
-  function getPendingBalance() { return invoices.filter(i => !i.paid && i.paidAt).reduce((acc, i) => acc + i.amount, 0); }
+  function getPendingBalance() { return invoices.filter(i => !i.paid && i.paidAt).reduce((acc, i) => acc + parseInt(i.amount), 0); }
 
   
   const PayButton = (props) => {

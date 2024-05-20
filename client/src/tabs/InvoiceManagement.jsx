@@ -11,7 +11,7 @@ import { notifSuccess } from '../components/Notifications.jsx'
 
 export default function InvoiceManagement() {
   
-  function fetchInvoices() { LimboInvoice.getAll().then((invoices) => { setInvoices(invoices) }) }
+  function fetchInvoices() { LimboInvoice.getAll().then((invoices) => { setInvoices(invoices); }) }
 
   const [invoices, setInvoices] = React.useState([])
   const [allUsers, setAllUsers] = React.useState({});

@@ -16,7 +16,9 @@ export function getSlashDateString(date) {
   return `${month + 1}/${day}/${year}`
 }
 
+/** Get the time HH:MM of a date */
 export function getTimeString(date) {
+  date = new Date(date)
   return `${date.getHours() % 12}:${date.getMinutes()}${date.getHours() >= 13 ? "PM" : "AM"}`
 }
 
