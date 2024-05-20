@@ -68,6 +68,7 @@ router.post("/assign-multiple", (req, res) => {
     const tool = { id: toolId, title: title, description: description, starred: false };
     if (!user.tools) { user.tools = {}; }
     user.tools[toolId] = tool;
+    console.log(user);
     setUser(user);
   }
 
