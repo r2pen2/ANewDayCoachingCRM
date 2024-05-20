@@ -37,7 +37,7 @@ export default function ToolManagement() {
   /** Fetch tools and users on component mount */
   React.useEffect(() => {
     Tool.fetchAll().then((tools) => { setAllTools(tools); })
-    User.fetchAll().then((users) => { setAllUsers(users); })
+    User.fetchSearch().then((users) => { setAllUsers(users); })
   }, [])
 
   const UserSearchResults = () => {

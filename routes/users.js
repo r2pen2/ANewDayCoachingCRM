@@ -16,7 +16,18 @@ db.collection("users").onSnapshot((querySnapshot) => {
   });
 });
 
-router.get("/", (req, res) => {
+router.get("/search-list", (req, res) => {
+  const resUsers = {}
+  for (const userId in allUsers) {
+    const u = allUsers[userId];
+    resUsers[userId] = {
+      personalData: {
+        displayName: u.personalData.displayName,
+        email: u.personalData.email
+      },
+      id: u.id
+    }
+  }
   res.json(allUsers);
 })
 

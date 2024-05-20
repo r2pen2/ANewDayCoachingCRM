@@ -73,6 +73,18 @@ export class User {
     })
   }
 
+  static async fetchSearch(): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      fetch(hostname + "/users/search-list").then((response) => {
+        response.json().then((data) => {
+          resolve(data);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
   fillData(data: any): User {
     this.invoices = data.invoices;
     this.admin = data.admin;

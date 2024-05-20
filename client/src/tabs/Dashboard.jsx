@@ -1,4 +1,4 @@
-import { Paper, Table, Tooltip } from '@mantine/core'
+import { Loader, Paper, Table, Tooltip } from '@mantine/core'
 import React, { useContext } from 'react'
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
@@ -47,6 +47,8 @@ const ToolCard = ({tool, currentUser}) => {
 
   function getLabel() { return (tool.starred ? "Unfavorite" : "Favorite") + ` "${tool.title}"` }
 
+  const [loading, setLoading] = React.useState(false);
+
   return (
     <Carousel.Slide style={{marginTop: "1rem", marginBottom: "1rem"}}>
     <Paper
@@ -59,9 +61,10 @@ const ToolCard = ({tool, currentUser}) => {
       >
         <div className="d-flex justify-content-between">
           <strong>{tool.title}</strong>
-          <Tooltip label={getLabel()} onClick={() => Tool.star(tool.id, currentUser.id)}>
-            <IconStar className='favorite-button' fill={tool.starred ? "gold" : "transparent"} stroke={tool.starred ? "gold" : "black"} />
-          </Tooltip>
+          {!loading && <Tooltip label={getLabel()} onClick={() => {Tool.star(tool.id, currentUser.id); setLoading(true)}}>
+            { <IconStar className='favorite-button' fill={tool.starred ? "gold" : "transparent"} stroke={tool.starred ? "gold" : "black"} /> }
+          </Tooltip>}
+          { loading && <Loader size={"1.25rem"}/> }
         </div>
         <p>{tool.description}</p>
       </Paper>
