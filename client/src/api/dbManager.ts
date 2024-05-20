@@ -311,7 +311,7 @@ export class Invoice {
   href: string;
   assignedTo: string;
   docRef: DocumentReference;
-  limboId: string | null = null;
+  limbo: boolean = false;
 
   /**
    * 
@@ -349,7 +349,7 @@ export class Invoice {
       dueAt: this.dueAt,
       href: this.href,
       assignedTo: this.assignedTo,
-      limboId: this.limboId
+      limbo: this.limbo
     }
   }
 
@@ -363,28 +363,25 @@ export class Invoice {
     })
   }
 
-  tellRachelIHaveBeenPaid(): Promise<DocumentReference> {
-    return new Promise<DocumentReference>((resolve, reject) => {
+  tellRachelIHaveBeenPaid(): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
       console.log("Rachel, I have been paid!");
       this.paidAt = new Date();
-      addDoc(invoiceLimboCollectionRef, this.toJson()).then(limboRef => {
-        resolve(limboRef);
-        this.limboId = limboRef.id;
-      });
-      this.setData();
+      this.limbo = true;
+      this.setData().then(() => {
+        resolve(true);
+      }).catch((error) => {
+        reject(error);
+      })
     })
 
   }
 
-  tellRachelIHaveNotBeenPaid(limboRef: DocumentReference | null): void {
+  tellRachelIHaveNotBeenPaid(): void {
     console.log("Rachel, I've made a mistake!");
     this.paidAt = null;
-    if (!limboRef) {
-      limboRef = doc(db, `invoiceLimbo/${this.limboId}`);
-    }
-    this.limboId = null;
+    this.limbo = false;
     this.setData();
-    deleteDoc(limboRef);
   }
 
   checkLate(): boolean {

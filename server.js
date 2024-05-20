@@ -6,7 +6,7 @@ const payments = require('./routes/payments');
 const calendar = require('./routes/calendar');
 const forms = require("./routes/forms");
 const tools = require('./routes/tools');
-const users = require('./routes/users');
+const {router: users, allUsers} = require('./routes/users');
 
 // Init express application
 const app = express();

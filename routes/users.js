@@ -48,4 +48,4 @@ router.get("/search-tools", (req, res) => {
   res.json(resUsers);
 })
 
-module.exports = router;
+module.exports = { router, allUsers };

@@ -166,7 +166,6 @@ export default function Invoices() {
   const PayModal = () => {
     
     const [secondPage, setSecondPage] = useState(cancellingPending ? "cancel" : null);
-    const [limboRef, setLimboRef] = useState(null);
 
     function getPayModalTitle() {
       /** Whether wer're on the thanks-venmo or thanks-mark pages */
@@ -185,7 +184,7 @@ export default function Invoices() {
       if (secondPage !== "venmo" && secondPage !== "mark" && secondPage !== "oops") { return; } // If somehow we're on the wrong page, don't show these action buttons
       
       /** When the done button is pressed, tell Rachel that this invoice is paid & go to the right page */
-      function handleDone() { currentInvoice?.tellRachelIHaveBeenPaid().then(ref => { setLimboRef(ref); setSecondPage(`thanks-${secondPage}`); }); }
+      function handleDone() { currentInvoice?.tellRachelIHaveBeenPaid().then(() => { setSecondPage(`thanks-${secondPage}`); }); }
       
       const DoneButton = () => {
         if (secondPage === "oops") { return; } // Don't show the done button if we're undoing a mark
@@ -213,7 +212,7 @@ export default function Invoices() {
     }
 
     /** When the user wants to undo a mark as paid, tell Rachel that this invoice is unpaid */
-    function handleUndoMarkPaid() { currentInvoice?.tellRachelIHaveNotBeenPaid(limboRef); setLimboRef(null); setSecondPage("oops"); }
+    function handleUndoMarkPaid() { currentInvoice?.tellRachelIHaveNotBeenPaid(); setSecondPage("oops"); }
 
     return <Modal opened={currentInvoice} onClose={() => setCurrentInvoice(null)} title={getPayModalTitle()} className='container-fluid'>
         <div className="d-flex flex-column align-items-center">
