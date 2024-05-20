@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const db = require('../firebase');
-const { allUsers } = require('./users');
+const { getAllUsers } = require('./users');
 
 router.use(bodyParser.json());
 
@@ -41,6 +41,7 @@ router.post("/delete", (req, res) => {
     // Remove tool from all users
     for (const userId of allTools[toolId].assignedTo) {
 
+      const allUsers = getAllUsers();
       const user = allUsers[userId]
 
       console.log(allUsers)
