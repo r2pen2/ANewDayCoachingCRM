@@ -419,6 +419,27 @@ export class Tool {
     })
   }
 
+  static unassignMultiple(toolId: string, users: string[]): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      fetch(hostname + "/tools/unassign-multiple", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          users: users,
+          toolId: toolId
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data.success);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
   static async fetchAll(): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
       fetch(hostname + "/tools").then((response) => {

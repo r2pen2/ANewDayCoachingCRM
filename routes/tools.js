@@ -101,8 +101,45 @@ router.post("/assign-multiple", (req, res) => {
   });
 })
 
-router.get("/", (req, res) => {
-  res.json(allTools);
+router.post("/unassign-multiple", (req, res) => {
+  const toolId = req.body.toolId;
+  const users = req.body.users;
+  
+  for (const userId of users) {
+    db.collection("users").doc(userId).get().then((docSnap) => {
+      if (!docSnap.exists) { return; }
+  
+      const user = docSnap.data();
+  
+      const tool = {
+        id: toolId,
+        title: title,
+        description: description
+      }
+
+      if (!user.tools) { user.tools = {}; }
+      user.tools[toolId] = tool;
+  
+      // Push changes
+      db.collection("users").doc(userId).set(user);
+    });
+  }
+
+  // Remove users from the tool
+  db.collection("tools").doc(toolId).get().then((docSnap) => {
+    if (!docSnap.exists) { return; }
+    const tool = docSnap.data();
+    if (!tool.assignedTo) { tool.assignedTo = []; }
+    tool.assignedTo = tool.assignedTo.filter((userId) => !users.includes(userId));
+    db.collection("tools").doc(toolId).set(tool);
+  }).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error("Error unassign tool from users: ", error);
+    res.json({ error: error });
+  });
 })
+
+router.get("/", (req, res) => { res.json(allTools); })
 
 module.exports = router;
