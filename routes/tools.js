@@ -44,8 +44,6 @@ router.post("/delete", (req, res) => {
       const allUsers = getAllUsers();
       const user = allUsers[userId]
 
-      console.log(allUsers)
-
       delete user.tools[toolId];
       db.collection("users").doc(user.id).set(user);
     }
@@ -157,4 +155,6 @@ router.post("/user-star", (req, res) => {
 
 router.get("/", (req, res) => { res.json(allTools); })
 
-module.exports = { router, allTools };
+function getAllTools() { return allTools; }
+
+module.exports = { router, getAllTools };

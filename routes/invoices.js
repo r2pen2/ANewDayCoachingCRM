@@ -32,4 +32,6 @@ router.get("/limbo", (req, res) => {
   res.json(limboInvoices);
 })
 
-module.exports = { router, allInvoices };
+function getAllInvoices() { return allInvoices }
+
+module.exports = { router, getAllInvoices };
