@@ -37,7 +37,7 @@ router.get("/limbo", (req, res) => {
 
 router.post("/limbo", (req, res) => {
   const action = req.body.action;
-  const invoiceId = req.body.invoiceId;
+  const invoiceId = req.body.id;
   const invoice = allInvoices[invoiceId];
   if (!invoice) { res.send("Error: Invoice not found"); return; }
   if (action === "accept") {
@@ -77,6 +77,10 @@ router.post("/create", (req, res) => {
     res.json({ success: false });
   });
   
+})
+
+router.post("/update", (req, res) => {
+  setInvoice(req.body.invoice)
 })
 
 function getAllInvoices() { return allInvoices }

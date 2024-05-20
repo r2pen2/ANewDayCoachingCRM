@@ -299,7 +299,7 @@ export class Invoice {
   
   static getDaysBefore(n: number) { const today = new Date(); today.setDate(today.getDate() - n); return today; }
 
-  invoiceId: string | null;
+  id: string | null;
   invoiceNumber: number;
   paid: boolean;
   amount: number;
@@ -308,12 +308,11 @@ export class Invoice {
   dueAt: Date;
   href: string;
   assignedTo: string;
-  docRef: DocumentReference;
   limbo: string | null = null;
 
   /**
    * 
-   * @param invoiceId - firestoreId of this invoice
+   * @param id - firestoreId of this invoice
    * @param invoiceNumber - invoice numerical identifier 
    * @param paid - boolean indicating if invoice has been paid
    * @param amount - amount of invoice
@@ -323,8 +322,8 @@ export class Invoice {
    * @param href - link to invoice pdf
    * @param assignedTo - firestoreId of user assigned to this invoice
    */
-  constructor(invoiceId: string | null, invoiceNumber: number, paid: boolean, amount: number, createdAt: Date, paidAt: Date | null, dueAt: Date, href: string, assignedTo: string) {
-    this.invoiceId = invoiceId;
+  constructor(id: string | null, invoiceNumber: number, paid: boolean, amount: number, createdAt: Date, paidAt: Date | null, dueAt: Date, href: string, assignedTo: string) {
+    this.id = id;
     this.invoiceNumber = invoiceNumber;
     this.paid = paid;
     this.amount = amount;
@@ -333,12 +332,11 @@ export class Invoice {
     this.dueAt = dueAt;
     this.href = href;
     this.assignedTo = assignedTo;
-    this.docRef = doc(db, `invoices/${this.invoiceId}`)
   }
 
   toJson() {
     return {
-      invoiceId: this.invoiceId,
+      id: this.id,
       invoiceNumber: this.invoiceNumber,
       paid: this.paid,
       amount: this.amount,
@@ -353,8 +351,19 @@ export class Invoice {
 
   async setData(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      setDoc(this.docRef, this.toJson()).then(() => {
-        resolve();
+      
+      fetch(hostname + "/invoices/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoice: this.toJson()
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve();
+        })
       }).catch((error) => {
         reject(error);
       })
@@ -431,7 +440,7 @@ export class LimboInvoice extends Invoice {
             const createdAt = createDate(d.createdAt);
             const dueAt = createDate(d.dueAt);
             const paidAt = d.paidAt ? createDate(d.paidAt) : null;
-            const invoice = new LimboInvoice(d.invoiceId, d.invoiceNumber, d.paid, d.amount, createdAt, paidAt, dueAt, d.href, d.assignedTo);
+            const invoice = new LimboInvoice(d.id, d.invoiceNumber, d.paid, d.amount, createdAt, paidAt, dueAt, d.href, d.assignedTo);
             invoice.userDisplayName = d.userDisplayName;
             invoice.limbo = d.limbo;
             return invoice;
@@ -463,7 +472,7 @@ export class LimboInvoice extends Invoice {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          invoiceId: this.invoiceId,
+          id: this.id,
           action: "accept"
         })
       }).then((response) => {
@@ -484,7 +493,7 @@ export class LimboInvoice extends Invoice {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          invoiceId: this.invoiceId,
+          id: this.id,
           action: "reject"
         })
       }).then((response) => {
