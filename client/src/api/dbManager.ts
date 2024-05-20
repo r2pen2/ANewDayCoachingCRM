@@ -439,7 +439,7 @@ export class Tool {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          id: id
+          toolId: id
         })
       }).then((res) => {
         res.json().then((data) => {
