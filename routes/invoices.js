@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const db = require('../firebase');
-const { allUsers } = require('./users');
+const { getUser, getAllUsers } = require('./users');
 
 router.use(bodyParser.json());
 
@@ -20,7 +20,7 @@ db.collection("invoices").onSnapshot((querySnapshot) => {
 router.get("/", (req, res) => {
   const userId = req.query.userId;
   if (!userId) { res.send("Error: No userId provided"); return; }
-  const user = allUsers[userId];
+  const user = getUser(userId);
   if (!user) { res.send("Error: User not found"); return; }
 
   const retInvoices = Object.values(allInvoices).filter(invoice => user.invoices.includes(invoice.id));
@@ -30,7 +30,7 @@ router.get("/", (req, res) => {
 router.get("/limbo", (req, res) => {
   const limboInvoices = Object.values(allInvoices).filter(invoice => invoice.limbo);
   for (const invoice of limboInvoices) {
-    invoice.userDisplayName = allUsers[invoice.assignedTo].personalData.displayName;
+    invoice.userDisplayName = getUser(invoice.assignedTo).personalData.displayName;
   }
   res.json(limboInvoices);
 })
