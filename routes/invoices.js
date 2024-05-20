@@ -62,7 +62,7 @@ router.post("/create", (req, res) => {
   if (invoice.invoiceNumber === -1) {
     invoice.invoiceNumber = user.invoices.length + 1;
   }
-  setInvoice(invoice).then((ref) => {
+  db.collection("invoices").add(invoice).then((ref) => {
     // We have a ref to the invoice
     const invoiceId = ref.id;
     user.invoices.push(invoiceId);
