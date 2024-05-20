@@ -36,9 +36,9 @@ router.post("/create", (req, res) => {
 router.post("/delete", (req, res) => {
   const toolId = req.body.toolId;
 
-  if (allTools[toolId].users) {
+  if (allTools[toolId].assignedTo) {
     // Remove tool from all users
-    for (const userId of allTools[toolId].users) {
+    for (const userId of allTools[toolId].assignedTo) {
       db.collection("users").doc(userId).get().then((docSnap) => {
         if (!docSnap.exists) { return; }
         const user = docSnap.data();
@@ -91,7 +91,7 @@ router.post("/assign-multiple", (req, res) => {
     if (!docSnap.exists) { return; }
     const tool = docSnap.data();
     if (!tool.assignedTo) { tool.assignedTo = []; }
-    tool.users = tool.assignedTo.push(users);
+    tool.assignedTo = tool.assignedTo.push(users);
     db.collection("tools").doc(toolId).set(tool);
   }).then(() => {
     res.json({ success: true });

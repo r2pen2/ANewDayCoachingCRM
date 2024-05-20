@@ -14,6 +14,8 @@ export default function ToolManagement() {
       Tool.fetchAll().then((tools) => {
         setAllTools(tools);
       })
+      setCurrentTool({title: name, description: description, id: toolId})
+      setUserSearchMenuOpen(true);
     })
   }
 
