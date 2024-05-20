@@ -21,7 +21,7 @@ export const navigationItems = {
   SETTINGS: "settings",
   ADMINTOOLS: "tools-admin",
   ADMINFORMS: "forms-admin",
-  INVOICELIMBO: "invoice-inbox",
+  ADMININVOICES: "invoices-admin",
 }
 
 /**
@@ -96,12 +96,12 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
         onClick={() => updateTab(navigationItems.ADMINFORMS)}
       />,
       <NavLink
-        key="invoice-limbo-nav"
-        label="Invoice Inbox"
+        key="admin-invoices-nav"
+        label="Manage Invoices"
         leftSection={<IconCreditCard />}
         variant={navigationStyles.variant}
-        active={currentTab === navigationItems.INVOICELIMBO}
-        onClick={() => updateTab(navigationItems.INVOICELIMBO)}
+        active={currentTab === navigationItems.ADMININVOICES}
+        onClick={() => updateTab(navigationItems.ADMININVOICES)}
       />,
     ]
   }

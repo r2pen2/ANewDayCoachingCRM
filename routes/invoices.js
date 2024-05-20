@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const db = require('../firebase');
-const { getUser, getAllUsers } = require('./users');
+const { getUser, getAllUsers, setUser } = require('./users');
 
 router.use(bodyParser.json());
 
@@ -55,7 +55,31 @@ router.post("/limbo", (req, res) => {
   });
 })
 
+router.post("/create", (req, res) => {
+  const invoice = req.body.invoice;
+
+  const user = getUser(invoice.assignedTo);
+  if (invoice.invoiceNumber === -1) {
+    invoice.invoiceNumber = user.invoices.length + 1;
+  }
+  setInvoice(invoice).then((ref) => {
+    // We have a ref to the invoice
+    const invoiceId = ref.id;
+    user.invoices.push(invoiceId);
+    setUser(user).then(() => {
+      res.json({ success: true });
+    }).catch((error) => {
+      console.error(error);
+      res.json({ success: false });
+    });
+  }).catch((error) => {
+    console.error(error);
+    res.json({ success: false });
+  });
+  
+})
+
 function getAllInvoices() { return allInvoices }
-async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then(() => { resolve(); }).catch((error) => { reject(error); }); }) }
+async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then((ref) => { resolve(ref); }).catch((error) => { reject(error); }); }) }
 
 module.exports = { router, getAllInvoices, setInvoice };

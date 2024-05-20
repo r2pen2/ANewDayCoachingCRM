@@ -299,7 +299,7 @@ export class Invoice {
   
   static getDaysBefore(n: number) { const today = new Date(); today.setDate(today.getDate() - n); return today; }
 
-  invoiceId: string;
+  invoiceId: string | null;
   invoiceNumber: number;
   paid: boolean;
   amount: number;
@@ -323,7 +323,7 @@ export class Invoice {
    * @param href - link to invoice pdf
    * @param assignedTo - firestoreId of user assigned to this invoice
    */
-  constructor(invoiceId: string, invoiceNumber: number, paid: boolean, amount: number, createdAt: Date, paidAt: Date | null, dueAt: Date, href: string, assignedTo: string) {
+  constructor(invoiceId: string | null, invoiceNumber: number, paid: boolean, amount: number, createdAt: Date, paidAt: Date | null, dueAt: Date, href: string, assignedTo: string) {
     this.invoiceId = invoiceId;
     this.invoiceNumber = invoiceNumber;
     this.paid = paid;
@@ -391,6 +391,29 @@ export class Invoice {
 
   checkPending(): boolean {
     return this.limbo !== null;
+  }
+
+  static async create(href: string, amount: number, user: any, dueDate: Date): Promise<any> {
+    
+    const invoice = new Invoice(null, -1, false, amount, new Date(), null, dueDate, href, user.id);
+    
+    return new Promise<any>((resolve, reject) => {
+      fetch(hostname + "/invoices/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoice: invoice.toJson()
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })    
   }
 }
 
