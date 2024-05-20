@@ -1,9 +1,10 @@
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
 import { Tool, User } from '../api/dbManager.ts';
-import { IconSearch, IconTrash, IconUser, IconUserCancel, IconUserShare } from '@tabler/icons-react';
+import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 import "../assets/style/toolsAdmin.css"
 import { navigationItems } from '../components/Navigation.jsx';
+import { notifSuccess } from '../components/Notifications.jsx';
 
 export default function ToolManagement() {
   
@@ -13,8 +14,8 @@ export default function ToolManagement() {
     const name = document.getElementById("name").value;
     const description = document.getElementById("description").value;
     Tool.createOnDatabase(name, description).then((toolId) => {
-      console.log(`Created tool with ID: ${toolId}`);
-      Tool.fetchAll().then((tools) => { setAllTools(tools); })
+      notifSuccess("Tool Created", `Created "${name}"`);
+      fetchTools();
       setCurrentTool({title: name, description: description, id: toolId})
       setUserSearchMenuOpen(true);
     })
@@ -35,9 +36,12 @@ export default function ToolManagement() {
   /** Whether we are in assign or unassign mode */
   const [assignMode, setAssignMode] = React.useState(null);
 
+  /** Fetch all tools from database */
+  function fetchTools() { Tool.fetchAll().then((tools) => { setAllTools(tools); }) }
+
   /** Fetch tools and users on component mount */
   React.useEffect(() => {
-    Tool.fetchAll().then((tools) => { setAllTools(tools); })
+    fetchTools()
     User.fetchSearch(navigationItems.ADMINTOOLS).then((users) => { setAllUsers(users); })
   }, [])
 
@@ -102,6 +106,8 @@ export default function ToolManagement() {
           if (success) {
             setUserSearchMenuOpen(false);
             setAssignees([]);
+            notifSuccess("Tool Assigned", `Assigned "${currentTool.title}" to ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
+            fetchTools();
           }
         })
         return;
@@ -110,6 +116,8 @@ export default function ToolManagement() {
         if (success) {
           setUserSearchMenuOpen(false);
           setAssignees([]);
+          notifSuccess("Tool Unassigned", `Unassigned "${currentTool.title}" from ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
+          fetchTools();
         }
       })
     }
@@ -160,10 +168,9 @@ export default function ToolManagement() {
               /** Delete this tool on DB and refresh list */
               function handleDelete() {
                 Tool.delete(tool.id).then((success) => {
-                  if (success) { 
-                    Tool.fetchAll().then((tools) => {
-                      setAllTools(tools);
-                    })
+                  if (success) {
+                    fetchTools();
+                    notifSuccess("Tool Deleted", `Deleted "${tool.title}".`)
                   }
                 })
               }

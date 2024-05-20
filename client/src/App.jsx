@@ -1,7 +1,7 @@
 import './App.css';
 import '@mantine/core/styles.css';
 
-import { createTheme, MantineProvider, AppShell } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { createContext, useEffect, useState } from 'react';
 import { AppShellNavigator, navigationItems } from './components/Navigation';
 import { AppShellHeader } from './components/Header';
@@ -15,8 +15,7 @@ import Dashboard from './tabs/Dashboard';
 import { getTab } from './api/browser.ts';
 import ToolManagement from './tabs/ToolManagement.jsx';
 import FormManagement from './tabs/FormManagement.jsx';
-
-const theme = createTheme({});
+import {Notifications} from "@mantine/notifications"
 
 export const CurrentUserContext = createContext();
 
@@ -50,12 +49,11 @@ function App() {
   useEffect(() => { getCurrentUser(setCurrentUser); }, [])
 
   if (!currentUser) {
-    return <MantineProvider theme={theme}><Login /></MantineProvider>
+    return <Login />
   }
 
   return (
     <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
-    <MantineProvider theme={theme}>
       <AppShell
         header={{ height: 60 }}
         navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !burgerOpen } }}
@@ -67,7 +65,6 @@ function App() {
           <CurrentTab />
         </AppShell.Main>
       </AppShell>
-    </MantineProvider>
     </CurrentUserContext.Provider>
   );
 }

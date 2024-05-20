@@ -1,12 +1,10 @@
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import React from 'react'
-import { User } from '../api/dbManager.ts';
-import { IconAlertCircle, IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
+import { FormAssignment, User } from '../api/dbManager.ts';
+import { IconAlertCircle, IconSearch, IconTrash, IconUserCancel, IconUserShare, IconX } from '@tabler/icons-react';
 import { allForms } from '../api/forms.ts';
 import "../assets/style/formsAdmin.css"
 import { navigationItems } from '../components/Navigation.jsx';
-
-
 
 export default function FormManagement() {
 
@@ -147,7 +145,6 @@ export default function FormManagement() {
   }
 
   return (
-
     <div>
       <h2>Form Management</h2>
       <Table.ScrollContainer minWidth={500} type="native">
