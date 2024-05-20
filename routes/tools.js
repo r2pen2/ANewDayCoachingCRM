@@ -136,8 +136,8 @@ router.post("/unassign-multiple", (req, res) => {
 })
 
 router.post("/user-star", (req, res) => {
-  const toolId = req.body.title;
-  const userId = req.body.description;
+  const toolId = req.body.toolId;
+  const userId = req.body.userId;
 
   db.collection("users").doc(userId).get().then((docSnap) => {
     if (!docSnap.exists) { return; }
