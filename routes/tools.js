@@ -145,7 +145,12 @@ router.post("/user-star", (req, res) => {
     user.tools[toolId].starred = !user.tools[toolId].starred;
     // Push changes
     db.collection("users").doc(userId).set(user);
-  })
+  }).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error("Error starring tool for user: ", error);
+    res.json({ error: error });
+  });
 })
 
 router.get("/", (req, res) => { res.json(allTools); })

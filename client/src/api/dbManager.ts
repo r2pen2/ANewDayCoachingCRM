@@ -477,15 +477,24 @@ export class Tool {
     })
   }
 
-  static star(toolId: string, userId: string): void {
-    fetch(hostname + "/tools/user-star", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        userId: userId,
-        toolId: toolId
+  static star(toolId: string, userId: string): Promise<boolean> {
+
+    return new Promise<boolean>((resolve, reject) => {
+      fetch(hostname + "/tools/user-star", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userId: userId,
+          toolId: toolId
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data.success);
+        })
+      }).catch((error) => {
+        reject(error);
       })
     })
   }
