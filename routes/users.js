@@ -28,7 +28,7 @@ router.get("/search-list", (req, res) => {
       id: u.id
     }
   }
-  res.json(allUsers);
+  res.json(resUsers);
 })
 
 module.exports = router;
