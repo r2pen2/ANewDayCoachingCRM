@@ -8,9 +8,10 @@ router.use(bodyParser.json());
 const confettiRecipients = {}
 
 router.get("/confetti", (req, res) => {
-  if (confettiRecipients[req.query.userId]) {
-    res.json({ formId: confettiRecipients[req.query.userId] });
-    delete confettiRecipients[req.query.userId];
+  const uid = req.query.userId
+  if (confettiRecipients[uid]) {
+    res.json({ formId: confettiRecipients[uid] });
+    delete confettiRecipients[uid];
   } else {
     res.json({ formId: null });
   }

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const db = require('../firebase');
+const { allUsers } = require('./users');
 
 router.use(bodyParser.json());
 
@@ -39,13 +40,10 @@ router.post("/delete", (req, res) => {
   if (allTools[toolId].assignedTo) {
     // Remove tool from all users
     for (const userId of allTools[toolId].assignedTo) {
-      db.collection("users").doc(userId).get().then((docSnap) => {
-        if (!docSnap.exists) { return; }
-        const user = docSnap.data();
-        delete user.tools[toolId];
-        // Push changes
-        db.collection("users").doc(userId).set(user);
-      });
+
+      const user = allUsers[userId]
+      delete user.tools[toolId];
+      db.collection("users").doc(user.id).set(user);
     }
   }
 
@@ -155,4 +153,4 @@ router.post("/user-star", (req, res) => {
 
 router.get("/", (req, res) => { res.json(allTools); })
 
-module.exports = router;
+module.exports = { router, allTools };

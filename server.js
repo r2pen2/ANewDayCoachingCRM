@@ -5,8 +5,9 @@ const cors = require('cors');
 const payments = require('./routes/payments');
 const calendar = require('./routes/calendar');
 const forms = require("./routes/forms");
-const tools = require('./routes/tools');
-const {router: users, allUsers} = require('./routes/users');
+const { router: tools } = require('./routes/tools');
+const { router: users } = require('./routes/users');
+const { router: invoices } = require('./routes/invoices');
 
 // Init express application
 const app = express();
@@ -34,6 +35,7 @@ app.use("/calendar", calendar)
 app.use("/forms", forms)
 app.use("/tools", tools)
 app.use("/users", users)
+app.use("/invoices", invoices)
 
 // Allow getting images
 app.get("/images/*", (req, res) => {
