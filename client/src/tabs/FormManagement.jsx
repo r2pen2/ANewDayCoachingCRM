@@ -5,6 +5,7 @@ import { IconAlertCircle, IconSearch, IconTrash, IconUserCancel, IconUserShare, 
 import { allForms } from '../api/forms.ts';
 import "../assets/style/formsAdmin.css"
 import { navigationItems } from '../components/Navigation.jsx';
+import { notifSuccess } from '../components/Notifications.jsx';
 
 export default function FormManagement() {
 
@@ -95,6 +96,7 @@ export default function FormManagement() {
         currentForm.assignToMultiple(assignees).then((success) => {
           if (success) {
             setUserSearchMenuOpen(false);
+            notifSuccess("Form Assigned", `Assigned "${currentForm.formTitle}" to ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           }
         })
         return;
@@ -104,6 +106,7 @@ export default function FormManagement() {
         currentForm.unassignToMultiple(assignees).then((success) => {
           if (success) {
             setUserSearchMenuOpen(false);
+            notifSuccess("Form Unassigned", `Unssigned "${currentForm.formTitle}" from ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           }
         })
         return;
@@ -113,6 +116,7 @@ export default function FormManagement() {
         currentForm.incompleteToMultiple(assignees).then((success) => {
           if (success) {
             setUserSearchMenuOpen(false);
+            notifSuccess("Form Marked Incomplete", `Marked "${currentForm.formTitle}" as incomplete for ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           }
         })
         return;

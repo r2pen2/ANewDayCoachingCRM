@@ -12,6 +12,8 @@ import { hostname } from '../api/dbManager.ts'
 
 // Style Imports
 import "../assets/style/forms.css"
+import { notifSuccess } from '../components/Notifications.jsx'
+import { allForms, getFormById } from '../api/forms.ts'
 
 /** How much confetti to add when a form is completed */
 const dConfetti = 500;
@@ -29,6 +31,7 @@ export default function Forms() {
     fetch(`${hostname}/forms/confetti?userId=${currentUser.id}`).then(res => res.json()).then(data => {
       if (data.formId) {
         setConfettiLeft(confettiLeft + dConfetti);
+        notifSuccess("Form Completed", `Thanks for completing ${getFormById(data.formId).formTitle}! 🎉`)
       }
     })
   }, [currentUser, confettiLeft]);
