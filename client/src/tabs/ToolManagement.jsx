@@ -100,6 +100,7 @@ export default function ToolManagement() {
         Tool.assignToMultiple(currentTool.title, currentTool.description, currentTool.id, assignees).then((success) => {
           if (success) {
             setUserSearchMenuOpen(false);
+            setAssignees([]);
           }
         })
         return;
@@ -107,6 +108,7 @@ export default function ToolManagement() {
       Tool.unassignMultiple(currentTool.id, assignees).then((success) => {
         if (success) {
           setUserSearchMenuOpen(false);
+          setAssignees([]);
         }
       })
     }
