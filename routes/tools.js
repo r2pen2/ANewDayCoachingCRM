@@ -93,13 +93,10 @@ router.post("/unassign-multiple", async (req, res) => {
   }
 
   // Remove users from the tool
-  db.collection("tools").doc(toolId).get().then((docSnap) => {
-    if (!docSnap.exists) { return; }
-    const tool = docSnap.data();
-    if (!tool.assignedTo) { tool.assignedTo = []; }
-    tool.assignedTo = tool.assignedTo.filter((userId) => !users.includes(userId));
-    db.collection("tools").doc(toolId).set(tool);
-  }).then(() => {
+  const tool = allTools[toolId];
+  if (!tool.assignedTo) { tool.assignedTo = []; }
+  tool.assignedTo = tool.assignedTo.filter((userId) => !users.includes(userId));
+  db.collection("tools").doc(toolId).set(tool).then(() => {
     res.json(allTools);
   }).catch((error) => {
     console.error("Error unassign tool from users: ", error);
