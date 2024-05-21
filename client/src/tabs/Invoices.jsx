@@ -1,14 +1,19 @@
-import { ActionIcon, NumberFormatter, Tooltip, Table, Badge, Modal, Paper, Button } from '@mantine/core'
-import React, { useContext, useEffect, useState } from 'react'
-import { getSlashDateString } from '../api/strings';
+// Library Imports
+import { ActionIcon, Badge, Button, Modal, NumberFormatter, Paper, Table, Tooltip } from '@mantine/core';
+import React, { useContext, useEffect, useState } from 'react';
 import { IconCreditCardPay, IconCreditCardRefund, IconEye } from '@tabler/icons-react';
-import '../assets/style/invoices.css';
-import { LinkMaster } from '../api/links.ts';
-import { CurrentUserContext } from '../App.jsx';
+
+// API Imports
+import { getSlashDateString } from '../api/strings';
 import { Invoice } from '../api/db/dbInvoice.ts';
+import { LinkMaster } from '../api/links.ts';
+
+// Component Imports
+import { CurrentUserContext } from '../App.jsx';
 import { notifSuccess } from '../components/Notifications.jsx';
 
-// const invoicesPerPage = 10;
+// Style Imports
+import '../assets/style/invoices.css';
 
 export default function Invoices() {
 

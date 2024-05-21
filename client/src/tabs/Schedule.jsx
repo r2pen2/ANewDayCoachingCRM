@@ -1,14 +1,14 @@
-// Style Imports
-import "../assets/style/schedule.css";
-
 // Library Imports
 import { useRef, useState } from "react";
 import { Loader, Paper } from "@mantine/core";
 
 // API Imports
-import { mockEvents } from "../api/calendar.ts";
 import { getEventTime, getVerboseDateString } from "../api/strings.js";
 import { LinkMaster } from "../api/links.ts";
+import { mockEvents } from "../api/calendar.ts";
+
+// Style Imports
+import "../assets/style/schedule.css";
 
 
 export default function Schedule() {

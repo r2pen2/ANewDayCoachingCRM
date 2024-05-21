@@ -1,14 +1,19 @@
-import { Loader, Paper, Table, Tooltip } from '@mantine/core'
+// Library Imports
 import React, { useContext } from 'react'
+import { Loader, Paper, Table, Tooltip } from '@mantine/core'
 import { Carousel } from '@mantine/carousel';
-import '@mantine/carousel/styles.css';
-
-import "../assets/style/dashboard.css"
-
-import { getSlashDateString } from '../api/strings.js'
 import { IconStar } from '@tabler/icons-react';
+
+// API Imports
+import { getSlashDateString } from '../api/strings.js'
 import { Tool } from '../api/db/dbTool.ts';
+
+// Component Imports
 import { CurrentUserContext } from '../App.jsx';
+
+// Style Imports
+import '@mantine/carousel/styles.css';
+import "../assets/style/dashboard.css"
 
 export default function Dashboard() {
   

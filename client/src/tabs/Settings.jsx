@@ -1,8 +1,13 @@
+// Library Imports
 import React, { useContext } from 'react'
-import { CurrentUserContext } from '../App'
 import { Avatar, Blockquote, Button } from '@mantine/core'
-import { auth } from '../api/firebase'
 import { IconInfoCircle } from '@tabler/icons-react'
+
+// API Imports
+import { auth } from '../api/firebase'
+
+// Component Imports
+import { CurrentUserContext } from '../App'
 
 export default function Settings() {
 
