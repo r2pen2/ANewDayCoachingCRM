@@ -8,14 +8,13 @@ import { AppShellHeader } from './components/Header';
 import Invoices from './tabs/Invoices';
 import Forms from './tabs/Forms';
 import Settings from './tabs/Settings';
-import { db, getCurrentUser } from './api/firebase';
+import { getCurrentUser } from './api/firebase';
 import Login from './tabs/Login';
 import Schedule from './tabs/Schedule';
 import Dashboard from './tabs/Dashboard';
 import { getTab } from './api/browser.ts';
 import ToolManagement from './tabs/ToolManagement.jsx';
 import FormManagement from './tabs/FormManagement.jsx';
-import {Notifications} from "@mantine/notifications"
 import InvoiceManagement from './tabs/InvoiceManagement.jsx';
 
 export const CurrentUserContext = createContext();

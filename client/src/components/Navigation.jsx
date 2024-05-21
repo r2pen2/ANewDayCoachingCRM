@@ -1,5 +1,5 @@
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconForms } from '@tabler/icons-react';
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools } from '@tabler/icons-react';
 import { useContext } from "react";
 import { CurrentUserContext } from "../App";
 
