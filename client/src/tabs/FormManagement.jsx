@@ -1,11 +1,18 @@
+// Library Imports
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
+import { IconAlertCircle, IconSearch, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 import React from 'react'
-import { FormAssignment, User } from '../api/db/dbManager.ts';
-import { IconAlertCircle, IconSearch, IconTrash, IconUserCancel, IconUserShare, IconX } from '@tabler/icons-react';
-import { allForms } from '../api/forms.ts';
-import "../assets/style/formsAdmin.css"
+
+// Component Imports
 import { navigationItems } from '../components/Navigation.jsx';
 import { notifSuccess } from '../components/Notifications.jsx';
+
+// API Imports
+import { User } from '../api/db/dbUser.ts';
+import { allForms } from '../api/forms.ts';
+
+// Style Imports
+import "../assets/style/formsAdmin.css"
 
 export default function FormManagement() {
 

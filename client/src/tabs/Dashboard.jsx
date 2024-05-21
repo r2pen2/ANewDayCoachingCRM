@@ -7,7 +7,7 @@ import "../assets/style/dashboard.css"
 
 import { getSlashDateString } from '../api/strings.js'
 import { IconStar } from '@tabler/icons-react';
-import { Tool } from '../api/db/dbManager.ts';
+import { Tool } from '../api/db/dbTool.ts';
 import { CurrentUserContext } from '../App.jsx';
 
 export default function Dashboard() {

@@ -1,14 +1,20 @@
-import React, { useEffect } from 'react'
-import { Invoice, LimboInvoice } from '../api/db/dbInvoice.ts'
-import { User } from '../api/db/dbManager.ts'
+// Library Imports
+import React from 'react'
+import { IconCheck, IconSearch, IconX } from '@tabler/icons-react'
 import { ActionIcon, Avatar, Button, Modal, NumberInput, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core'
 import { DateInput } from "@mantine/dates"
+
+// API Imports
+import { Invoice, LimboInvoice } from '../api/db/dbInvoice.ts'
+import { User } from '../api/db/dbUser.ts'
 import { getSlashDateString, getTimeString } from '../api/strings.js'
-import { IconCheck, IconSearch, IconX } from '@tabler/icons-react'
+
+// Component Imports
 import { navigationItems } from '../components/Navigation.jsx'
-import '@mantine/dates/styles.css';
 import { notifSuccess } from '../components/Notifications.jsx'
 
+// Style Imports
+import '@mantine/dates/styles.css';
 
 export default function InvoiceManagement() {
   
@@ -148,7 +154,7 @@ export default function InvoiceManagement() {
 
   return (
     <div>
-      <h2>Manage Invoices</h2>
+      <h2>Invoice Management</h2>
       <Button onClick={() => setCreateMenuOpen(true)}>Create A New Invoice</Button>
       <Modal opened={createMenuOpen} onClose={handleCreateModalClose} title="Create A New Invoice">
         <form onSubmit={createInvoice} className="gap-2 d-flex flex-column">
