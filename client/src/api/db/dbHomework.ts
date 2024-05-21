@@ -1,10 +1,11 @@
-class Homework {
+export class Homework {
   subject: string;
   dueDate: Date;
   startDate: Date;
   status: HomeworkStatus;
   priority: HomeworkPriority;
   description: string;
+  color: string | null = null;
 
   /**
    * @constructor Create a new Homework assignment for the tracker
@@ -21,7 +22,13 @@ class Homework {
     this.startDate = startDate;
     this.status = status;
     this.priority = priority;
-    this.description = description;
+    this.description = description; 
+  }
+
+  setColor(color: string): Homework { this.color = color; return this; }
+
+  static load(data: any): Homework {
+    return new Homework(data.subject, new Date(data.dueDate), new Date(data.startDate), data.status, data.priority, data.description).setColor(data.color);
   }
 }
 

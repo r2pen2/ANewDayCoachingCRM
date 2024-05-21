@@ -4,13 +4,13 @@ import { DocumentReference, doc, getDoc, onSnapshot, setDoc } from "firebase/fir
 import { navigationItems } from "../../components/Navigation";
 import { hostname } from "./dbManager.ts";
 import { FormAssignment } from "./dbFormAssignment.ts";
+import { Homework } from "./dbHomework.ts";
 
 export class User {
   
   firebaseUser: UserCredential;
   
   invoices: string[] = [];
-  unpaidInvoices: string[] = [];
   admin: boolean = false;
   formAssignments: FormAssignment[] = [];
   id: string;
@@ -20,6 +20,8 @@ export class User {
   pfpUrl: string;
   tools: any[] = [];
   numUnpaidInvoices: number = 0;
+
+  homework: Homework[] = [];
 
   personalData: any = {
     displayName: "",
@@ -49,8 +51,8 @@ export class User {
         formAssignments: this.formAssignments.map((formAssignment) => formAssignment.toJson()),
         id: this.id,
         personalData: this.personalData,
-        unpaidInvoices: this.unpaidInvoices,
-        tools: this.tools
+        tools: this.tools,
+        homework: this.homework
       }).then(() => {
         resolve();
       }).catch((error) => {
@@ -100,9 +102,9 @@ export class User {
     this.displayName = data.displayName;
     this.pfpUrl = data.pfpUrl;
     this.personalData = data.personalData;
-    this.unpaidInvoices = data.unpaidInvoices;
     this.tools = data.tools;
     this.numUnpaidInvoices = data.numUnpaidInvoices;
+    this.homework = data.homework.map((h: any) => Homework.load(h));
     return this;
   }
 
