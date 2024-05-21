@@ -1,18 +1,18 @@
 // Library Imports
-import React from 'react'
+import React from 'react';
 import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 
 // API Imports
-import { User } from '../api/db/dbUser.ts';
 import { Tool } from '../api/db/dbTool.ts';
+import { User } from '../api/db/dbUser.ts';
 
-// Compoennt Imports
+// Component Imports
 import { navigationItems } from '../components/Navigation.jsx';
 import { notifSuccess } from '../components/Notifications.jsx';
 
 // Style Imports
-import "../assets/style/toolsAdmin.css"
+import "../assets/style/toolsAdmin.css";
 
 export default function ToolManagement() {
   
