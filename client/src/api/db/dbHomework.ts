@@ -1,36 +1,3 @@
-export class Homework {
-  subject: string;
-  dueDate: Date;
-  startDate: Date;
-  status: HomeworkStatus;
-  priority: HomeworkPriority;
-  description: string;
-  color: string | null = null;
-
-  /**
-   * @constructor Create a new Homework assignment for the tracker
-   * @param subject - class that the assignment is associated with 
-   * @param dueDate - date that the assignment is due
-   * @param startDate - date to start the assignment
-   * @param status - HomeworkStatus enum representing the status of the assignment
-   * @param priority - HomeworkPriority enum representing the priority of the assignment
-   * @param description - Title of the assignment in the tracker
-   */
-  constructor(subject: string, dueDate: Date, startDate: Date, status: HomeworkStatus, priority: HomeworkPriority, description: string) {
-    this.subject = subject;
-    this.dueDate = dueDate;
-    this.startDate = startDate;
-    this.status = status;
-    this.priority = priority;
-    this.description = description; 
-  }
-
-  setColor(color: string): Homework { this.color = color; return this; }
-
-  static load(data: any): Homework {
-    return new Homework(data.subject, new Date(data.dueDate), new Date(data.startDate), data.status, data.priority, data.description).setColor(data.color);
-  }
-}
 
 /**
  * Enum representing the status of a homework assignment
@@ -45,7 +12,99 @@ export enum HomeworkStatus {
  * Enum representing the priority of a homework assignment
  */
 export enum HomeworkPriority {
-  LOW = 1,
-  MEDIUM = 2,
-  HIGH = 3
+  LOW = "Low",
+  MEDIUM = "Medium",
+  HIGH = "High"
+}
+
+export class Homework {
+  subject: string | null = null;
+  dueDate: Date | null = null;
+  startDate: Date | null = null;
+  status: HomeworkStatus = HomeworkStatus.NOT_STARTED;
+  priority: HomeworkPriority = HomeworkPriority.LOW;
+  description: string | null = null;
+  estTime: string | null = null;
+
+  constructor(homework?: any) {
+    this.subject = homework?.subject;
+    this.dueDate = homework?.dueDate;
+    this.startDate = homework?.startDate;
+    this.status = homework?.status;
+    this.priority = homework?.priority;
+    this.description = homework?.description;
+    this.estTime = homework?.estTime;
+  }
+
+  static getPriorityColor(homework: Homework | string): string | undefined {
+    const p = typeof homework === "string" ? homework : homework.priority;
+    switch(p) {
+      case HomeworkPriority.LOW: return "blue";
+      case HomeworkPriority.MEDIUM: return "yellow";
+      case HomeworkPriority.HIGH: return "red";
+    }
+  }
+
+  static getStatusColor(homework: Homework): string | null {
+    const s = homework.status;
+    switch(s) {
+      case HomeworkStatus.NOT_STARTED: return "gray";
+      case HomeworkStatus.IN_PROGRESS: return "yellow";
+      case HomeworkStatus.COMPLETED: return "green";
+    }
+  }
+
+  static load(data: any): Homework {
+    const hw = new Homework();
+    hw.description = data.description;
+    hw.dueDate = data.dueDate;
+    hw.startDate = data.startDate;
+    hw.status = data.status;
+    hw.priority = data.priority;
+    hw.subject = data.subject;
+    hw.estTime = data.estTime;
+    return hw;
+  }
+
+  toJson(): any {
+    return {
+      subject: this.subject,
+      dueDate: this.dueDate,
+      startDate: this.startDate,
+      status: this.status,
+      priority: this.priority,
+      description: this.description,
+      estTime: this.estTime,
+    }
+  }
+
+  setEstTime(time: string): Homework {
+    this.estTime = time;
+    return this;
+  }
+
+  static getPriorityValue(homework: Homework) {
+    switch(homework.priority) {
+      case HomeworkPriority.LOW: return 1;
+      case HomeworkPriority.MEDIUM: return 2;
+      case HomeworkPriority.HIGH: return 3;
+    }
+  }
+}
+
+export class HomeworkSubject {
+  title: string;
+  color: string;
+
+  constructor(title: string, color: string) {
+    this.title = title;
+    this.color = color;
+  }
+
+  toJson() {
+    return {
+      title: this.title,
+      color: this.color
+    }
+  }
 }

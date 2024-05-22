@@ -4,7 +4,7 @@ import { DocumentReference, doc, getDoc, onSnapshot, setDoc } from "firebase/fir
 import { navigationItems } from "../../components/Navigation";
 import { hostname } from "./dbManager.ts";
 import { FormAssignment } from "./dbFormAssignment.ts";
-import { Homework } from "./dbHomework.ts";
+import { Homework, HomeworkSubject } from "./dbHomework.ts";
 
 export class User {
   
@@ -22,6 +22,8 @@ export class User {
   numUnpaidInvoices: number = 0;
 
   homework: Homework[] = [];
+
+  subjects: { [key: string]: any } = {}
 
   personalData: any = {
     displayName: "",
@@ -44,15 +46,17 @@ export class User {
   }
   
   async setData(): Promise<void> {
+    console.log(this)
     return new Promise<void>((resolve, reject) => {
       setDoc(this.docRef, {
         invoices: this.invoices,
         admin: this.admin,
-        formAssignments: this.formAssignments.map((formAssignment) => formAssignment.toJson()),
+        formAssignments: this.formAssignments,
         id: this.id,
         personalData: this.personalData,
         tools: this.tools,
-        homework: this.homework
+        homework: this.homework.map((h) => h.toJson()),
+        subjects: this.subjects
       }).then(() => {
         resolve();
       }).catch((error) => {
@@ -105,6 +109,7 @@ export class User {
     this.tools = data.tools;
     this.numUnpaidInvoices = data.numUnpaidInvoices;
     this.homework = data.homework.map((h: any) => Homework.load(h));
+    this.subjects = data.subjects;
     return this;
   }
 
@@ -129,6 +134,63 @@ export class User {
         const cloneUser = this.clone()
         setter(cloneUser);
       }
+    })
+  }
+
+  async addSubject(subject: HomeworkSubject): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.subjects[subject.title] = subject.toJson();
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async removeSubject(title: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      delete this.subjects[title];
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async updateSubject(subject: HomeworkSubject): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.subjects[subject.title] = subject.toJson();
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async addHomework(homework: Homework): Promise<void> {
+    console.log(homework)
+    return new Promise<void>((resolve, reject) => {
+      this.homework.push(homework);
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async updateHomework(homework: Homework): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const index = this.homework.findIndex((hw) => hw.description === homework.description && homework.subject === hw.subject);
+      this.homework[index] = homework;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
     })
   }
 }

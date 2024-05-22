@@ -17,3 +17,7 @@
 .favorite-button {
   cursor: pointer;
 }
+
+.picker-button {
+  border: 1px solid #ced4da !important;
+}

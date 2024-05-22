@@ -1,3 +1,5 @@
+import { HomeworkPriority } from "./db/dbHomework.ts";
+
 /**
  * Formats a UTC date string so that it's easier to read
  * @param {Date} date string representing a UTC date
@@ -64,4 +66,82 @@ export function getEventTime(date) {
 
   // Format and return string
   return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+}
+
+
+// Regular expressions to match patterns
+export const priorityPattern = /!low|!med(ium)?|!high/i;
+export const datePattern = /\b(start|due):(\d{1,2}\/\d{2}(\/(\d{4}|\d{2}))?)/gi;
+export const subjectPattern = /#(\w+)/;
+
+export function parseQuickEntry(string) {
+  let priority = null;
+  let startDate = null;
+  let dueDate = null;
+  let description = string.trim();
+  let subject = null;
+
+  // Extract and set priority
+  const priorityMatch = description.match(priorityPattern);
+  if (priorityMatch) {
+    const priorityKey = priorityMatch[0].toLowerCase();
+    if (priorityKey.includes("low")) {
+      priority = HomeworkPriority.LOW;
+    } else if (priorityKey.includes("med")) {
+      priority = HomeworkPriority.MEDIUM;
+    } else if (priorityKey.includes("high")) {
+      priority = HomeworkPriority.HIGH;
+    }
+    // Remove the priority from the description
+    description = description.replace(priorityPattern, '').trim();
+  }
+
+  // Function to handle date parsing and adjustment
+  function parseAndAdjustDate(dateStr) {
+    console.log(dateStr);
+    let [month, day, year] = dateStr.split('/');
+    let yearUndefined = false;
+    if (year === undefined) { year = new Date().getFullYear(); yearUndefined = true; }
+    if (year.length === 2) { year = `20${year}`; }
+    year = parseInt(year);
+    // year += (year < 50) ? 2000 : 1900;  // Adjust year based on the value
+    let date = new Date(year, month - 1, day);
+
+    const today = new Date();
+    if (date < today && yearUndefined) {  // Check if the parsed date is in the past
+      date.setFullYear(date.getFullYear() + 1);  // Set to the next occurrence
+    }
+    return date;
+  }
+
+  // Extract and set dates for start and due
+  let dateMatch;
+  while ((dateMatch = datePattern.exec(description)) !== null) {
+    const [fullMatch, key, dateStr] = dateMatch;
+    const dateObj = parseAndAdjustDate(dateStr);
+    if (key.toLowerCase() === 'start') {
+      startDate = dateObj;
+    } else if (key.toLowerCase() === 'due') {
+      dueDate = dateObj;
+    }
+    // Remove the date from the description
+    description = description.replace(fullMatch, '').trim();
+    datePattern.lastIndex = 0;
+  }
+
+  // Extract and set subject
+  const subjectMatch = description.match(subjectPattern);
+  if (subjectMatch) {
+    subject = subjectMatch[1];
+    // Remove the subject from the description
+    description = description.replace(subjectPattern, '').trim();
+  }
+
+  return {
+    priority: priority,
+    startDate: startDate,
+    dueDate: dueDate,
+    subject: subject,
+    description: description
+  };
 }
