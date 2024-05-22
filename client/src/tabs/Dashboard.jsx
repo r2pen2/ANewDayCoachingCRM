@@ -1,12 +1,10 @@
 // Library Imports
 import React, { useContext, useEffect, useState } from 'react'
-import { ActionIcon, Badge, Button, ColorPicker, Loader, Modal, Paper, Popover, Radio, Select, Table, Text, TextInput, Tooltip } from '@mantine/core'
-import { Carousel } from '@mantine/carousel';
-import { IconPlus, IconSchool, IconSend, IconSpeedboat, IconStar, IconTrash } from '@tabler/icons-react';
+import { Badge, Button, Modal, Popover, Radio, Select, Table, Text, TextInput, Tooltip } from '@mantine/core'
+import { IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash } from '@tabler/icons-react';
 
 // API Imports
 import { getSlashDateString, parseQuickEntry } from '../api/strings.js'
-import { Tool } from '../api/db/dbTool.ts';
 
 // Component Imports
 import { CurrentUserContext } from '../App.jsx';
@@ -19,6 +17,8 @@ import { notifSuccess } from '../components/Notifications.jsx';
 import { DateInput } from '@mantine/dates';
 import { shouldUseBlackText } from '../api/color.ts';
 import { ToolsList } from '../components/dashboard/ToolsList.jsx';
+import { PickerMenu, SubjectCard } from '../components/dashboard/HomeworkTracker.jsx';
+import IconButton from '../components/IconButton.jsx';
 
 export default function Dashboard() {
   
@@ -29,14 +29,10 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="d-flex align-items-center flex-column">
-        <h2>Dashboard</h2>
-      </div>
       <AddSubjectModal currentUser={currentUser} open={subjectAddMenuOpen} close={() => setSubjectAddMenuOpen(false)} />
       <AddHomeworkModal currentUser={currentUser} open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
       <Tracker currentUser={currentUser} setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>
-      <h3 style={{marginTop: "2rem"}}>My Tools</h3>
-      <ToolsList currentUser={currentUser} />
+      <ToolsList />
     </div>
   )
 }
@@ -52,40 +48,6 @@ const AddSubjectModal = ({currentUser, open, close}) => {
   const SubjectList = () => {
     if (!hasSubjects) { return <Text>No subjects found. Add some to get started!</Text> }
     return subjects.map((subject, index) => <SubjectCard subject={subject} key={index} />)
-  }
-
-  const SubjectCard = ({subject}) => {
-      
-    const [c, setC] = React.useState(subject.color);
-
-    function handleDelete() {
-      if (window.confirm(`Are you sure you want to delete "${subject.title}"?`)) {
-        currentUser.removeSubject(subject.title).then(() => {
-          notifSuccess("Subject Removed", `Removed subject "${subject.title}"`)
-        });
-      }
-    }
-    
-    function updateColor(c) {
-      if (c === subject.color) { return; }
-      currentUser.updateSubject(new HomeworkSubject(subject.title, c)).then(() => {
-        notifSuccess("Subject Updated", `Changed the color for "${subject.title}"`)
-      })
-    }
-
-    return (
-      <Paper className="p-2 d-flex justify-content-between align-items-center mb-2" withBorder>
-        <Text>{subject.title}</Text>
-        <div className="d-flex gap-2">
-          <PickerMenu c={c} setC={setC} onDone={updateColor} />
-          <Tooltip label="Delete Subject">
-            <ActionIcon color="red" size={36} onClick={handleDelete}>
-              <IconTrash />
-            </ActionIcon>
-          </Tooltip>
-        </div>
-      </Paper>
-    )
   }
 
   const [error, setError] = React.useState(null);
@@ -116,37 +78,10 @@ const AddSubjectModal = ({currentUser, open, close}) => {
       <form className="d-flex gap-2 mt-1 mb-2" onSubmit={handleFormSubmit}>
         <TextInput className="w-100" required id="title" placeholder="Subject Title" onChange={(e) => { setNewTitle(e.target.value); setError(null) }} error={error}/>
         <PickerMenu c={newColor} setC={setNewColor} popoverOpenOverride={popoverOpen} setPopoverOpenOverride={setPopoverOpen} />
-        <Tooltip label="Add Subject">
-          <ActionIcon size={36} type="submit">
-            <IconSend />
-          </ActionIcon>
-        </Tooltip>
+        <IconButton label="Add Subject" icon={<IconSend />} buttonProps={{size: 36}} type="submit" />
       </form>
       <SubjectList />
     </Modal>
-  )
-}
-
-const PickerMenu = ({c, setC, popoverOpenOverride, setPopoverOpenOverride, onDone}) => {
-  const [popoverOpen, setPopoverOpen] = React.useState(false)
-  const handleDone = () => { 
-    setPopoverOpenOverride ? setPopoverOpenOverride(false) : setPopoverOpen(false);
-    if (onDone) { onDone(c); }
-  }
-  return (
-    <Popover withArrow position="bottom" shadow="md" opened={popoverOpenOverride ? popoverOpenOverride : popoverOpen}>
-      <Popover.Target>
-        <Tooltip label="Select Color">            
-          <Button className="picker-button" onClick={setPopoverOpenOverride ? () => setPopoverOpenOverride((popoverOpenOverride) => !popoverOpenOverride) : () => setPopoverOpen((popoverOpen) => !popoverOpen)} style={{width: 36, height: 36, background: c}} />
-        </Tooltip>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <ColorPicker value={c} onChange={setC} format="hex" swatches={['#2e2e2e', '#868e96', '#fa5252', '#e64980', '#be4bdb', '#7950f2', '#4c6ef5', '#228be6', '#15aabf', '#12b886', '#40c057', '#82c91e', '#fab005', '#fd7e14']} />
-        <div className="d-flex justify-content-end w-100 mt-2">
-          <Button onClick={handleDone}>Done</Button>
-        </div>
-      </Popover.Dropdown>
-    </Popover>
   )
 }
 
@@ -185,28 +120,31 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
   const [quickEntryError, setQuickEntryError] = useState(null)
 
   function handleEnter(e) {
-    if (e.key === "Enter") {
-      const newHomework = new Homework();
-      newHomework.subject = quickExtract.subject;
-      newHomework.description = quickExtract.description;
-      newHomework.startDate = quickExtract.startDate ? new Date(quickExtract.startDate) : null;
-      newHomework.dueDate = quickExtract.dueDate ? new Date(quickExtract.dueDate) : null;
-      newHomework.priority = quickExtract.priority ? quickExtract.priority : HomeworkPriority.LOW;
-      
-      if (!newHomework.subject) { setQuickEntryError("Please specify a subject."); return; }
-      if (!currentUser.subjects[newHomework.subject]) { 
-        if (window.confirm(`Subject "${newHomework.subject}" does not exist. Would you like to create it?`)) {
-          currentUser.addSubject(new HomeworkSubject(newHomework.subject, "#ffffff")).then(() => {
-            notifSuccess("Subject Added", `Added subject "${newHomework.subject}"`)
-          });
-        } else { return; }
-      }
+    if (e.key !== "Enter") { return; }
+    sendQuickEntry();
+  }
 
-      setQuickEntryString("");
-      currentUser.addHomework(newHomework).then(() => {
-        notifSuccess("Assignment Added", `Added assignment: "${newHomework.description}"`)
-      });
+  function sendQuickEntry() {
+    const newHomework = new Homework();
+    newHomework.subject = quickExtract.subject;
+    newHomework.description = quickExtract.description;
+    newHomework.startDate = quickExtract.startDate ? new Date(quickExtract.startDate) : null;
+    newHomework.dueDate = quickExtract.dueDate ? new Date(quickExtract.dueDate) : null;
+    newHomework.priority = quickExtract.priority ? quickExtract.priority : HomeworkPriority.LOW;
+    
+    if (!newHomework.subject) { setQuickEntryError("Please specify a subject."); return; }
+    if (!currentUser.subjects[newHomework.subject]) { 
+      if (window.confirm(`Subject "${newHomework.subject}" does not exist. Would you like to create it?`)) {
+        currentUser.addSubject(new HomeworkSubject(newHomework.subject, "#ffffff")).then(() => {
+          notifSuccess("Subject Added", `Added subject "${newHomework.subject}"`)
+        });
+      } else { return; }
     }
+
+    setQuickEntryString("");
+    currentUser.addHomework(newHomework).then(() => {
+      notifSuccess("Assignment Added", `Added assignment: "${newHomework.description}"`)
+    });
   }
 
   const QuickEntryResults = () => {
@@ -249,26 +187,14 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
       <Tooltip label="Show/Hide Completed Assignments">
         <Radio checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} />
       </Tooltip>
-      <Tooltip label="Manage Subjects">
-        <ActionIcon size={36} onClick={() => setSubjectAddMenuOpen(true)}>
-          <IconSchool />
-        </ActionIcon>
-      </Tooltip>
-      <Tooltip label="Add Assignment">
-        <ActionIcon size={36} onClick={() => setHomeworkAddMenuOpen(true)}>
-          <IconPlus />
-        </ActionIcon>
-      </Tooltip>
+      <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
+      <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
       <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
     </div>
   </div>,
   <div className="d-flex gap-2" key="controls">
     <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
-    <Tooltip label="Submit">
-      <ActionIcon style={{height: 36, width: 36}}>
-        <IconSend />
-      </ActionIcon>
-    </Tooltip>
+    <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
   </div>,
     <QuickEntryResults key="quick-results" />,
     <Table.ScrollContainer minWidth={500} type="native" key="table">
@@ -344,11 +270,7 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
               <Table.Td>{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
               <Table.Td>{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
               <Table.Td>
-                <Tooltip label="Delete Assignment">
-                  <ActionIcon color="red" onClick={handleRemove}>
-                    <IconTrash />
-                  </ActionIcon>
-                </Tooltip>
+                <IconButton onClick={handleRemove} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
               </Table.Td>
             </Table.Tr>
           )

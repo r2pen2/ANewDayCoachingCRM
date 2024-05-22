@@ -5,26 +5,34 @@ import React from "react";
 import { IconStar } from "@tabler/icons-react";
 // API Imports
 import { Tool } from "../../api/db/dbTool.ts";
+// Component Imports
+import { CurrentUserContext } from "../../App.jsx";
 // Style Imports
 import "../../assets/style/tools.css";
 
 /** Render a list of tools in a Carousel */
-export const ToolsList = ({currentUser}) => {
+export const ToolsList = () => {
+
+  /** Get currentUser from react context */
+  const {currentUser} = React.useContext(CurrentUserContext);
+
   /** Every tool that belongs to this user */
   const tools = Object.values(currentUser.tools);
-  return (
-      <Carousel
-        slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
-        slideGap={{ base: 0, sm: 'md' }} 
-        withIndicators
-        loop
-        withControls={false}
-        dragFree
-        className="indicator-container"
-      >
-        {tools.map((tool, index) => <ToolCard currentUser={currentUser} key={index} tool={tool} />)}
-      </Carousel>
-    )
+  return [
+    <h3 style={{marginTop: "2rem"}} key='tools-header'>My Tools</h3>,
+    <Carousel
+      key="tools-carousel"
+      slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
+      slideGap={{ base: 0, sm: 'md' }} 
+      withIndicators
+      loop
+      withControls={false}
+      dragFree
+      className="indicator-container"
+    >
+      {tools.map((tool, index) => <ToolCard currentUser={currentUser} key={index} tool={tool} />)}
+    </Carousel>
+  ]
 }
 
 /** Render a single tool in a Carousel */

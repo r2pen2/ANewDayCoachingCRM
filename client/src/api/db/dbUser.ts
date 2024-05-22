@@ -55,9 +55,9 @@ export class User {
         personalData: this.personalData,
         tools: this.tools,
         homework: this.homework.map((h) => h.toJson()),
-        subjects: this.subjects
+        subjects: this.subjects,
+        numUnpaidInvoices: this.numUnpaidInvoices,
       }
-      console.log(data)
       setDoc(this.docRef, data).then(() => {
         resolve();
       }).catch((error) => {
