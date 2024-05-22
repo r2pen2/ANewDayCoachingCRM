@@ -1,5 +1,5 @@
 // Library Imports
-import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
+import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconAlertCircle, IconSearch, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 import React from 'react';
 
@@ -13,6 +13,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 
 // Style Imports
 import "../assets/style/formsAdmin.css";
+import IconButton from '../components/IconButton.jsx';
 
 export default function FormManagement() {
 
@@ -209,15 +210,9 @@ export default function FormManagement() {
                   {form.formDescription}
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
-                  <Tooltip label={`Assign "${form.formTitle}"`}>
-                    <ActionIcon onClick={handleAssign}><IconUserShare /></ActionIcon>
-                  </Tooltip>
-                  <Tooltip label={`Unassign "${form.formTitle}"`}>
-                    <ActionIcon color="red" onClick={handleUnassign}><IconUserCancel /></ActionIcon>
-                  </Tooltip>
-                  <Tooltip label={`Mark "${form.formTitle}" as Incomplete`}>
-                    <ActionIcon color="orange" onClick={handleIncomplete}><IconAlertCircle /></ActionIcon>
-                  </Tooltip>
+                  <IconButton label={`Assign "${form.formTitle}"`} icon={<IconUserShare />} onClick={handleAssign} />
+                  <IconButton label={`Unassign "${form.formTitle}"`} icon={<IconUserCancel />} buttonProps={{color: "red"}} onClick={handleUnassign} />
+                  <IconButton label={`Mark "${form.formTitle}" as Incomplete`} icon={<IconAlertCircle />} buttonProps={{color: "orange"}} onClick={handleIncomplete} />
                 </Table.Td>
               </Table.Tr>
             )})}

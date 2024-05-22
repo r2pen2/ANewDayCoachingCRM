@@ -1,6 +1,6 @@
 // Library Imports
 import React from "react";
-import { ActionIcon, Button, ColorPicker, Paper, Popover, Text, Tooltip } from "@mantine/core";
+import { Button, ColorPicker, Paper, Popover, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 // API Imports
 import { HomeworkSubject } from "../../api/db/dbHomework.ts";
