@@ -1,5 +1,5 @@
 // Library Imports
-import { ActionIcon, Badge, Button, Modal, NumberFormatter, Paper, Table, Tooltip } from '@mantine/core';
+import { Badge, Button, Modal, NumberFormatter, Paper, Table, Tooltip } from '@mantine/core';
 import React, { useContext, useEffect, useState } from 'react';
 import { IconCreditCardPay, IconCreditCardRefund, IconEye } from '@tabler/icons-react';
 
@@ -14,6 +14,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 
 // Style Imports
 import '../assets/style/invoices.css';
+import IconButton from '../components/IconButton.jsx';
 
 export default function Invoices() {
 
@@ -89,17 +90,8 @@ export default function Invoices() {
                   <Badge color={getBadgeColor(invoice)}>{getPaidMessage(invoice)}</Badge>
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
-                  <Tooltip label="View Invoice">
-                    <ActionIcon variant="filled" aria-label="View" onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")}>
-                      <IconEye />
-                    </ActionIcon>
-                  </Tooltip>
-                  <Tooltip label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} disabled={invoice.paid}>
-                    <ActionIcon color={invoice.checkPending() ? "orange" : "blue"} variant="filled" disabled={invoice.paid} aria-label="View" onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} }>
-                      { !invoice.checkPending() && <IconCreditCardPay /> }
-                      { invoice.checkPending() && <IconCreditCardRefund /> }
-                    </ActionIcon>
-                  </Tooltip>
+                  <IconButton label="View Invoice" icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
+                  <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
                 </Table.Td>
               </Table.Tr>
             ))}

@@ -211,8 +211,8 @@ export default function FormManagement() {
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
                   <IconButton label={`Assign "${form.formTitle}"`} icon={<IconUserShare />} onClick={handleAssign} />
-                  <IconButton label={`Unassign "${form.formTitle}"`} icon={<IconUserCancel />} buttonProps={{color: "red"}} onClick={handleUnassign} />
-                  <IconButton label={`Mark "${form.formTitle}" as Incomplete`} icon={<IconAlertCircle />} buttonProps={{color: "orange"}} onClick={handleIncomplete} />
+                  <IconButton label={`Unassign "${form.formTitle}"`} icon={<IconUserCancel />} color="red" onClick={handleUnassign} />
+                  <IconButton label={`Mark "${form.formTitle}" as Incomplete`} icon={<IconAlertCircle />} color="orange" onClick={handleIncomplete} />
                 </Table.Td>
               </Table.Tr>
             )})}

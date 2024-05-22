@@ -1,6 +1,6 @@
 // Library Imports
 import React from 'react'
-import { ActionIcon, Avatar, Button, Modal, NumberInput, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core'
+import { Avatar, Button, Modal, NumberInput, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core'
 import { DateInput } from "@mantine/dates"
 import { IconCheck, IconSearch, IconX } from '@tabler/icons-react'
 
@@ -15,6 +15,7 @@ import { notifSuccess } from '../components/Notifications.jsx'
 
 // Style Imports
 import '@mantine/dates/styles.css';
+import IconButton from '../components/IconButton.jsx'
 
 export default function InvoiceManagement() {
   
@@ -121,12 +122,8 @@ export default function InvoiceManagement() {
                 <Table.Td><strong style={{color: invoice.getPlatformColor()}}>{invoice.limbo}</strong></Table.Td>
                 <Table.Td>{invoice.generateMemo()}</Table.Td>
                 <Table.Td className='d-flex gap-2'>
-                  <Tooltip label="Accept">
-                    <ActionIcon color="green" onClick={handleAccept}><IconCheck /></ActionIcon>
-                  </Tooltip>
-                  <Tooltip label="Reject">
-                    <ActionIcon color="red" onClick={handleReject}><IconX /></ActionIcon>
-                  </Tooltip>
+                  <IconButton icon={<IconCheck />} color="green" onClick={handleAccept} label="Accept" />
+                  <IconButton icon={<IconX />} color="red" onClick={handleReject} label="Reject" />
                 </Table.Td>
               </Table.Tr>
             )

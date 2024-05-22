@@ -1,6 +1,6 @@
 // Library Imports
 import React from 'react';
-import { ActionIcon, Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
+import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 
 // API Imports
@@ -13,6 +13,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 
 // Style Imports
 import "../assets/style/toolsAdmin.css";
+import IconButton from '../components/IconButton.jsx';
 
 export default function ToolManagement() {
   
@@ -218,15 +219,9 @@ export default function ToolManagement() {
                     {tool.assignedTo.length}
                   </Table.Td>
                   <Table.Td className='d-flex gap-2'>
-                    <Tooltip label={`Delete "${tool.title}"`}>
-                      <ActionIcon onClick={confirmDelete} color="red"><IconTrash /></ActionIcon>
-                    </Tooltip>
-                    <Tooltip label={`Assign "${tool.title}"`}>
-                      <ActionIcon onClick={handleAssign}><IconUserShare /></ActionIcon>
-                    </Tooltip>
-                    <Tooltip label={`Unassign "${tool.title}"`}>
-                      <ActionIcon color="red" onClick={handleUnassign}><IconUserCancel /></ActionIcon>
-                    </Tooltip>
+                    <IconButton icon={<IconTrash />} color="red" onClick={confirmDelete} label={`Delete "${tool.title}"`} />
+                    <IconButton icon={<IconUserShare />} color="blue" onClick={handleAssign} label={`Assign "${tool.title}"`} />
+                    <IconButton icon={<IconUserCancel />} color="orange" onClick={handleUnassign} label={`Unassign "${tool.title}"`} />
                   </Table.Td>
                 </Table.Tr>
               )
