@@ -1,8 +1,9 @@
+// Library Imports
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
 import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools } from '@tabler/icons-react';
 import { useContext } from "react";
+// Component Imports
 import { CurrentUserContext } from "../App";
-
 
 /**
  * Object containing names for navigation tabs.

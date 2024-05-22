@@ -1,4 +1,6 @@
+// Library Imports
 import { AppShell, Burger, Group } from "@mantine/core";
+// Component Imports
 import logo from "../assets/images/sun.png";
 
 export function AppShellHeader({burgerOpen, setBurgerOpen}) {

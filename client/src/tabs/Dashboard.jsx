@@ -18,26 +18,11 @@ import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from '../
 import { notifSuccess } from '../components/Notifications.jsx';
 import { DateInput } from '@mantine/dates';
 import { shouldUseBlackText } from '../api/color.ts';
+import { ToolsList } from '../components/dashboard/ToolsList.jsx';
 
 export default function Dashboard() {
   
-  const {currentUser} = useContext(CurrentUserContext)
-
-  const tools = Object.values(currentUser.tools);
-
-  const ToolsList = () => (
-    <Carousel
-      slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
-      slideGap={{ base: 0, sm: 'md' }} 
-      withIndicators
-      loop
-      withControls={false}
-      dragFree
-      className="indicator-container"
-    >
-      {tools.map((tool, index) => <ToolCard currentUser={currentUser} key={index} tool={tool} />)}
-    </Carousel>
-  )
+  const { currentUser } = useContext(CurrentUserContext)
 
   const [subjectAddMenuOpen, setSubjectAddMenuOpen] = React.useState(false);
   const [homeworkAddMenuOpen, setHomeworkAddMenuOpen] = React.useState(false);
@@ -51,7 +36,7 @@ export default function Dashboard() {
       <AddHomeworkModal currentUser={currentUser} open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
       <Tracker currentUser={currentUser} setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>
       <h3 style={{marginTop: "2rem"}}>My Tools</h3>
-      <ToolsList />
+      <ToolsList currentUser={currentUser} />
     </div>
   )
 }
@@ -162,35 +147,6 @@ const PickerMenu = ({c, setC, popoverOpenOverride, setPopoverOpenOverride, onDon
         </div>
       </Popover.Dropdown>
     </Popover>
-  )
-}
-
-const ToolCard = ({tool, currentUser}) => {
-
-  function getLabel() { return (tool.starred ? "Unfavorite" : "Favorite") + ` "${tool.title}"` }
-
-  const [loading, setLoading] = React.useState(false);
-
-  return (
-    <Carousel.Slide style={{marginTop: "1rem", marginBottom: "1rem"}}>
-    <Paper
-        withBorder 
-        className={"p-2 h-100"} 
-        style={{
-          marginRight: "1rem",
-          filter: tool.starred ? "drop-shadow(0 0 0.5rem gold)" : "none",
-        }}
-      >
-        <div className="d-flex justify-content-between">
-          <strong>{tool.title}</strong>
-          {!loading && <Tooltip label={getLabel()} onClick={() => {Tool.star(tool.id, currentUser.id); setLoading(true)}}>
-            { <IconStar className='favorite-button' fill={tool.starred ? "gold" : "transparent"} stroke={tool.starred ? "gold" : "black"} /> }
-          </Tooltip>}
-          { loading && <Loader size={"1.25rem"}/> }
-        </div>
-        <p>{tool.description}</p>
-      </Paper>
-    </Carousel.Slide>
   )
 }
 

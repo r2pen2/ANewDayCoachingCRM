@@ -1,5 +1,7 @@
+// Library Imports
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
+// API Imports
 import { notifStyle } from "../api/notifications.ts";
 
 export function notifSuccess(title, message) {
