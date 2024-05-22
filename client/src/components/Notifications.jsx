@@ -12,5 +12,6 @@ export function notifSuccess(title, message) {
     icon: <IconCheck />,
     style: notifStyle,
     withBorder: true,
+    
   });
 }

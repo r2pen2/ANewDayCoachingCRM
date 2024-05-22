@@ -1,13 +1,14 @@
+// Library Imports
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import React from 'react';
+import { Button } from '@mantine/core';
+
 // API Imports
 import { auth } from '../api/firebase';
 
 // Component Imports
 import logo from '../assets/images/logo.png';
 
-// Library Imports
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import React from 'react';
-import { Button } from '@mantine/core';
 
 // const GoogleIcon = () => <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" style={{ width: 30, aspectRatio: "1/1", marginRight: 10, userSelect: "none" }} />
 

@@ -25,15 +25,19 @@ export class Homework {
   priority: HomeworkPriority = HomeworkPriority.LOW;
   description: string | null = null;
   estTime: string | null = null;
+  timestamp: number | null = null;
+
+  registerTimestamp(): void { this.timestamp = Date.now(); }
 
   constructor(homework?: any) {
     this.subject = homework?.subject;
-    this.dueDate = homework?.dueDate;
-    this.startDate = homework?.startDate;
-    this.status = homework?.status;
+    this.dueDate = homework ? homework.dueDate : null;
+    this.startDate = homework ? homework.startDate : null;
+    this.status = homework? homework.status : HomeworkStatus.NOT_STARTED;
     this.priority = homework?.priority;
     this.description = homework?.description;
-    this.estTime = homework?.estTime;
+    this.estTime = homework ? homework.estTime : null;
+    this.timestamp = homework?.timestamp;
   }
 
   static getPriorityColor(homework: Homework | string): string | undefined {
@@ -63,6 +67,7 @@ export class Homework {
     hw.priority = data.priority;
     hw.subject = data.subject;
     hw.estTime = data.estTime;
+    hw.timestamp = data.timestamp;
     return hw;
   }
 
@@ -75,6 +80,7 @@ export class Homework {
       priority: this.priority,
       description: this.description,
       estTime: this.estTime,
+      timestamp: this.timestamp
     }
   }
 

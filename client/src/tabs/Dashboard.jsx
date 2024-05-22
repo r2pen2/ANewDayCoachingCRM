@@ -17,6 +17,7 @@ import "../assets/style/dashboard.css"
 import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from '../api/db/dbHomework.ts';
 import { notifSuccess } from '../components/Notifications.jsx';
 import { DateInput } from '@mantine/dates';
+import { shouldUseBlackText } from '../api/color.ts';
 
 export default function Dashboard() {
   
@@ -222,7 +223,10 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
       }
     }
     setQuickExtract(props);
+    setQuickEntryError(null);
   }
+
+  const [quickEntryError, setQuickEntryError] = useState(null)
 
   function handleEnter(e) {
     if (e.key === "Enter") {
@@ -232,6 +236,16 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
       newHomework.startDate = quickExtract.startDate ? new Date(quickExtract.startDate) : null;
       newHomework.dueDate = quickExtract.dueDate ? new Date(quickExtract.dueDate) : null;
       newHomework.priority = quickExtract.priority ? quickExtract.priority : HomeworkPriority.LOW;
+      
+      if (!newHomework.subject) { setQuickEntryError("Please specify a subject."); return; }
+      if (!currentUser.subjects[newHomework.subject]) { 
+        if (window.confirm(`Subject "${newHomework.subject}" does not exist. Would you like to create it?`)) {
+          currentUser.addSubject(new HomeworkSubject(newHomework.subject, "#ffffff")).then(() => {
+            notifSuccess("Subject Added", `Added subject "${newHomework.subject}"`)
+          });
+        } else { return; }
+      }
+
       setQuickEntryString("");
       currentUser.addHomework(newHomework).then(() => {
         notifSuccess("Assignment Added", `Added assignment: "${newHomework.description}"`)
@@ -276,8 +290,8 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
     <div className="d-flex justify-content-between" key="headers">
     <h3>Upcoming Assignments</h3>
     <div className="d-flex gap-2 align-items-center">
-      <Tooltip label="Show Completed Assignments">
-        <Radio checked={showCompleted} onClick={() => setShowCompleted(!showCompleted)} />
+      <Tooltip label="Show/Hide Completed Assignments">
+        <Radio checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} />
       </Tooltip>
       <Tooltip label="Manage Subjects">
         <ActionIcon size={36} onClick={() => setSubjectAddMenuOpen(true)}>
@@ -293,7 +307,7 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
     </div>
   </div>,
   <div className="d-flex gap-2" key="controls">
-    <TextInput placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
+    <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
     <Tooltip label="Submit">
       <ActionIcon style={{height: 36, width: 36}}>
         <IconSend />
@@ -326,6 +340,9 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
           <Table.Th>
             Due Date
           </Table.Th>
+          <Table.Th>
+            Actions
+          </Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
@@ -346,9 +363,15 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
             });
           }
 
+          function handleRemove() {
+            if (window.confirm(`Are you sure you want to delete "${homework.description}"?`)) {
+              currentUser.removeHomework(homework).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${homework.description}"`))
+            }
+          }
+
           return (
             <Table.Tr key={index}>
-              <Table.Td><Badge color={subject.color}>{subject.title}</Badge></Table.Td>
+              <Table.Td><Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge></Table.Td>
               <Table.Td>{homework.description}</Table.Td>
               <Table.Td>
                 <Popover style={{cursor: "pointer"}}>
@@ -364,6 +387,13 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
               <Table.Td><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
               <Table.Td>{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
               <Table.Td>{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
+              <Table.Td>
+                <Tooltip label="Delete Assignment">
+                  <ActionIcon color="red" onClick={handleRemove}>
+                    <IconTrash />
+                  </ActionIcon>
+                </Tooltip>
+              </Table.Td>
             </Table.Tr>
           )
         })}

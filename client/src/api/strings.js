@@ -98,7 +98,6 @@ export function parseQuickEntry(string) {
 
   // Function to handle date parsing and adjustment
   function parseAndAdjustDate(dateStr) {
-    console.log(dateStr);
     let [month, day, year] = dateStr.split('/');
     let yearUndefined = false;
     if (year === undefined) { year = new Date().getFullYear(); yearUndefined = true; }

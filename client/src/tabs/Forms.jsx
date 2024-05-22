@@ -13,7 +13,7 @@ import { hostname } from '../api/db/dbManager.ts'
 // Style Imports
 import "../assets/style/forms.css"
 import { notifSuccess } from '../components/Notifications.jsx'
-import { allForms, getFormById } from '../api/forms.ts'
+import { getFormById } from '../api/forms.ts'
 
 /** How much confetti to add when a form is completed */
 const dConfetti = 500;

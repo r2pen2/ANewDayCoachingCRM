@@ -46,9 +46,8 @@ export class User {
   }
   
   async setData(): Promise<void> {
-    console.log(this)
     return new Promise<void>((resolve, reject) => {
-      setDoc(this.docRef, {
+      const data = {
         invoices: this.invoices,
         admin: this.admin,
         formAssignments: this.formAssignments,
@@ -57,7 +56,9 @@ export class User {
         tools: this.tools,
         homework: this.homework.map((h) => h.toJson()),
         subjects: this.subjects
-      }).then(() => {
+      }
+      console.log(data)
+      setDoc(this.docRef, data).then(() => {
         resolve();
       }).catch((error) => {
         reject(error);
@@ -171,8 +172,8 @@ export class User {
   }
 
   async addHomework(homework: Homework): Promise<void> {
-    console.log(homework)
     return new Promise<void>((resolve, reject) => {
+      homework.registerTimestamp();
       this.homework.push(homework);
       this.setData().then(() => {
         resolve();
@@ -184,8 +185,22 @@ export class User {
 
   async updateHomework(homework: Homework): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const index = this.homework.findIndex((hw) => hw.description === homework.description && homework.subject === hw.subject);
+      const index = this.homework.findIndex((hw) => hw.timestamp === homework.timestamp);
       this.homework[index] = homework;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async removeHomework(homework: Homework): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.homework = this.homework.filter((hw) => {
+        console.log(hw, homework)
+        return hw.timestamp !== homework.timestamp
+      });
       this.setData().then(() => {
         resolve();
       }).catch((error) => {
