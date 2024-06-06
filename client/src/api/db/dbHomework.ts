@@ -1,3 +1,5 @@
+import { notifSuccess } from "../../components/Notifications";
+import { User } from "./dbUser";
 
 /**
  * Enum representing the status of a homework assignment
@@ -94,6 +96,14 @@ export class Homework {
       case HomeworkPriority.LOW: return 1;
       case HomeworkPriority.MEDIUM: return 2;
       case HomeworkPriority.HIGH: return 3;
+    }
+  }
+
+  /** Remove this homework assignment from a user */
+  handleRemove(currentUser: User) {
+    if (!currentUser) { console.error("No user found for homework assignment"); return; }
+    if (window.confirm(`Are you sure you want to delete "${this.description}"?`)) {
+      currentUser.removeHomework(this).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`))
     }
   }
 }

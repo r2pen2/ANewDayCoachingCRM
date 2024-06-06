@@ -8,6 +8,7 @@ import { getSlashDateString, parseQuickEntry } from '../api/strings.js'
 
 // Component Imports
 import { CurrentUserContext } from '../App.jsx';
+import { QuickEntryResults } from '../components/dashboard/HomeworkTracker.jsx';
 
 // Style Imports
 import '@mantine/carousel/styles.css';
@@ -147,20 +148,6 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
     });
   }
 
-  const QuickEntryResults = () => {
-    
-    if (!quickExtract.subject && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; }
-
-    return (
-      <div className=" align-items-center d-flex gap-2 mt-2">
-        { currentUser.subjects[quickExtract.subject] && <Badge color={currentUser.subjects[quickExtract.subject].color}>Subject: {quickExtract.subject}</Badge> }
-        { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
-        { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
-        { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
-      </div>
-    )
-  }
-
   const [sortType, setSortType] = useState("Priority")
   
   function sortingAlg(a, b) {
@@ -196,7 +183,7 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
     <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
     <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
   </div>,
-    <QuickEntryResults key="quick-results" />,
+    <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
     <Table.ScrollContainer minWidth={500} type="native" key="table">
     <Table striped>
       <Table.Thead>
@@ -245,32 +232,32 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
             });
           }
 
-          function handleRemove() {
-            if (window.confirm(`Are you sure you want to delete "${homework.description}"?`)) {
-              currentUser.removeHomework(homework).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${homework.description}"`))
-            }
-          }
+          const AssignmentStatusIndicator = () => (
+            <Table.Td className="hover-clickable">
+              <Popover>
+                <Popover.Target>
+                  <div className="w-100 h-100 d-flex align-items-start">
+                    <Badge color={Homework.getStatusColor(homework)}>{homework.status}</Badge>
+                  </div>
+                </Popover.Target>
+                <Popover.Dropdown>
+                  <Select data={Object.values(HomeworkStatus)} value={homework.status} onChange={handleStatusChange} />
+                </Popover.Dropdown>
+              </Popover>
+            </Table.Td>
+          )
 
           return (
             <Table.Tr key={index}>
               <Table.Td className="hover-clickable"><Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge></Table.Td>
               <Table.Td className="hover-clickable">{homework.description}</Table.Td>
-              <Table.Td className="hover-clickable">
-                <Popover style={{cursor: "pointer"}}>
-                  <Popover.Target>
-                    <Badge color={Homework.getStatusColor(homework)}>{homework.status}</Badge>
-                  </Popover.Target>
-                  <Popover.Dropdown>
-                    <Select data={Object.values(HomeworkStatus)} value={homework.status} onChange={handleStatusChange} />
-                  </Popover.Dropdown>
-                </Popover>
-              </Table.Td>
+              <AssignmentStatusIndicator />
               <Table.Td className="hover-clickable">{homework.estTime}</Table.Td>
               <Table.Td className="hover-clickable"><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
               <Table.Td className="hover-clickable">{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
               <Table.Td className="hover-clickable">{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
-              <Table.Td className="hover-clickable">
-                <IconButton onClick={handleRemove} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
+              <Table.Td>
+                <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
               </Table.Td>
             </Table.Tr>
           )

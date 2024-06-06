@@ -198,7 +198,6 @@ export class User {
   async removeHomework(homework: Homework): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.homework = this.homework.filter((hw) => {
-        console.log(hw, homework)
         return hw.timestamp !== homework.timestamp
       });
       this.setData().then(() => {

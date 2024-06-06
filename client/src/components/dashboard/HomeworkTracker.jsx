@@ -1,13 +1,14 @@
 // Library Imports
 import React from "react";
-import { Button, ColorPicker, Paper, Popover, Text, Tooltip } from "@mantine/core";
+import { Badge, Button, ColorPicker, Paper, Popover, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 // API Imports
-import { HomeworkSubject } from "../../api/db/dbHomework.ts";
+import { Homework, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
 import { notifSuccess } from "../Notifications";
 import { CurrentUserContext } from "../../App";
 import IconButton from "../IconButton.jsx";
+import { getSlashDateString } from "../../api/strings.js";
 
 /**
  * A card that displays a subject
@@ -90,5 +91,22 @@ export const PickerMenu = ({c, setC, popoverOpenOverride, setPopoverOpenOverride
         </div>
       </Popover.Dropdown>
     </Popover>
+  )
+}
+
+export const QuickEntryResults = ({quickExtract}) => {
+  
+  /** Get currentUser from react context */
+  const {currentUser} = React.useContext(CurrentUserContext);
+
+  if (!quickExtract.subject && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; }
+
+  return (
+    <div className=" align-items-center d-flex gap-2 mt-2">
+      { currentUser.subjects[quickExtract.subject] && <Badge color={currentUser.subjects[quickExtract.subject].color}>Subject: {quickExtract.subject}</Badge> }
+      { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
+      { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
+      { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
+    </div>
   )
 }
