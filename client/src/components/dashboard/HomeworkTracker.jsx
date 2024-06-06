@@ -1,7 +1,7 @@
 // Library Imports
 import React from "react";
 import { Badge, Button, ColorPicker, Paper, Popover, Radio, Select, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash } from "@tabler/icons-react";
+import { IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -10,6 +10,8 @@ import { CurrentUserContext } from "../../App";
 import IconButton from "../IconButton.jsx";
 import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
 import { shouldUseBlackText } from "../../api/color.ts";
+import { DateInput } from "@mantine/dates";
+import { getOrthodoxDate } from "../../api/dates.ts";
 
 /**
  * A card that displays a subject
@@ -100,7 +102,7 @@ export const QuickEntryResults = ({quickExtract}) => {
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
 
-  if (!quickExtract.subject && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; }
+  if (!quickExtract.subject && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; } // There's nothing in the quickExtract to display
 
   return (
     <div className=" align-items-center d-flex gap-2 mt-2">
@@ -115,30 +117,14 @@ export const QuickEntryResults = ({quickExtract}) => {
 export const AssignmentTableHead = () => (
   <Table.Thead>
     <Table.Tr>
-      <Table.Th>
-        Subject
-      </Table.Th>
-      <Table.Th>
-        Assignment
-      </Table.Th>
-      <Table.Th>
-        Status
-      </Table.Th>
-      <Table.Th>
-        Est Time
-      </Table.Th>
-      <Table.Th>
-        Priority
-      </Table.Th>
-      <Table.Th>
-        Start Date
-      </Table.Th>
-      <Table.Th>
-        Due Date
-      </Table.Th>
-      <Table.Th>
-        Actions
-      </Table.Th>
+      <Table.Th>Subject</Table.Th>
+      <Table.Th>Assignment</Table.Th>
+      <Table.Th>Status</Table.Th>
+      <Table.Th>Est Time</Table.Th>
+      <Table.Th>Priority</Table.Th>
+      <Table.Th>Start Date</Table.Th>
+      <Table.Th>Due Date</Table.Th>
+      <Table.Th>Actions</Table.Th>
     </Table.Tr>
   </Table.Thead>
 )
@@ -194,13 +180,72 @@ export function AssignmentRow({homeworkJson}) {
     <Table.Td className="hover-clickable"><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
   )
 
-  const AssignmentStartDate = () => (
-    <Table.Td className="hover-clickable">{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
-  )
+  const AssignmentStartDate = () => {
 
-  const AssignmentDueDate = () => (
-    <Table.Td className="hover-clickable">{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
-  )
+    const dateOrthodox = getOrthodoxDate(homework.startDate)
+    const startDateString = getSlashDateString(dateOrthodox)
+
+    const [startDatePickerOpen, setStartDatePickerOpen] = React.useState(false)
+
+    function handleStartDateChange(date) {
+      const newStartDate = new Date(date);
+      setStartDatePickerOpen(false);
+      if (newStartDate.getTime() === dateOrthodox.getTime()) { return; }
+      homework.startDate = newStartDate;
+      currentUser.updateHomework(homework).then(() => {
+        notifSuccess("Assignment Updated", `Changed start date to: "${getSlashDateString(newStartDate)}"`)
+      });
+    }
+
+    return (
+      <Table.Td className="hover-clickable">
+        <Popover opened={startDatePickerOpen}>
+          <Popover.Target>
+            <div className="w-100 h-100 d-flex align-items-start" onClick={() => setStartDatePickerOpen(!startDatePickerOpen)}>
+              {homework.startDate ? startDateString : ""}
+            </div>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <IconX onClick={() => setStartDatePickerOpen(false)} style={{cursor: "pointer", position: "absolute", top: "0.5rem", right: "0.5rem"}}/>
+            <DateInput autoFocus onChange={handleStartDateChange} label="Start Date" id="start-date" w={"100%"} placeholder={homework.startDate ? startDateString : "When will you start?"}/>
+          </Popover.Dropdown>
+        </Popover>
+      </Table.Td>
+    )
+  }
+
+  const AssignmentDueDate = () => {
+    
+    const dateOrthodox = getOrthodoxDate(homework.dueDate)
+    const dueDateString = getSlashDateString(dateOrthodox);
+
+    const [dueDatePickerOpen, setDueDatePickerOpen] = React.useState(false)
+
+    function handleDueDateChange(date) {
+      const newDueDate = new Date(date);
+      if (newDueDate.getTime() === dateOrthodox.getTime()) { return; }
+      homework.dueDate = newDueDate;
+      currentUser.updateHomework(homework).then(() => {
+        notifSuccess("Assignment Updated", `Changed due date to: "${getSlashDateString(newDueDate)}"`)
+      });
+    }
+
+    return (
+    <Table.Td className="hover-clickable">
+        <Popover opened={dueDatePickerOpen}>
+          <Popover.Target>
+            <div className="w-100 h-100 d-flex align-items-start" onClick={() => setDueDatePickerOpen(!dueDatePickerOpen)}>
+              {homework.dueDate ? dueDateString : ""}
+            </div>
+          </Popover.Target>
+          <Popover.Dropdown>
+          <IconX onClick={() => setDueDatePickerOpen(false)} style={{cursor: "pointer", position: "absolute", top: "0.5rem", right: "0.5rem"}}/>
+            <DateInput autoFocus onChange={handleDueDateChange} label="Due Date" id="due-date" w={"100%"} placeholder={homework.dueDate ? dueDateString : "When is it due?"}/>
+          </Popover.Dropdown>
+        </Popover>
+      </Table.Td>
+    )
+  }
 
   const AssignmentActions = () => (
     <Table.Td>
