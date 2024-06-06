@@ -14,10 +14,28 @@
   padding-bottom: 1rem;
 }
 
-.favorite-button {
-  cursor: pointer;
-}
-
 .picker-button {
   border: 1px solid #ced4da !important;
+}
+
+.hover-clickable {
+  cursor: pointer;
+  position: relative;
+}
+
+.hover-clickable::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: none;
+  z-index: 1;
+  transition: all 0.5s ease;
+}
+
+.hover-clickable:hover::after {
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.1);
 }

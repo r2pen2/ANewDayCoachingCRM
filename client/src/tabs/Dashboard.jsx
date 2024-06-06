@@ -253,9 +253,9 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
 
           return (
             <Table.Tr key={index}>
-              <Table.Td><Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge></Table.Td>
-              <Table.Td>{homework.description}</Table.Td>
-              <Table.Td>
+              <Table.Td className="hover-clickable"><Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge></Table.Td>
+              <Table.Td className="hover-clickable">{homework.description}</Table.Td>
+              <Table.Td className="hover-clickable">
                 <Popover style={{cursor: "pointer"}}>
                   <Popover.Target>
                     <Badge color={Homework.getStatusColor(homework)}>{homework.status}</Badge>
@@ -265,11 +265,11 @@ const Tracker = ({currentUser, setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) =
                   </Popover.Dropdown>
                 </Popover>
               </Table.Td>
-              <Table.Td>{homework.estTime}</Table.Td>
-              <Table.Td><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
-              <Table.Td>{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
-              <Table.Td>{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
-              <Table.Td>
+              <Table.Td className="hover-clickable">{homework.estTime}</Table.Td>
+              <Table.Td className="hover-clickable"><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
+              <Table.Td className="hover-clickable">{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
+              <Table.Td className="hover-clickable">{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
+              <Table.Td className="hover-clickable">
                 <IconButton onClick={handleRemove} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
               </Table.Td>
             </Table.Tr>
