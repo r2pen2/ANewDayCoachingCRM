@@ -1,14 +1,15 @@
 // Library Imports
 import React from "react";
-import { Badge, Button, ColorPicker, Paper, Popover, Text, Tooltip } from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+import { Badge, Button, ColorPicker, Paper, Popover, Radio, Select, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash } from "@tabler/icons-react";
 // API Imports
-import { Homework, HomeworkSubject } from "../../api/db/dbHomework.ts";
+import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
 import { notifSuccess } from "../Notifications";
 import { CurrentUserContext } from "../../App";
 import IconButton from "../IconButton.jsx";
-import { getSlashDateString } from "../../api/strings.js";
+import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
+import { shouldUseBlackText } from "../../api/color.ts";
 
 /**
  * A card that displays a subject
@@ -109,4 +110,228 @@ export const QuickEntryResults = ({quickExtract}) => {
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
     </div>
   )
+}
+
+export const AssignmentTableHead = () => (
+  <Table.Thead>
+    <Table.Tr>
+      <Table.Th>
+        Subject
+      </Table.Th>
+      <Table.Th>
+        Assignment
+      </Table.Th>
+      <Table.Th>
+        Status
+      </Table.Th>
+      <Table.Th>
+        Est Time
+      </Table.Th>
+      <Table.Th>
+        Priority
+      </Table.Th>
+      <Table.Th>
+        Start Date
+      </Table.Th>
+      <Table.Th>
+        Due Date
+      </Table.Th>
+      <Table.Th>
+        Actions
+      </Table.Th>
+    </Table.Tr>
+  </Table.Thead>
+)
+
+export function AssignmentRow({homeworkJson}) {
+
+  /** Get currentUser from react context */
+  const {currentUser} = React.useContext(CurrentUserContext);
+
+  const homework = new Homework(homeworkJson);
+
+  const subject = currentUser.subjects[homework.subject]
+
+  function handleStatusChange(s) {
+
+    if (s === homework.status) { return; }
+    homework.status = s;
+    currentUser.updateHomework(homework).then(() => {
+      if (s === HomeworkStatus.COMPLETED) { notifSuccess("Assignment Completed", `Completed assignment: "${homework.description}"`) }
+      if (s === HomeworkStatus.IN_PROGRESS) { notifSuccess("Assignment Started", `Started assignment: "${homework.description}"`) }
+      if (s === HomeworkStatus.NOT_STARTED) { notifSuccess("Assignment Reset", `Reset assignment: "${homework.description}"`) }
+    });
+  }
+
+  const AssignmentStatus = () => (
+    <Table.Td className="hover-clickable">
+      <Popover>
+        <Popover.Target>
+          <div className="w-100 h-100 d-flex align-items-start">
+            <Badge color={Homework.getStatusColor(homework)}>{homework.status}</Badge>
+          </div>
+        </Popover.Target>
+        <Popover.Dropdown>
+          <Select data={Object.values(HomeworkStatus)} value={homework.status} onChange={handleStatusChange} />
+        </Popover.Dropdown>
+      </Popover>
+    </Table.Td>
+  )
+
+  const AssignmentSubject = () => (
+    <Table.Td className="hover-clickable"><Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge></Table.Td>
+  )
+
+  const AssignmentDescription = () => (
+    <Table.Td className="hover-clickable">{homework.description}</Table.Td>
+  )
+
+  const AssignmentEstimatedTime = () => (
+    <Table.Td className="hover-clickable">{homework.estTime}</Table.Td>
+  )
+
+  const AssignmentPriority = () => (
+    <Table.Td className="hover-clickable"><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
+  )
+
+  const AssignmentStartDate = () => (
+    <Table.Td className="hover-clickable">{homework.startDate ? getSlashDateString(!homework.startDate.toDate ? homework.startDate : homework.startDate.toDate()) : ""}</Table.Td>
+  )
+
+  const AssignmentDueDate = () => (
+    <Table.Td className="hover-clickable">{homework.dueDate ? getSlashDateString(!homework.dueDate.toDate ? homework.dueDate : homework.dueDate.toDate()) : ""}</Table.Td>
+  )
+
+  const AssignmentActions = () => (
+    <Table.Td>
+      <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
+    </Table.Td>
+  )
+
+  return (
+    <Table.Tr>
+      <AssignmentSubject />
+      <AssignmentDescription />
+      <AssignmentStatus />
+      <AssignmentEstimatedTime />
+      <AssignmentPriority />
+      <AssignmentStartDate />
+      <AssignmentDueDate />
+      <AssignmentActions />
+    </Table.Tr>
+  )
+}
+
+export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
+  
+  /** Get current user from react context */
+  const {currentUser} = React.useContext(CurrentUserContext);
+
+  const [showCompleted, setShowCompleted] = React.useState(false)
+
+  const [quickEntryString, setQuickEntryString] = React.useState("");
+  const [quickExtract, setQuickExtract] = React.useState({
+    subject: null,
+    description: null,
+    startDate: null,
+    dueDate: null,
+    priority: null
+  });
+  
+  React.useEffect(() => {
+    extractQuickEntry();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickEntryString]);  // Dependency array includes quickEntryString
+
+  function extractQuickEntry() {
+    const props = parseQuickEntry(quickEntryString);
+    for (const key of Object.keys(currentUser.subjects)) {
+      if (key && props.subject) {
+        if (key.replace(" ", "").toLowerCase() === props.subject.toLowerCase()) {
+          props.subject = key;
+          break;
+        }
+      }
+    }
+    setQuickExtract(props);
+    setQuickEntryError(null);
+  }
+
+  const [quickEntryError, setQuickEntryError] = React.useState(null)
+
+  function handleEnter(e) {
+    if (e.key !== "Enter") { return; }
+    sendQuickEntry();
+  }
+
+  function sendQuickEntry() {
+    const newHomework = new Homework();
+    newHomework.subject = quickExtract.subject;
+    newHomework.description = quickExtract.description;
+    newHomework.startDate = quickExtract.startDate ? new Date(quickExtract.startDate) : null;
+    newHomework.dueDate = quickExtract.dueDate ? new Date(quickExtract.dueDate) : null;
+    newHomework.priority = quickExtract.priority ? quickExtract.priority : HomeworkPriority.LOW;
+    
+    if (!newHomework.subject) { setQuickEntryError("Please specify a subject."); return; }
+    if (!currentUser.subjects[newHomework.subject]) { 
+      if (window.confirm(`Subject "${newHomework.subject}" does not exist. Would you like to create it?`)) {
+        currentUser.addSubject(new HomeworkSubject(newHomework.subject, "#ffffff")).then(() => {
+          notifSuccess("Subject Added", `Added subject "${newHomework.subject}"`)
+        });
+      } else { return; }
+    }
+
+    setQuickEntryString("");
+    currentUser.addHomework(newHomework).then(() => {
+      notifSuccess("Assignment Added", `Added assignment: "${newHomework.description}"`)
+    });
+  }
+
+  const [sortType, setSortType] = React.useState("Priority")
+  
+  function sortingAlg(a, b) {
+    if (sortType === "Priority") {
+      return Homework.getPriorityValue(b) - Homework.getPriorityValue(a);
+    }
+    if (sortType === "Due Date") {
+      if (!a.dueDate) { return 1; }
+      return a.dueDate - b.dueDate;
+    }
+    if (sortType === "Start Date") {
+      if (!a.startDate) { return 1; }
+      return a.startDate - b.startDate;
+    }
+    if (sortType === "Subject") {
+      return a.subject.localeCompare(b.subject);
+    }
+  }
+
+  return [
+    <div className="d-flex justify-content-between" key="headers">
+    <h3>Upcoming Assignments</h3>
+    <div className="d-flex gap-2 align-items-center">
+      <Tooltip label="Show/Hide Completed Assignments">
+        <Radio checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} />
+      </Tooltip>
+      <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
+      <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
+      <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
+    </div>
+  </div>,
+  <div className="d-flex gap-2" key="controls">
+    <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
+    <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
+  </div>,
+    <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
+    <Table.ScrollContainer minWidth={500} type="native" key="table">
+    <Table striped>
+      <AssignmentTableHead />
+      <Table.Tbody>
+        {Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED || showCompleted).sort((a, b) => sortingAlg(a, b)).map((homework, index) => {
+          return <AssignmentRow key={index} homeworkJson={homework} />
+        })}
+      </Table.Tbody>
+    </Table>
+  </Table.ScrollContainer>
+  ]
 }
