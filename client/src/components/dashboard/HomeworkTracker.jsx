@@ -1,6 +1,6 @@
 // Library Imports
 import React, { Component, useState } from "react";
-import { Badge, Button, ColorPicker, Paper, Popover, Radio, Select, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { Badge, Button, ColorPicker, Paper, Popover, Radio, Select, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconClock, IconClockCancel, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
@@ -117,14 +117,14 @@ export const QuickEntryResults = ({quickExtract}) => {
 export const AssignmentTableHead = () => (
   <Table.Thead>
     <Table.Tr>
-      <Table.Th>Subject</Table.Th>
-      <Table.Th>Assignment</Table.Th>
-      <Table.Th>Status</Table.Th>
-      <Table.Th>Est Time</Table.Th>
-      <Table.Th>Priority</Table.Th>
-      <Table.Th>Start Date</Table.Th>
-      <Table.Th>Due Date</Table.Th>
-      <Table.Th>Actions</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Subject</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Assignment</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Status</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Est Time</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Priority</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Start Date</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Due Date</Table.Th>
+      <Table.Th style={{minWidth: 100}}>Actions</Table.Th>
     </Table.Tr>
   </Table.Thead>
 )
@@ -426,7 +426,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
 
   return [
     <div className="d-flex justify-content-between" key="headers">
-    <h3>Upcoming Assignments</h3>
+    <h3>Assignment Tracker</h3>
     <div className="d-flex gap-2 align-items-center">
       <Tooltip label="Show/Hide Completed Assignments">
         <Radio checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} />
@@ -441,15 +441,17 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
   </div>,
     <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
-    <Table.ScrollContainer minWidth={500} type="native" key="table">
-    <Table striped>
-      <AssignmentTableHead />
-      <Table.Tbody>
-        {Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED || showCompleted).sort((a, b) => sortingAlg(a, b)).map((homework, index) => {
-          return <AssignmentRow key={index} homeworkJson={homework} />
-        })}
-      </Table.Tbody>
-    </Table>
-  </Table.ScrollContainer>
+    <Spoiler maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" >
+      <Table.ScrollContainer minWidth={500} type="native" key="table">
+        <Table striped>
+          <AssignmentTableHead />
+          <Table.Tbody>
+            {Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED || showCompleted).sort((a, b) => sortingAlg(a, b)).map((homework, index) => {
+              return <AssignmentRow key={index} homeworkJson={homework} />
+            })}
+          </Table.Tbody>
+        </Table>
+      </Table.ScrollContainer>
+    </Spoiler>
   ]
 }
