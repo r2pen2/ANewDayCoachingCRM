@@ -9,6 +9,7 @@ import { AddHomeworkModal, AddSubjectModal } from '../components/dashboard/Homew
 // Style Imports
 import '@mantine/carousel/styles.css';
 import "../assets/style/dashboard.css";
+import DocumentsList from '../components/dashboard/DocumentsList.jsx';
 
 export default function Dashboard() {
   
@@ -21,6 +22,7 @@ export default function Dashboard() {
       <AddHomeworkModal open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
       <Tracker setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>
       <ToolsList />
+      <DocumentsList />
     </div>
   )
 }

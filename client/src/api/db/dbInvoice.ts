@@ -105,8 +105,8 @@ export class Invoice {
   }
 
   checkPending(): boolean {
-    console.log(this)
-    return this.limbo !== null || (this.paidAt && !this.paid);
+    const limboCheck = (this.paidAt && !this.paid) !== null
+    return this.limbo !== null || limboCheck;
   }
 
   static async create(href: string, amount: number, user: any, dueDate: Date): Promise<any> {

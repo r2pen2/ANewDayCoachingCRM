@@ -5,6 +5,7 @@ import { navigationItems } from "../../components/Navigation";
 import { hostname } from "./dbManager.ts";
 import { FormAssignment } from "./dbFormAssignment.ts";
 import { Homework, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
+import { Document } from "./dbDocument.ts";
 
 export class User {
   
@@ -24,6 +25,8 @@ export class User {
   homework: Homework[] = [];
 
   subjects: { [key: string]: any } = {}
+
+  documents: any[] = [];
 
   personalData: any = {
     displayName: "",
@@ -57,6 +60,7 @@ export class User {
         homework: this.homework.map((h) => h.toJson()),
         subjects: this.subjects,
         numUnpaidInvoices: this.numUnpaidInvoices,
+        documents: this.documents.map((d) => d.toJson()),
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -111,6 +115,7 @@ export class User {
     this.numUnpaidInvoices = data.numUnpaidInvoices;
     this.homework = data.homework.map((h: any) => Homework.load(h));
     this.subjects = data.subjects;
+    this.documents = data.documents.map((d: any) => Document.load(d));
     return this;
   }
 
