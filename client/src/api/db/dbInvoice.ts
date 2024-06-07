@@ -105,7 +105,8 @@ export class Invoice {
   }
 
   checkPending(): boolean {
-    return this.limbo !== null;
+    console.log(this)
+    return this.limbo !== null || (this.paidAt && !this.paid);
   }
 
   static async create(href: string, amount: number, user: any, dueDate: Date): Promise<any> {
@@ -169,6 +170,7 @@ export class LimboInvoice extends Invoice {
 
   generateMemo(): string {
     if (this.limbo === "Venmo") { return `${this.userDisplayName}'s ANDC Invoice No.${this.invoiceNumber}`; }
+    if (this.limbo === "Mark") { return `${this.userDisplayName} marked this invoice as paid.` }
     return "Error: Memo not generated."
   }
 

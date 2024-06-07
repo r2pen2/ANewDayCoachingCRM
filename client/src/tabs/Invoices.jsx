@@ -91,7 +91,7 @@ export default function Invoices() {
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
                   <IconButton label="View Invoice" icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
-                  <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
+                  <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? "orange" : "green"} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -146,7 +146,7 @@ export default function Invoices() {
       
       return [
         <DoneButton key="done-button" />,
-        <Button key="back-button" onClick={() => setSecondPage(null)}>Back to Payment Options</Button>
+        <Button key="back-button" onClick={() => { setSecondPage(null); setCurrentInvoice(null)}}>Close</Button>
       ]
     }
 
@@ -170,7 +170,7 @@ export default function Invoices() {
             { secondPage === "thanks-venmo" && <p>You're all set! I've let Rachel know that you paid through <strong style={{color: "#228BE6"}}>Venmo</strong>. The table will update shortly once she's approved the payment.</p> }
             { secondPage === "thanks-mark" && <p>You're all set! I've let Rachel know that you've declared this invoice as paid. The table will update shortly once she's approved the payment.</p> }
             { (secondPage === "thanks-venmo" || secondPage === "thanks-mark") && <Button color="red"  style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Wait! I Didn't mean to do that!</Button>}
-            { (secondPage === "cancel") && <Button color="red"  style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Mark unpaid</Button>}
+            { (secondPage === "cancel") && <Button color="orange"  style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Mark unpaid</Button>}
             { (secondPage === "thanks-venmo" || secondPage === "thanks-mark") && <Button color="blue" onClick={() => setCurrentInvoice(null)}>Close</Button>}
             { (secondPage === "cancel") && <Button color="blue" onClick={() => setCurrentInvoice(null)}>Cancel</Button>}
           </div>
