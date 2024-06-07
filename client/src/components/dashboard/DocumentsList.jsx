@@ -1,8 +1,7 @@
 import React from 'react'
 import { CurrentUserContext } from '../../App';
-import { Carousel } from '@mantine/carousel';
 import { Paper, Spoiler, Text, Tooltip } from '@mantine/core';
-import { DocumentType, DocumentTypeColors } from '../../api/db/dbDocument.ts';
+import { DocumentType } from '../../api/db/dbDocument.ts';
 import { LinkMaster } from '../../api/links.ts';
 
 export default function DocumentsList() {
@@ -15,17 +14,15 @@ export default function DocumentsList() {
 
   /** Render a list of documents */
   const DocList = () => {
-    return documents.map((document) => <DocumentCard key={document.id} d={document} currentUser={currentUser} />)
+    return documents.sort((a,b) => a.title.localeCompare(b.title)).map((document) => <DocumentCard key={document.id} d={document} currentUser={currentUser} />)
   }
 
   return [
     <h3 style={{marginTop: "2rem"}} key='documents-header'>My Shared Drive</h3>,
-    <Spoiler key="documents" maxHeight={120} showLabel="See All Documents" hideLabel="Hide">
+    <Spoiler key="documents" maxHeight={120} showLabel="See All Shared" hideLabel="Hide">
       <div className="container-fluid">
         <div className="row">
-          <div className="col-6 col-md-4 col-lg-3 col-xl-2">
-            <DocList />
-          </div>
+          <DocList />
         </div>
       </div>
     </Spoiler>
@@ -53,15 +50,17 @@ const DocumentCard = ({d}) => {
   }
 
   return (
-    <Paper className="p-2 h-100" withBorder style={{cursor: "pointer"}} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(d.href), "_blank")}>
-      <div className="d-flex justify-content-between" style={{overflow: 'hidden'}}>
-        <Text style={{width: "100%", overflow:"hidden", textOverflow: "ellipsis", whiteSpace: 'nowrap'}}>{d.title}</Text>
-        <Tooltip label={d.type}>
-          <div style={{marginLeft:"1rem"}}>
-            <DocSvg />
-          </div>
-        </Tooltip>
-      </div>
-    </Paper>
+    <div className="col-6 col-md-4 col-lg-3 col-xl-2 mb-2">
+      <Paper className="p-2 h-100" withBorder style={{cursor: "pointer"}} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(d.href), "_blank")}>
+        <div className="d-flex justify-content-between" style={{overflow: 'hidden'}}>
+          <Text style={{width: "100%", overflow:"hidden", textOverflow: "ellipsis", whiteSpace: 'nowrap'}}>{d.title}</Text>
+          <Tooltip label={d.type}>
+            <div style={{marginLeft:"1rem"}}>
+              <DocSvg />
+            </div>
+          </Tooltip>
+        </div>
+      </Paper>
+    </div>
   )
 }

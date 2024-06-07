@@ -1,6 +1,6 @@
 // Library Imports
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools } from '@tabler/icons-react';
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconBrandGoogleDrive, IconUser, IconUserCog } from '@tabler/icons-react';
 import { useContext } from "react";
 // Component Imports
 import { CurrentUserContext } from "../App";
@@ -23,6 +23,8 @@ export const navigationItems = {
   ADMINTOOLS: "tools-admin",
   ADMINFORMS: "forms-admin",
   ADMININVOICES: "invoices-admin",
+  ADMINDRIVE: "drive-admin",
+  ADMINUSERS: "users-admin",
 }
 
 /**
@@ -103,6 +105,22 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
         variant={navigationStyles.variant}
         active={currentTab === navigationItems.ADMININVOICES}
         onClick={() => updateTab(navigationItems.ADMININVOICES)}
+      />,
+      <NavLink
+        key="admin-drive-nav"
+        label="Manage Drive"
+        leftSection={<IconBrandGoogleDrive />}
+        variant={navigationStyles.variant}
+        active={currentTab === navigationItems.ADMINDRIVE}
+        onClick={() => updateTab(navigationItems.ADMINDRIVE)}
+      />,
+      <NavLink
+        key="admin-users-nav"
+        label="Manage Users"
+        leftSection={<IconUserCog />}
+        variant={navigationStyles.variant}
+        active={currentTab === navigationItems.ADMINUSERS}
+        onClick={() => updateTab(navigationItems.ADMINUSERS)}
       />,
     ]
   }
