@@ -43,9 +43,10 @@ export class Homework {
   }
 
   static getPriorityColor(homework: Homework | string): string | undefined {
+    if (!homework) { console.error("No homework found"); return ; }
     const p = typeof homework === "string" ? homework : homework.priority;
     switch(p) {
-      case HomeworkPriority.LOW: return "blue";
+      case HomeworkPriority.LOW: return "green";
       case HomeworkPriority.MEDIUM: return "yellow";
       case HomeworkPriority.HIGH: return "red";
     }
@@ -55,7 +56,7 @@ export class Homework {
     const s = homework.status;
     switch(s) {
       case HomeworkStatus.NOT_STARTED: return "gray";
-      case HomeworkStatus.IN_PROGRESS: return "yellow";
+      case HomeworkStatus.IN_PROGRESS: return "blue";
       case HomeworkStatus.COMPLETED: return "green";
     }
   }

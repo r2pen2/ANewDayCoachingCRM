@@ -154,7 +154,7 @@ export function AssignmentRow({homeworkJson}) {
       this.setState({targetField: homework[this.targetField]});
     }
 
-    handleFieldChange(f) { console.error("hadnleFieldChange is not implemented on type " + this.typeof) }
+    handleFieldChange(f) { console.error("handleFieldChange is not implemented on type " + this.typeof) }
   }
 
   class AssignmentTextField extends AssignmentField {
@@ -166,7 +166,7 @@ export function AssignmentRow({homeworkJson}) {
     }
 
     handleFieldChange() {
-      this.setState({editPopoverOpen: false});
+      setTimeout(() => { this.setState({editPopoverOpen: false}); })
       if (this.state.targetField === homework[this.targetField]) { return; }
       homework[this.targetField] = this.state.targetField;
       currentUser.updateHomework(homework).then(() => {
@@ -206,7 +206,10 @@ export function AssignmentRow({homeworkJson}) {
     }
 
     handleFieldChange(f) {
-      if (f === homework[this.targetField]) { return; }
+      if (f === homework[this.targetField] || f === null) { 
+        setTimeout(() => { this.setState({editPopoverOpen: false}); })
+        return;
+      }
       homework[this.targetField] = f;
       currentUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Set ${this.sanitizeFieldName()} to: "${f}"`)
@@ -316,7 +319,7 @@ export function AssignmentRow({homeworkJson}) {
     return (
       <Table.Td className="d-flex gap-2">
         <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
-         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} buttonProps={{color: "yellow"}} label="Start Assignment" /> }
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} buttonProps={{color: "blue"}} label="Start Assignment" /> }
          { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconClockCancel />} buttonProps={{color: "gray"}} label="Pause Assignment" /> }
         <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} buttonProps={{color: "green"}} label="Complete Assignment" />
       </Table.Td>
