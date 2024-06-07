@@ -4,7 +4,7 @@ import { DocumentReference, doc, getDoc, onSnapshot, setDoc } from "firebase/fir
 import { navigationItems } from "../../components/Navigation";
 import { hostname } from "./dbManager.ts";
 import { FormAssignment } from "./dbFormAssignment.ts";
-import { Homework, HomeworkSubject } from "./dbHomework.ts";
+import { Homework, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
 
 export class User {
   
@@ -200,6 +200,42 @@ export class User {
       this.homework = this.homework.filter((hw) => {
         return hw.timestamp !== homework.timestamp
       });
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async startHomework(homework: Homework): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const index = this.homework.findIndex((hw) => hw.timestamp === homework.timestamp);
+      this.homework[index].status = HomeworkStatus.IN_PROGRESS;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async completeHomework(homework: Homework): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const index = this.homework.findIndex((hw) => hw.timestamp === homework.timestamp);
+      this.homework[index].status = HomeworkStatus.COMPLETED;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async pauseHomework(homework: Homework): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const index = this.homework.findIndex((hw) => hw.timestamp === homework.timestamp);
+      this.homework[index].status = HomeworkStatus.NOT_STARTED;
       this.setData().then(() => {
         resolve();
       }).catch((error) => {

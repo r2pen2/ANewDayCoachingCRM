@@ -1,7 +1,7 @@
 // Library Imports
-import React from "react";
+import React, { Component, useState } from "react";
 import { Badge, Button, ColorPicker, Paper, Popover, Radio, Select, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
+import { IconCheck, IconClock, IconClockCancel, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -138,130 +138,200 @@ export function AssignmentRow({homeworkJson}) {
 
   const subject = currentUser.subjects[homework.subject]
 
-  function handleStatusChange(s) {
-
-    if (s === homework.status) { return; }
-    homework.status = s;
-    currentUser.updateHomework(homework).then(() => {
-      if (s === HomeworkStatus.COMPLETED) { notifSuccess("Assignment Completed", `Completed assignment: "${homework.description}"`) }
-      if (s === HomeworkStatus.IN_PROGRESS) { notifSuccess("Assignment Started", `Started assignment: "${homework.description}"`) }
-      if (s === HomeworkStatus.NOT_STARTED) { notifSuccess("Assignment Reset", `Reset assignment: "${homework.description}"`) }
-    });
-  }
-
-  const AssignmentStatus = () => (
-    <Table.Td className="hover-clickable">
-      <Popover>
-        <Popover.Target>
-          <div className="w-100 h-100 d-flex align-items-start">
-            <Badge color={Homework.getStatusColor(homework)}>{homework.status}</Badge>
-          </div>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <Select data={Object.values(HomeworkStatus)} value={homework.status} onChange={handleStatusChange} />
-        </Popover.Dropdown>
-      </Popover>
-    </Table.Td>
-  )
-
-  const AssignmentSubject = () => (
-    <Table.Td className="hover-clickable"><Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge></Table.Td>
-  )
-
-  const AssignmentDescription = () => (
-    <Table.Td className="hover-clickable">{homework.description}</Table.Td>
-  )
-
-  const AssignmentEstimatedTime = () => (
-    <Table.Td className="hover-clickable">{homework.estTime}</Table.Td>
-  )
-
-  const AssignmentPriority = () => (
-    <Table.Td className="hover-clickable"><Badge color={Homework.getPriorityColor(homework)}>{homework.priority}</Badge></Table.Td>
-  )
-
-  const AssignmentStartDate = () => {
-
-    const dateOrthodox = getOrthodoxDate(homework.startDate)
-    const startDateString = getSlashDateString(dateOrthodox)
-
-    const [startDatePickerOpen, setStartDatePickerOpen] = React.useState(false)
-
-    function handleStartDateChange(date) {
-      const newStartDate = new Date(date);
-      setStartDatePickerOpen(false);
-      if (newStartDate.getTime() === dateOrthodox.getTime()) { return; }
-      homework.startDate = newStartDate;
-      currentUser.updateHomework(homework).then(() => {
-        notifSuccess("Assignment Updated", `Changed start date to: "${getSlashDateString(newStartDate)}"`)
-      });
-    }
-
-    return (
-      <Table.Td className="hover-clickable">
-        <Popover opened={startDatePickerOpen}>
-          <Popover.Target>
-            <div className="w-100 h-100 d-flex align-items-start" onClick={() => setStartDatePickerOpen(!startDatePickerOpen)}>
-              {homework.startDate ? startDateString : ""}
-            </div>
-          </Popover.Target>
-          <Popover.Dropdown>
-            <IconX onClick={() => setStartDatePickerOpen(false)} style={{cursor: "pointer", position: "absolute", top: "0.5rem", right: "0.5rem"}}/>
-            <DateInput autoFocus onChange={handleStartDateChange} label="Start Date" id="start-date" w={"100%"} placeholder={homework.startDate ? startDateString : "When will you start?"}/>
-          </Popover.Dropdown>
-        </Popover>
-      </Table.Td>
-    )
-  }
-
-  const AssignmentDueDate = () => {
+  class AssignmentField extends React.Component {
     
-    const dateOrthodox = getOrthodoxDate(homework.dueDate)
-    const dueDateString = getSlashDateString(dateOrthodox);
+    targetField = this.props.field;
+    
+    state = {
+      targetField: homework[this.targetField] ? homework[this.targetField] : "",
+      editPopoverOpen: false
+    }
+  
+    handleEnter(e) { if (e.key !== "Enter") { return; } this.handleFieldChange(); }
 
-    const [dueDatePickerOpen, setDueDatePickerOpen] = React.useState(false)
+    openPopover() {
+      this.setState({editPopoverOpen: true});
+      this.setState({targetField: homework[this.targetField]});
+    }
 
-    function handleDueDateChange(date) {
-      const newDueDate = new Date(date);
-      if (newDueDate.getTime() === dateOrthodox.getTime()) { return; }
-      homework.dueDate = newDueDate;
+    handleFieldChange(f) { console.error("hadnleFieldChange is not implemented on type " + this.typeof) }
+  }
+
+  class AssignmentTextField extends AssignmentField {
+  
+    sanitizeFieldName() {
+      if (this.targetField === "estTime") { return "estimated time"; }
+      if (this.targetField === "description") { return "description"; }
+      return "unknown field"
+    }
+
+    handleFieldChange() {
+      this.setState({editPopoverOpen: false});
+      if (this.state.targetField === homework[this.targetField]) { return; }
+      homework[this.targetField] = this.state.targetField;
       currentUser.updateHomework(homework).then(() => {
-        notifSuccess("Assignment Updated", `Changed due date to: "${getSlashDateString(newDueDate)}"`)
+        notifSuccess("Assignment Updated", `Changed ${this.sanitizeFieldName()} to: "${this.state.targetField}"`)
       });
     }
 
+    getSelectLabel() {
+      if (this.targetField === "estTime") { return "Est Time"; }
+      if (this.targetField === "description") { return "Description"; }
+    }
+  
+    render() {
+      return (
+        <Table.Td className="hover-clickable" onClick={this.openPopover.bind(this)}>
+          <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
+            <Popover.Target>
+              <Text>{homework[this.targetField]}</Text>
+            </Popover.Target>
+            <Popover.Dropdown className="d-flex flex-row gap-2 align-items-end">
+              <TextInput autoFocus label={this.getSelectLabel()} value={this.state.targetField} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
+              <IconButton onClick={this.handleFieldChange.bind(this)} icon={<IconSend />} buttonProps={{size: 36}} label="Submit" />
+            </Popover.Dropdown>
+          </Popover>
+        </Table.Td>
+      )
+    }
+  }
+
+  class AssignmentBadgeField extends AssignmentField {
+  
+    sanitizeFieldName() {
+      if (this.targetField === "priority") { return "priority"; }
+      if (this.targetField === "subject") { return "subject"; }
+      if (this.targetField === "status") { return "status"; }
+      return "unknown field"
+    }
+
+    handleFieldChange(f) {
+      if (f === homework[this.targetField]) { return; }
+      homework[this.targetField] = f;
+      currentUser.updateHomework(homework).then(() => {
+        notifSuccess("Assignment Updated", `Set ${this.sanitizeFieldName()} to: "${f}"`)
+      });
+    }
+
+    getBadgeColor() {
+      switch (this.targetField) {
+        case "priority":
+          return Homework.getPriorityColor(homework.priority);
+        case "status":
+          return Homework.getStatusColor(homework);
+        case "subject":
+          return currentUser.subjects[homework.subject].color;
+        default:
+          return "#000000";
+      }
+    }
+    
+    getBadgeValue() {
+      if (this.targetField === "subject") { return currentUser.subjects[homework.subject].title; }
+      return homework[this.targetField];
+    }
+    
+    getSelectValues() {
+      if (this.targetField === "subject") { return Object.keys(currentUser.subjects); }
+      if (this.targetField === "status") { return Object.values(HomeworkStatus); }
+      if (this.targetField === "priority") { return Object.values(HomeworkPriority); }
+    }
+
+    PopoverTarget = () => {
+      if (this.targetField === "subject") {
+        return <Popover.Target>
+          <Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge>
+        </Popover.Target>
+      }
+      return <Popover.Target>
+        <Badge color={this.getBadgeColor()}>{this.getBadgeValue()}</Badge>
+      </Popover.Target>
+    }
+
+    getSelectLabel() {
+      if (this.targetField === "subject") { return "Subject"; }
+      if (this.targetField === "status") { return "Status"; }
+      if (this.targetField === "priority") { return "Priority"; }
+    }
+
+    render() {
+      return (
+        <Table.Td className="hover-clickable" onClick={this.openPopover.bind(this)}>
+          <Popover position="bottom-start" opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
+            <this.PopoverTarget />
+            <Popover.Dropdown>
+              <Select label={this.getSelectLabel()} data={this.getSelectValues()} value={this.getBadgeValue()} onChange={this.handleFieldChange.bind(this)} />
+            </Popover.Dropdown>
+          </Popover>
+        </Table.Td>
+      )
+    }
+  }
+  
+  class AssignmentDateField extends AssignmentField {
+    
+    handleFieldChange(date) {
+      this.setState({editPopoverOpen: false});
+      if (date === homework[this.targetField]) { return; }
+      homework[this.targetField] = date;
+      const dateType = this.targetField === "startDate" ? "start" : "due";
+      currentUser.updateHomework(homework).then(() => {
+        notifSuccess("Assignment Updated", `Changed ${dateType} date to: "${getSlashDateString(date)}"`)
+      });
+    }
+    
+    getDateString() {
+      if (!homework[this.targetField]) { return ""; }
+      return getSlashDateString(getOrthodoxDate(homework[this.targetField]));
+    }
+
+    getDateInputLabel() {
+      if (this.targetField === "startDate") { return "Start Date"; }
+      if (this.targetField === "dueDate") { return "Due Date"; }
+    }
+
+    getEmptyStringPlaceholder() {
+      if (this.targetField === "startDate") { return "When will you start?" }
+      if (this.targetField === "dueDate") { return "When is it due?" }
+    }
+
+    render() {
+      return (
+        <Table.Td className="hover-clickable" onClick={this.openPopover.bind(this)}>
+          <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
+            <Popover.Target>
+              <Text>{this.getDateString()}</Text>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <DateInput autoFocus onChange={this.handleFieldChange.bind(this)} label={this.getDateInputLabel()} id="start-date" w={"100%"} placeholder={homework[this.targetField] ? this.getDateString() : this.getEmptyStringPlaceholder()}/>
+            </Popover.Dropdown>
+          </Popover>
+        </Table.Td>
+      )
+    }
+  }
+
+  const AssignmentActions = () => {
+
     return (
-    <Table.Td className="hover-clickable">
-        <Popover opened={dueDatePickerOpen}>
-          <Popover.Target>
-            <div className="w-100 h-100 d-flex align-items-start" onClick={() => setDueDatePickerOpen(!dueDatePickerOpen)}>
-              {homework.dueDate ? dueDateString : ""}
-            </div>
-          </Popover.Target>
-          <Popover.Dropdown>
-          <IconX onClick={() => setDueDatePickerOpen(false)} style={{cursor: "pointer", position: "absolute", top: "0.5rem", right: "0.5rem"}}/>
-            <DateInput autoFocus onChange={handleDueDateChange} label="Due Date" id="due-date" w={"100%"} placeholder={homework.dueDate ? dueDateString : "When is it due?"}/>
-          </Popover.Dropdown>
-        </Popover>
+      <Table.Td className="d-flex gap-2">
+        <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} buttonProps={{color: "yellow"}} label="Start Assignment" /> }
+         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconClockCancel />} buttonProps={{color: "gray"}} label="Pause Assignment" /> }
+        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} buttonProps={{color: "green"}} label="Complete Assignment" />
       </Table.Td>
     )
   }
-
-  const AssignmentActions = () => (
-    <Table.Td>
-      <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
-    </Table.Td>
-  )
 
   return (
     <Table.Tr>
-      <AssignmentSubject />
-      <AssignmentDescription />
-      <AssignmentStatus />
-      <AssignmentEstimatedTime />
-      <AssignmentPriority />
-      <AssignmentStartDate />
-      <AssignmentDueDate />
+      <AssignmentBadgeField field="subject" />
+      <AssignmentTextField field="description" />
+      <AssignmentBadgeField field="status" />
+      <AssignmentTextField field="estTime" />
+      <AssignmentBadgeField field="priority" />
+      <AssignmentDateField field="startDate" />
+      <AssignmentDateField field="dueDate" />
       <AssignmentActions />
     </Table.Tr>
   )

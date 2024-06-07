@@ -106,6 +106,24 @@ export class Homework {
       currentUser.removeHomework(this).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`))
     }
   }
+
+  /** Start this homework assignment on a user */
+  handleStart(currentUser: User) {
+    if (!currentUser) { console.error("No user found for homework assignment"); return; }
+    currentUser.startHomework(this).then(() => notifSuccess("Assignment Started", `Started assignment: "${this.description}"`));
+  }
+
+  /** Complete this homework assignment on a user */
+  handleComplete(currentUser: User) {
+    if (!currentUser) { console.error("No user found for homework assignment"); return; }
+    currentUser.completeHomework(this).then(() => notifSuccess("Assignment Completed", `Completed assignment: "${this.description}"`));
+  }
+
+  /** Pause this homework assignment on a user */
+  handlePause(currentUser: User) {
+    if (!currentUser) { console.error("No user found for homework assignment"); return; }
+    currentUser.pauseHomework(this).then(() => notifSuccess("Assignment Paused", `Paused assignment: "${this.description}"`));
+  }
 }
 
 export class HomeworkSubject {
