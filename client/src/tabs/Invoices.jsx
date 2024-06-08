@@ -15,6 +15,8 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import IconButton from '../components/IconButton.jsx';
 import { FirstPage } from '../components/invoices/PaymentProcess.jsx';
+import { navigationItems } from '../components/Navigation.jsx';
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
 
 export default function Invoices() {
 
@@ -207,6 +209,7 @@ export default function Invoices() {
 
   return [
     <PayModal key="pay-modal"/>,
+    <CRMBreadcrumbs key="breadcrumbs" items={[{title: "Invoices", href: navigationItems.INVOICES}]} />,
     <hgroup key="invoices-headers" className="d-flex align-items-center flex-column">
       <h2>Invoices</h2>
       <p>This is a list of all invoices: paid and unpaid. They are sorted by invoice number.</p>

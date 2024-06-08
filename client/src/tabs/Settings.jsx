@@ -8,6 +8,8 @@ import { auth } from '../api/firebase'
 
 // Component Imports
 import { CurrentUserContext } from '../App'
+import { CRMBreadcrumbs } from '../components/Breadcrumbs'
+import { navigationItems } from '../components/Navigation'
 
 export default function Settings() {
 
@@ -15,6 +17,8 @@ export default function Settings() {
 
   return (
     <div className="d-flex flex-column gap-2 align-items-center justify-content-center">
+
+      <CRMBreadcrumbs items={[{title: "Settings", href: navigationItems.SETTINGS}]} />
 
       <SettingsIntro currentUser={currentUser} />
       <SettingsAvatar currentUser={currentUser} />

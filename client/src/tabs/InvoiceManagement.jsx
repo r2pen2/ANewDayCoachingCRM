@@ -16,6 +16,7 @@ import { notifSuccess } from '../components/Notifications.jsx'
 // Style Imports
 import '@mantine/dates/styles.css';
 import IconButton from '../components/IconButton.jsx'
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx'
 
 export default function InvoiceManagement() {
   
@@ -151,6 +152,7 @@ export default function InvoiceManagement() {
 
   return (
     <div>
+      <CRMBreadcrumbs items={[{title: "Invoice Management", href: navigationItems.ADMININVOICES}]} />
       <h2>Invoice Management</h2>
       <Button onClick={() => setCreateMenuOpen(true)}>Create A New Invoice</Button>
       <Modal opened={createMenuOpen} onClose={handleCreateModalClose} title="Create A New Invoice">

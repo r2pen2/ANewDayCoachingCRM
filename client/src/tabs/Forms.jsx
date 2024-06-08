@@ -14,6 +14,8 @@ import { hostname } from '../api/db/dbManager.ts'
 import "../assets/style/forms.css"
 import { notifSuccess } from '../components/Notifications.jsx'
 import { getFormById } from '../api/forms.ts'
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx'
+import { navigationItems } from '../components/Navigation.jsx'
 
 /** How much confetti to add when a form is completed */
 const dConfetti = 500;
@@ -101,6 +103,7 @@ export default function Forms() {
   
   return (
     <div>
+      <CRMBreadcrumbs items={[{title: "Forms", href: navigationItems.FORMS}]} />
       <Confetti recycle={false} numberOfPieces={confettiLeft} />
       <Header />
       <div className="container-fluid">

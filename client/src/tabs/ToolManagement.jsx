@@ -14,6 +14,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import "../assets/style/toolsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
 
 export default function ToolManagement() {
   
@@ -148,6 +149,7 @@ export default function ToolManagement() {
   return (
 
     <div>
+      <CRMBreadcrumbs items={[{title: "Tool Management", href: navigationItems.ADMINTOOLS}]} />
       <h2>Tool Management</h2>
       <form onSubmit={addTool} className="gap-2 d-flex flex-column">
         <TextInput id="name" label="Tool Name" placeholder="Enter the tool name" required />

@@ -14,6 +14,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import "../assets/style/formsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
 
 export default function FormManagement() {
 
@@ -158,6 +159,7 @@ export default function FormManagement() {
 
   return (
     <div>
+      <CRMBreadcrumbs items={[{title: "Form Management", href: navigationItems.ADMINFORMS}]} />
       <h2>Form Management</h2>
       <Table.ScrollContainer minWidth={500} type="native">
         <Table striped>

@@ -10,6 +10,8 @@ import { AddHomeworkModal, AddSubjectModal } from '../components/dashboard/Homew
 import '@mantine/carousel/styles.css';
 import "../assets/style/dashboard.css";
 import DocumentsList from '../components/dashboard/DocumentsList.jsx';
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
+import { navigationItems } from '../components/Navigation.jsx';
 
 export default function Dashboard() {
   
@@ -18,6 +20,7 @@ export default function Dashboard() {
 
   return (
     <div>
+      <CRMBreadcrumbs items={[{title: "Dashboard", href: navigationItems.DASHBOARD}]} />
       <AddSubjectModal open={subjectAddMenuOpen} close={() => setSubjectAddMenuOpen(false)} />
       <AddHomeworkModal open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
       <Tracker setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>

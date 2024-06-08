@@ -2,6 +2,8 @@ import { navigationItems } from "../components/Navigation"
 
 export function getTab() {
   
+  if (window.location.hash.includes("drive-admin")) return navigationItems.ADMINDRIVE
+  if (window.location.hash.includes("users-admin")) return navigationItems.ADMINUSERS
   if (window.location.hash.includes("tools-admin")) return navigationItems.ADMINTOOLS
   if (window.location.hash.includes("forms-admin")) return navigationItems.ADMINFORMS
   if (window.location.hash.includes("invoices-admin")) return navigationItems.ADMININVOICES

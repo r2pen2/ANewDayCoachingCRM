@@ -3,6 +3,7 @@ import { IconSearch } from '@tabler/icons-react';
 import React from 'react'
 import { User } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
+import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
 
 export default function UserManagement() {
 
@@ -43,6 +44,7 @@ export default function UserManagement() {
 
   return (
     <div>
+      <CRMBreadcrumbs items={[{title: "User Management", href: navigationItems.ADMINUSERS}]} />
       <h2>User Management</h2>
       <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
       <UserSearchResults />
