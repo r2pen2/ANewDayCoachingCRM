@@ -150,7 +150,6 @@ export default function ToolManagement() {
 
     <div>
       <CRMBreadcrumbs items={[{title: "Tool Management", href: navigationItems.ADMINTOOLS}]} />
-      <h2>Tool Management</h2>
       <form onSubmit={addTool} className="gap-2 d-flex flex-column">
         <TextInput id="name" label="Tool Name" placeholder="Enter the tool name" required />
         <TextInput id="description" label="Tool Description" placeholder="Enter the tool description" required />

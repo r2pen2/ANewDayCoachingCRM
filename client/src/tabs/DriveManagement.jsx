@@ -6,7 +6,6 @@ export default function DriveManagement() {
   return (
     <div>
       <CRMBreadcrumbs items={[{title: "Drive Management", href: navigationItems.ADMINDRIVE}]} />
-      <h2>Drive Management</h2>
     </div>
   )
 }

@@ -211,7 +211,6 @@ export default function Invoices() {
     <PayModal key="pay-modal"/>,
     <CRMBreadcrumbs key="breadcrumbs" items={[{title: "Invoices", href: navigationItems.INVOICES}]} />,
     <hgroup key="invoices-headers" className="d-flex align-items-center flex-column">
-      <h2>Invoices</h2>
       <p>This is a list of all invoices: paid and unpaid. They are sorted by invoice number.</p>
       <BalanceDisplay />
       <BalanceExplanation />

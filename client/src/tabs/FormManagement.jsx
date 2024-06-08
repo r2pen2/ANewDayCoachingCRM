@@ -160,7 +160,6 @@ export default function FormManagement() {
   return (
     <div>
       <CRMBreadcrumbs items={[{title: "Form Management", href: navigationItems.ADMINFORMS}]} />
-      <h2>Form Management</h2>
       <Table.ScrollContainer minWidth={500} type="native">
         <Table striped>
           <Table.Thead>

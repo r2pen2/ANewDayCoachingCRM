@@ -96,7 +96,6 @@ export default function Forms() {
   /** Header that describes the Forms page */
   const Header = () => (
     <hgroup className="d-flex align-items-center flex-column">
-      <h2>Forms</h2>
       <p>This is a list of all forms assigned to a given client The client can use this page to fill them out for the first time, confirm that they've been filled, and view them at any point.</p>
     </hgroup>
   )

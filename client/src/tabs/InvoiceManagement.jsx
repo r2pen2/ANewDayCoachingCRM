@@ -153,7 +153,6 @@ export default function InvoiceManagement() {
   return (
     <div>
       <CRMBreadcrumbs items={[{title: "Invoice Management", href: navigationItems.ADMININVOICES}]} />
-      <h2>Invoice Management</h2>
       <Button onClick={() => setCreateMenuOpen(true)}>Create A New Invoice</Button>
       <Modal opened={createMenuOpen} onClose={handleCreateModalClose} title="Create A New Invoice">
         <form onSubmit={createInvoice} className="gap-2 d-flex flex-column">

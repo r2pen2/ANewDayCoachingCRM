@@ -34,7 +34,6 @@ export default function Settings() {
 }
 
 const SettingsIntro = ({currentUser}) => [
-  <h1 key="settings-header">Settings</h1>,
   <p key="settings-display-name">Welcome, {currentUser.personalData.displayName}!</p>,
   <p key="settings-directions">Here you can change your name, profile picture, and darkmode preference.</p>
 ];
