@@ -90,6 +90,8 @@ export class User {
         endpoint = "search-forms";
       } else if (navPage === navigationItems.ADMINTOOLS) {
         endpoint = "search-tools";
+      } else if (navPage === navigationItems.ADMINUSERS) {
+        endpoint = "search-users";
       }
 
       fetch(hostname + `/users/${endpoint}`).then((response) => {

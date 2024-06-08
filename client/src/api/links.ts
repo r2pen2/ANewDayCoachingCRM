@@ -34,5 +34,18 @@ export class LinkMaster {
         url = "https://" + url;
     }
     return url;
-}
+  }
+
+  static async getPageTitle(url: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => { 
+      fetch(url)
+        .then((response) => response.text())
+        .then((html) => {
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const title = doc.querySelectorAll('title')[0];
+          resolve(title.innerText);
+        }
+      );
+    })
+  }
 }
