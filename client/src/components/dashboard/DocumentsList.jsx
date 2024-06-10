@@ -3,6 +3,7 @@ import { CurrentUserContext } from '../../App';
 import { Paper, Spoiler, Text, Tooltip } from '@mantine/core';
 import { DocumentType } from '../../api/db/dbDocument.ts';
 import { LinkMaster } from '../../api/links.ts';
+import DashboardSectionHeader from './DashboardSectionHeader.jsx';
 
 export default function DocumentsList() {
   
@@ -18,7 +19,7 @@ export default function DocumentsList() {
   }
 
   return [
-    <h3 style={{marginTop: "2rem"}} key='documents-header'>My Shared Drive</h3>,
+    <DashboardSectionHeader key="documents-header">My Shared Drive</DashboardSectionHeader>,
     <Spoiler key="documents" maxHeight={120} showLabel="See All Shared" hideLabel="Hide">
       <div className="container-fluid">
         <div className="row">
@@ -50,8 +51,8 @@ const DocumentCard = ({d}) => {
   }
 
   return (
-    <div className="col-6 col-md-4 col-lg-3 col-xl-2 mb-2">
-      <Paper className="p-2 h-100" withBorder style={{cursor: "pointer"}} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(d.href), "_blank")}>
+    <div className="col-6 col-md-4 mb-2">
+      <Paper className="p-2 h-100" withBorder style={{cursor: "pointer", background: "#e9eef6"}} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(d.href), "_blank")}>
         <div className="d-flex justify-content-between" style={{overflow: 'hidden'}}>
           <Text style={{width: "100%", overflow:"hidden", textOverflow: "ellipsis", whiteSpace: 'nowrap'}}>{d.title}</Text>
           <Tooltip label={d.type}>

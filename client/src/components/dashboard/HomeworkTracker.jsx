@@ -1,6 +1,6 @@
 // Library Imports
 import React, { Component, useState } from "react";
-import { Badge, Button, ColorPicker, Paper, Popover, Radio, Select, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { Badge, Button, ColorPicker, Divider, Paper, Popover, Radio, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconCheck, IconClock, IconClockCancel, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
@@ -12,6 +12,7 @@ import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
 import { shouldUseBlackText } from "../../api/color.ts";
 import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
+import DashboardSectionHeader from "./DashboardSectionHeader.jsx";
 
 /**
  * A card that displays a subject
@@ -425,21 +426,20 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   }
 
   return [
-    <div className="d-flex justify-content-between" key="headers">
-    <h3>Assignment Tracker</h3>
-    <div className="d-flex gap-2 align-items-center">
-      <Tooltip label="Show/Hide Completed Assignments">
-        <Radio checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} />
-      </Tooltip>
-      <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
-      <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
-      <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
-    </div>
-  </div>,
-  <div className="d-flex gap-2" key="controls">
-    <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
-    <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
-  </div>,
+    <DashboardSectionHeader key="assignemts-header">My Assignments</DashboardSectionHeader>,
+    <div className="d-flex gap-2" key="controls">
+      <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
+      <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
+      <Divider orientation="vertical" />
+      <div className="d-flex gap-2 align-items-center">
+        <Tooltip label="Show/Hide Completed Assignments">
+          <div><Switch checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} /></div>
+        </Tooltip>
+        <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
+        <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
+        <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
+      </div>
+    </div>,
     <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
     <Spoiler maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" >
       <Table.ScrollContainer minWidth={500} type="native" key="table">

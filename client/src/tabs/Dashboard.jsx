@@ -12,6 +12,7 @@ import "../assets/style/dashboard.css";
 import DocumentsList from '../components/dashboard/DocumentsList.jsx';
 import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
 import { navigationItems } from '../components/Navigation.jsx';
+import ExternalToolsList from '../components/dashboard/ExternalToolsList.jsx';
 
 export default function Dashboard() {
   
@@ -25,7 +26,16 @@ export default function Dashboard() {
       <AddHomeworkModal open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
       <Tracker setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>
       <ToolsList />
-      <DocumentsList />
+      <div className="container-fluid">
+        <div className="row">
+          <div className="mt-3 col-12 col-xl-6">
+            <DocumentsList />
+          </div>
+          <div className="mt-3 col-12 col-xl-6">
+            <ExternalToolsList />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

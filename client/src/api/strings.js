@@ -21,7 +21,8 @@ export function getSlashDateString(date) {
 /** Get the time HH:MM of a date */
 export function getTimeString(date) {
   date = new Date(date)
-  return `${date.getHours() % 12}:${date.getMinutes()}${date.getHours() >= 13 ? "PM" : "AM"}`
+  const mins = date.getMinutes()
+  return `${date.getHours() % 12}:${mins < 10 ? "0" : ""}${mins}${date.getHours() >= 13 ? "PM" : "AM"}`
 }
 
 /**
@@ -71,7 +72,7 @@ export function getEventTime(date) {
 
 // Regular expressions to match patterns
 export const priorityPattern = /!low|!med(ium)?|!high/i;
-export const datePattern = /\b(start|due):(\d{1,2}\/\d{2}(\/(\d{4}|\d{2}))?)/gi;
+export const datePattern = /\b(s|start|d|due):(\d{1,2}\/\d{1,2}(\/(\d{4}|\d{2}))?|tod(ay)?|tom(orrow)?|yes(terday)?|((next )?|(last )?)mon(day)?|((next )?|(last )?)tue(sday)?|((next )?|(last )?)wed(nesday)?|((next )?|(last )?)thu(rsday)?|((next )?|(last )?)fri(day)?|((next )?|(last )?)sat(urday)?|((next )?|(last )?)sun(day)?)/gi;
 export const subjectPattern = /#(\w+)/;
 
 export function parseQuickEntry(string) {
@@ -98,7 +99,69 @@ export function parseQuickEntry(string) {
 
   // Function to handle date parsing and adjustment
   function parseAndAdjustDate(dateStr) {
+    if (!dateStr) { return; }
+    
+    const keywords = ["today", "tod", "tomorrow", "tom", "yesterday", "yes", "monday", "mon", "tuesday", "tue", "wednesday", "wed", "thursday", "thu", "friday", "fri", "saturday", "sat", "sunday", "sun"];
+    const hasNext = dateStr.indexOf("next") !== -1;
+    const hasLast = dateStr.indexOf("last") !== -1;
+    if (hasNext && hasLast) { return; }  // Can't have both next and last
+    dateStr = dateStr.replace("next ", "").replace("last ", "");
+
+    const str = dateStr.toLowerCase();
+    if (keywords.includes(str)) {
+
+      function getWeekdayByOffset(n) {      
+        const d = new Date();
+        d.setDate(d.getDate() + (n + 7 - d.getDay()) % 7);
+        if (d.getDate() === new Date().getDate()) { d.setDate(d.getDate() + 7); }
+        if (hasNext) { d.setDate(d.getDate() + 7); }
+        if (hasLast) { d.setDate(d.getDate() - 7); }
+        return d;
+      }
+
+      // This is a special case
+      let today = new Date();
+      switch(str) {
+        case "today":
+        case "tod":
+          return new Date();;
+        case "tomorrow":
+        case "tom":
+          today.setDate(today.getDate() + 1);
+          return today;
+        case "yesterday":
+        case "yes":
+          today.setDate(today.getDate() - 1);
+          return today;
+        case "monday":
+        case "mon":
+          return getWeekdayByOffset(1)
+        case "tuesday":
+        case "tue":
+          return getWeekdayByOffset(2)
+        case "wednesday":
+        case "wed":
+          return getWeekdayByOffset(3)
+        case "thursday":
+        case "thu":        
+          return getWeekdayByOffset(4)
+        case "friday":
+        case "fri":
+          return getWeekdayByOffset(5)
+        case "saturday":
+        case "sat":
+          return getWeekdayByOffset(6)
+        case "sunday":
+        case "sun":
+          return getWeekdayByOffset(7)
+        default:
+          return;
+      }
+    }
+
+
     let [month, day, year] = dateStr.split('/');
+    if (month > 12) { return; }
     let yearUndefined = false;
     if (year === undefined) { year = new Date().getFullYear(); yearUndefined = true; }
     if (year.length === 2) { year = `20${year}`; }
@@ -118,9 +181,9 @@ export function parseQuickEntry(string) {
   while ((dateMatch = datePattern.exec(description)) !== null) {
     const [fullMatch, key, dateStr] = dateMatch;
     const dateObj = parseAndAdjustDate(dateStr);
-    if (key.toLowerCase() === 'start') {
+    if (key.toLowerCase() === 'start' || key.toLowerCase() === "s") {
       startDate = dateObj;
-    } else if (key.toLowerCase() === 'due') {
+    } else if (key.toLowerCase() === 'due' || key.toLowerCase() === "d") {
       dueDate = dateObj;
     }
     // Remove the date from the description

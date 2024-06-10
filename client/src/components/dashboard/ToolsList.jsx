@@ -1,6 +1,6 @@
 // Library Imports
 import { Carousel } from "@mantine/carousel";
-import { Loader, Paper, Tooltip } from "@mantine/core";
+import { Loader, Paper, Spoiler, Tooltip } from "@mantine/core";
 import React from "react";
 import { IconStar } from "@tabler/icons-react";
 // API Imports
@@ -9,6 +9,7 @@ import { Tool } from "../../api/db/dbTool.ts";
 import { CurrentUserContext } from "../../App.jsx";
 // Style Imports
 import "../../assets/style/tools.css";
+import DashboardSectionHeader from "./DashboardSectionHeader.jsx";
 
 /** Render a list of tools in a Carousel */
 export const ToolsList = () => {
@@ -18,20 +19,22 @@ export const ToolsList = () => {
 
   /** Every tool that belongs to this user */
   const tools = Object.values(currentUser.tools);
+  
+  const ToolDisplay = () => tools.sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => <ToolCard currentUser={currentUser} key={index} tool={tool} />)
+
   return [
-    <h3 style={{marginTop: "2rem"}} key='tools-header'>My Tools</h3>,
-    <Carousel
-      key="tools-carousel"
-      slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
-      slideGap={{ base: 0, sm: 'md' }} 
-      withIndicators
-      loop
-      withControls={false}
-      dragFree
-      className="indicator-container"
-    >
-      {tools.map((tool, index) => <ToolCard currentUser={currentUser} key={index} tool={tool} />)}
-    </Carousel>
+    <div className="container-fluid" key="tools-display">
+      <div className="row">
+        <DashboardSectionHeader key='tools-header'>My Tools</DashboardSectionHeader>
+        <Spoiler maxHeight={180} showLabel="See All Tools" hideLabel="Collapse">
+          <div className="container-fluid">
+            <div className="row">
+              <ToolDisplay />
+            </div>
+          </div>
+        </Spoiler>
+      </div>
+    </div>
   ]
 }
 
@@ -45,7 +48,7 @@ const ToolCard = ({tool, currentUser}) => {
   const [loading, setLoading] = React.useState(false);
 
   /** Style for the paper component dependant on whether it's "favorited" or not */
-  const paperStyle = { marginRight: "1rem", filter: tool.starred ? "drop-shadow(0 0 0.5rem gold)" : "none" }
+  const paperStyle = { marginRight: "1rem", border: tool.starred ? "1px solid gold" : null }
 
   /** Star icon button that only displays if not loading */
   const Star = () => {
@@ -58,7 +61,7 @@ const ToolCard = ({tool, currentUser}) => {
   }
 
   return (
-    <Carousel.Slide style={{marginTop: "1rem", marginBottom: "1rem"}}>
+    <div className="col-12 col-md-6 col-lg-4 col-xl-3 mb-2">
       <Paper withBorder className={"p-2 h-100"} style={paperStyle}>
         <div className="d-flex justify-content-between">
           <strong>{tool.title}</strong>
@@ -67,6 +70,6 @@ const ToolCard = ({tool, currentUser}) => {
         </div>
         <p>{tool.description}</p>
       </Paper>
-    </Carousel.Slide>
+    </div>
   )
 }

@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.coaching-line {
+  background-color: #9FB8AD;
+  height: 5px;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
