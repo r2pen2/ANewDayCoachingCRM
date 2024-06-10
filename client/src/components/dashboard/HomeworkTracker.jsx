@@ -105,9 +105,11 @@ export const QuickEntryResults = ({quickExtract}) => {
 
   if (!quickExtract.subject && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; } // There's nothing in the quickExtract to display
 
+  const subjectColor = currentUser.subjects[quickExtract.subject].color;
+
   return (
     <div className=" align-items-center d-flex gap-2 mt-2">
-      { currentUser.subjects[quickExtract.subject] && <Badge color={currentUser.subjects[quickExtract.subject].color}>Subject: {quickExtract.subject}</Badge> }
+      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor}  style={{border: "1px solid #00000022", color: shouldUseBlackText(subjectColor) ? "#000000" : "#FFFFFF"}}>Subject: {quickExtract.subject}</Badge> }
       { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
       { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
@@ -427,21 +429,25 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
 
   return [
     <DashboardSectionHeader key="assignemts-header">My Assignments</DashboardSectionHeader>,
-    <div className="d-flex gap-2" key="controls">
-      <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
-      <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
-      <Divider orientation="vertical" />
-      <div className="d-flex gap-2 align-items-center">
-        <Tooltip label="Show/Hide Completed Assignments">
-          <div><Switch checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} /></div>
-        </Tooltip>
-        <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
-        <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
-        <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
+    <div className="container-fluid mt-md-0" key="controls">
+      <div className="row">
+        <div className="col-12 col-xl-8 mb-2 d-flex flex-row gap-2">
+          <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
+          <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
+        </div>
+        <div className="d-flex gap-2 align-items-center justify-content-end col-12 col-xl-4" style={{paddingLeft: 0}}>
+          <Divider orientation="vertical" className="d-none d-xl-block" />
+          <Tooltip label="Show/Hide Completed Assignments">
+            <div><Switch checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} /></div>
+          </Tooltip>
+          <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
+          <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
+          <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
+        </div>
       </div>
     </div>,
     <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
-    <Spoiler maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" >
+    <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" >
       <Table.ScrollContainer minWidth={500} type="native" key="table">
         <Table striped>
           <AssignmentTableHead />

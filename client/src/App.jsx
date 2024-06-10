@@ -65,7 +65,7 @@ function App() {
     <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
       <AppShell
         header={{ height: 60 }}
-        navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !burgerOpen } }}
+        navbar={{ width: 300, breakpoint: 'lg', collapsed: { mobile: !burgerOpen } }}
         padding="md"
       >
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 

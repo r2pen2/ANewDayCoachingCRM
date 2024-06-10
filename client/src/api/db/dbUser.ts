@@ -28,6 +28,8 @@ export class User {
 
   documents: any[] = [];
 
+  intents: string[] = [];
+
   personalData: any = {
     displayName: "",
     email: "",
@@ -61,6 +63,7 @@ export class User {
         subjects: this.subjects,
         numUnpaidInvoices: this.numUnpaidInvoices,
         documents: this.documents.map((d) => d.toJson()),
+        intents: this.intents,
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -118,6 +121,7 @@ export class User {
     this.homework = data.homework.map((h: any) => Homework.load(h));
     this.subjects = data.subjects;
     this.documents = data.documents.map((d: any) => Document.load(d));
+    this.intents = data.intents;
     return this;
   }
 

@@ -8,7 +8,7 @@ export default function IconButton(props) {
   const color = props.color ? props.color : props.buttonProps?.color;
 
   return (
-    <Tooltip label={props.label}>
+    <Tooltip label={props.label} className={props.className}>
       <ActionIcon {...props.buttonProps} color={color} disabled={props.disabled} onClick={props.onClick}>
         {props.icon}
       </ActionIcon>
