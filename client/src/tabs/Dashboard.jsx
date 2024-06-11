@@ -13,7 +13,6 @@ import DocumentsList from '../components/dashboard/DocumentsList.jsx';
 import ExternalToolsList from '../components/dashboard/ExternalToolsList.jsx';
 import Intent from '../components/dashboard/Intent.jsx';
 import { Carousel, CarouselSlide } from '@mantine/carousel';
-import NextMeetingNotif from '../components/dashboard/NextMeetingNotif.jsx';
 
 export default function Dashboard() {
   
@@ -23,7 +22,6 @@ export default function Dashboard() {
   return (
     <div className="container-fluid w-100">
       <div className="row">     
-        {/* <NextMeetingNotif /> */}
         <div className="d-xxl-none col-12">
           <Carousel height="auto" slideSize="90%" slideGap={10} withControls={false}>
             <CarouselSlide>
