@@ -19,6 +19,25 @@ export enum HomeworkPriority {
   HIGH = "High"
 }
 
+/**
+ * Enum representing the loader style of a homework assignment
+ */
+export enum HomeworkLoaderType {
+  CIRCLE = "oval",
+  BARS = "bars",
+  DOTS = "dots"
+}
+
+/**
+ * Enum representing the verbosity of homework priorities
+ */
+export enum HomeworkPriorityVerbosity {
+  COLORS = "Colors",
+  MINIMAL = "Minimal",
+  DEFAULT = "Default",
+  VERBOSE = "Verbose"
+}
+
 export class Homework {
   subject: string | null = null;
   dueDate: Date | null = null;
@@ -98,6 +117,20 @@ export class Homework {
       case HomeworkPriority.MEDIUM: return 2;
       case HomeworkPriority.HIGH: return 3;
     }
+  }
+
+  static getPriorityStringBySetting(priority: HomeworkPriority, verbosity: HomeworkPriorityVerbosity): string {
+    if (verbosity === HomeworkPriorityVerbosity.MINIMAL) { return "!" + priority.slice(0, 1); }
+    if (verbosity === HomeworkPriorityVerbosity.VERBOSE) { return priority + " Priority"; }
+    if (verbosity === HomeworkPriorityVerbosity.COLORS) { return ""; }
+    return priority;
+  }
+
+  static checkPriorityPulseThreshold(priority: HomeworkPriority, threshold: HomeworkPriority): boolean {
+    if (threshold === HomeworkPriority.LOW) { return true; }
+    if (threshold === HomeworkPriority.MEDIUM && priority !== HomeworkPriority.LOW) { return true; }
+    if (threshold === HomeworkPriority.HIGH && priority === HomeworkPriority.HIGH) { return true; }
+    return false;
   }
 
   /** Remove this homework assignment from a user */

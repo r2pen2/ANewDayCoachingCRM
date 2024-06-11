@@ -2,7 +2,7 @@
 import React from 'react';
 
 // Component Imports
-import { Tracker } from '../components/dashboard/HomeworkTracker.jsx';
+import { Tracker } from '../components/dashboard/HomeworkTrackerV2.jsx';
 import { ToolsList } from '../components/dashboard/ToolsList.jsx';
 import { AddHomeworkModal, AddSubjectModal } from '../components/dashboard/HomeworkTrackerModals.jsx';
 

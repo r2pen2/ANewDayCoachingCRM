@@ -21,6 +21,9 @@
 .hover-clickable {
   cursor: pointer;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hover-clickable::after {
@@ -31,6 +34,7 @@
   right: 0;
   bottom: 0;
   background: none;
+  transform: scale(1.1);
   z-index: 1;
   transition: all 0.5s ease;
 }
@@ -38,6 +42,7 @@
 .hover-clickable:hover::after {
   pointer-events: none;
   background: rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
 }
 
 .top-green {
@@ -58,4 +63,12 @@
 
 .green-bg {
   background-color: #D6E3D1;
+}
+
+.border-gray-top {
+  border-top: 1px solid #00000022;
+}
+
+.border-gray-bottom {
+  border-bottom: 1px solid #00000022;
 }

@@ -3,7 +3,7 @@ import { Homework, HomeworkPriority, HomeworkSubject } from "../../api/db/dbHome
 import { notifSuccess } from "../Notifications.jsx";
 import { DateInput } from "@mantine/dates";
 import React from "react";
-import { PickerMenu, SubjectCard } from "./HomeworkTracker.jsx";
+import { PickerMenu, SubjectCard } from "./HomeworkTrackerV2.jsx";
 import { IconSend } from "@tabler/icons-react";
 import IconButton from "../IconButton.jsx";
 import { CurrentUserContext } from "../../App.jsx";

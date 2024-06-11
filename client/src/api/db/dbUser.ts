@@ -4,7 +4,7 @@ import { DocumentReference, doc, getDoc, onSnapshot, setDoc } from "firebase/fir
 import { navigationItems } from "../../components/Navigation";
 import { hostname } from "./dbManager.ts";
 import { FormAssignment } from "./dbFormAssignment.ts";
-import { Homework, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
+import { Homework, HomeworkLoaderType, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
 import { Document } from "./dbDocument.ts";
 
 export class User {
@@ -24,7 +24,12 @@ export class User {
 
   homework: Homework[] = [];
 
-  subjects: { [key: string]: any } = {}
+  subjects: { [key: string]: any } = {
+    "todo": { 
+      color: "#ffffff",
+      title: "todo",
+    }
+  }
 
   documents: any[] = [];
 
@@ -39,6 +44,13 @@ export class User {
     city: "",
     state: "",
     zip: "",
+  }
+
+  settings: any = {
+    darkMode: false,
+    priorityVerbosity: HomeworkPriorityVerbosity.DEFAULT,
+    priorityPulseThreshold: HomeworkPriority.HIGH,
+    homeworkLoaderType: HomeworkLoaderType.CIRCLE,
   }
 
   constructor(firebaseUser: any) {
@@ -64,6 +76,7 @@ export class User {
         numUnpaidInvoices: this.numUnpaidInvoices,
         documents: this.documents.map((d) => d.toJson()),
         intents: this.intents,
+        settings: this.settings,
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -122,6 +135,7 @@ export class User {
     this.subjects = data.subjects;
     this.documents = data.documents.map((d: any) => Document.load(d));
     this.intents = data.intents;
+    this.settings = data.settings;
     return this;
   }
 

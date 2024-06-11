@@ -1,9 +1,9 @@
 // Library Imports
 import React, { Component, useState } from "react";
-import { Badge, Button, ColorPicker, Divider, Paper, Popover, Radio, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconCheck, IconClock, IconClockCancel, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
+import { Badge, Button, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Radio, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAB, IconAlignJustified, IconCheck, IconClock, IconClockCancel, IconClockCheck, IconClockDown, IconClockUp, IconDotsCircleHorizontal, IconEdit, IconHourglass, IconHourglassEmpty, IconPlus, IconQuote, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
-import { Homework, HomeworkPriority, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
+import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
 import { notifSuccess } from "../Notifications";
 import { CurrentUserContext } from "../../App";
@@ -13,6 +13,7 @@ import { shouldUseBlackText } from "../../api/color.ts";
 import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
 import DashboardSectionHeader from "./DashboardSectionHeader.jsx";
+import { Tool } from "../../api/db/dbTool.ts";
 
 /**
  * A card that displays a subject
@@ -103,13 +104,13 @@ export const QuickEntryResults = ({quickExtract}) => {
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
 
-  if (!quickExtract.subject && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; } // There's nothing in the quickExtract to display
+  if (!currentUser.subjects[quickExtract.subject] && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; } // There's nothing in the quickExtract to display
 
   const subjectColor = currentUser.subjects[quickExtract.subject].color;
 
   return (
-    <div className=" align-items-center d-flex gap-2 mt-2">
-      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor}  style={{border: "1px solid #00000022", color: shouldUseBlackText(subjectColor) ? "#000000" : "#FFFFFF"}}>Subject: {quickExtract.subject}</Badge> }
+    <div className="align-items-center d-flex gap-2 mt-2">
+      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: "1px solid #00000022", color: shouldUseBlackText(subjectColor) ? "#000000" : "#FFFFFF"}}>Subject: {quickExtract.subject}</Badge> }
       { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
       { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
@@ -117,22 +118,7 @@ export const QuickEntryResults = ({quickExtract}) => {
   )
 }
 
-export const AssignmentTableHead = () => (
-  <Table.Thead>
-    <Table.Tr>
-      <Table.Th style={{minWidth: 100}}>Subject</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Assignment</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Status</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Est Time</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Priority</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Start Date</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Due Date</Table.Th>
-      <Table.Th style={{minWidth: 100}}>Actions</Table.Th>
-    </Table.Tr>
-  </Table.Thead>
-)
-
-export function AssignmentRow({homeworkJson}) {
+export function Assignment({homeworkJson}) {
 
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
@@ -183,18 +169,36 @@ export function AssignmentRow({homeworkJson}) {
     }
   
     render() {
-      return (
-        <Table.Td className="hover-clickable" onClick={this.openPopover.bind(this)}>
+      const fieldName = this.sanitizeFieldName();
+      if (!homework[this.targetField] || homework[this.targetField].length === 0) {
+        return <div className="hover-clickable" onClick={this.openPopover.bind(this)}>
           <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
             <Popover.Target>
-              <Text>{homework[this.targetField]}</Text>
+              <Tooltip label={`Set ${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`}>
+                { this.targetField === "estTime" ? <IconHourglassEmpty /> : <IconAlignJustified /> }
+              </Tooltip>
             </Popover.Target>
             <Popover.Dropdown className="d-flex flex-row gap-2 align-items-end">
               <TextInput autoFocus label={this.getSelectLabel()} value={this.state.targetField} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
               <IconButton onClick={this.handleFieldChange.bind(this)} icon={<IconSend />} buttonProps={{size: 36}} label="Submit" />
             </Popover.Dropdown>
           </Popover>
-        </Table.Td>
+        </div>
+      }
+      return (
+        <div className="hover-clickable" onClick={this.openPopover.bind(this)}>
+          <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
+            <Popover.Target>
+              <Tooltip label={`Edit ${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`}>              
+                <Text>{homework[this.targetField]}</Text>
+              </Tooltip>
+            </Popover.Target>
+            <Popover.Dropdown className="d-flex flex-row gap-2 align-items-end">
+              <TextInput autoFocus label={this.getSelectLabel()} value={this.state.targetField} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
+              <IconButton onClick={this.handleFieldChange.bind(this)} icon={<IconSend />} buttonProps={{size: 36}} label="Submit" />
+            </Popover.Dropdown>
+          </Popover>
+        </div>
       )
     }
   }
@@ -234,6 +238,14 @@ export function AssignmentRow({homeworkJson}) {
     
     getBadgeValue() {
       if (this.targetField === "subject") { return currentUser.subjects[homework.subject].title; }
+      if (this.targetField === "priority") {
+        return Homework.getPriorityStringBySetting(homework.priority, currentUser.settings.priorityVerbosity)
+      }
+      return homework[this.targetField];
+    }
+
+    getSelectValue() {
+      if (this.targetField !== "priority") { return this.getBadgeValue(); }
       return homework[this.targetField];
     }
     
@@ -244,13 +256,27 @@ export function AssignmentRow({homeworkJson}) {
     }
 
     PopoverTarget = () => {
+      const fieldName = this.sanitizeFieldName();
       if (this.targetField === "subject") {
         return <Popover.Target>
-          <Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge>
+          <Tooltip label="Edit Subject">
+            <Badge color={subject.color} style={{border: "1px solid #00000022", color: shouldUseBlackText(subject.color) ? "#000000" : "#FFFFFF"}}>{subject.title}</Badge>
+          </Tooltip>
+        </Popover.Target>
+      }
+      if (this.targetField === "priority" && currentUser.settings.priorityVerbosity === HomeworkPriorityVerbosity.COLORS) {
+        return <Popover.Target>
+          <Tooltip label="Edit Priority" position="bottom">
+            <div className="p-2 d-flex flex-row align-items-center justify-content-center">
+              <Indicator processing={Homework.checkPriorityPulseThreshold(homework.priority, currentUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
+            </div>
+          </Tooltip>
         </Popover.Target>
       }
       return <Popover.Target>
-        <Badge color={this.getBadgeColor()}>{this.getBadgeValue()}</Badge>
+        <Tooltip position="bottom" label={`Edit ${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`}>
+          <Badge color={this.getBadgeColor()}>{this.getBadgeValue()}</Badge>
+        </Tooltip>
       </Popover.Target>
     }
 
@@ -262,14 +288,14 @@ export function AssignmentRow({homeworkJson}) {
 
     render() {
       return (
-        <Table.Td className="hover-clickable" onClick={this.openPopover.bind(this)}>
+        <div className="hover-clickable" onClick={this.openPopover.bind(this)}>
           <Popover position="bottom-start" opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
             <this.PopoverTarget />
             <Popover.Dropdown>
-              <Select label={this.getSelectLabel()} data={this.getSelectValues()} value={this.getBadgeValue()} onChange={this.handleFieldChange.bind(this)} />
+              <Select label={this.getSelectLabel()} data={this.getSelectValues()} value={this.getSelectValue()} onChange={this.handleFieldChange.bind(this)} />
             </Popover.Dropdown>
           </Popover>
-        </Table.Td>
+        </div>
       )
     }
   }
@@ -296,23 +322,56 @@ export function AssignmentRow({homeworkJson}) {
       if (this.targetField === "dueDate") { return "Due Date"; }
     }
 
+    getDateInputLabelShort() {
+      if (!homework[this.targetField]) { return ""; }
+      if (this.targetField === "startDate") { return "Start: "; }
+      if (this.targetField === "dueDate") { return "Due: "; }
+    }
+
     getEmptyStringPlaceholder() {
       if (this.targetField === "startDate") { return "When will you start?" }
       if (this.targetField === "dueDate") { return "When is it due?" }
     }
 
+    getTooltipLabel() {
+      if (!homework[this.targetField]) { 
+        if (this.targetField === "startDate") { return "Set Start Date"; }
+        if (this.targetField === "dueDate") { return "Set Due Date"; }
+      }
+      if (this.targetField === "startDate") { return "Edit Start Date"; }
+      if (this.targetField === "dueDate") { return "Edit Due Date"; }
+    }
+
     render() {
+      if (!homework[this.targetField]) { 
+        return (
+          <div className="hover-clickable" onClick={this.openPopover.bind(this)}>
+            <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
+              <Popover.Target>
+                <Tooltip position="bottom" label={this.getTooltipLabel()}>
+                  { this.targetField === "startDate" ? <IconClockUp /> : <IconClockDown /> }
+                </Tooltip>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <DateInput autoFocus onChange={this.handleFieldChange.bind(this)} label={this.getDateInputLabel()} id="start-date" w={"100%"} placeholder={homework[this.targetField] ? this.getDateString() : this.getEmptyStringPlaceholder()}/>
+              </Popover.Dropdown>
+            </Popover>
+          </div>
+        )
+      }
       return (
-        <Table.Td className="hover-clickable" onClick={this.openPopover.bind(this)}>
+        <div className="hover-clickable" onClick={this.openPopover.bind(this)}>
           <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
             <Popover.Target>
-              <Text>{this.getDateString()}</Text>
+              <Tooltip position="bottom" label={this.getTooltipLabel()}>
+                <Text><strong>{this.getDateInputLabelShort()}</strong>{this.getDateString()}</Text>
+              </Tooltip>
             </Popover.Target>
             <Popover.Dropdown>
               <DateInput autoFocus onChange={this.handleFieldChange.bind(this)} label={this.getDateInputLabel()} id="start-date" w={"100%"} placeholder={homework[this.targetField] ? this.getDateString() : this.getEmptyStringPlaceholder()}/>
             </Popover.Dropdown>
           </Popover>
-        </Table.Td>
+        </div>
       )
     }
   }
@@ -320,26 +379,37 @@ export function AssignmentRow({homeworkJson}) {
   const AssignmentActions = () => {
 
     return (
-      <Table.Td className="d-flex gap-2">
-        <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red"}} label="Delete Assignment" />
-         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} buttonProps={{color: "blue"}} label="Start Assignment" /> }
-         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconClockCancel />} buttonProps={{color: "gray"}} label="Pause Assignment" /> }
-        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} buttonProps={{color: "green"}} label="Complete Assignment" />
-      </Table.Td>
+      <div className="d-flex gap-2">
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} buttonProps={{color: "gray", variant: "light"}} label="Click to Start Assignment" /> }
+         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} />} buttonProps={{color: "blue", variant: "light"}} label="Click to Pause Assignment" /> }
+        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} buttonProps={{color: "green", variant: "light"}} label="Complete Assignment" />
+        <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red", variant: "light"}} label="Delete Assignment" />
+      </div>
     )
   }
 
   return (
-    <Table.Tr>
-      <AssignmentBadgeField field="subject" />
-      <AssignmentTextField field="description" />
-      <AssignmentBadgeField field="status" />
-      <AssignmentTextField field="estTime" />
-      <AssignmentBadgeField field="priority" />
-      <AssignmentDateField field="startDate" />
-      <AssignmentDateField field="dueDate" />
-      <AssignmentActions />
-    </Table.Tr>
+    <div className="d-flex flex-row align-items-center justify-content-between border-gray-bottom pt-1 pb-1 px-1">
+      <div className="d-flex flex-column align-items-start justify-content-start">
+        <div className="d-flex gap-2 align-items-center mb-1">
+          <AssignmentBadgeField field="subject" />
+          <AssignmentTextField field="description" />
+        </div>
+        <div className="d-flex gap-2 align-items-center">
+          <AssignmentDateField field="startDate" />
+          <Divider orientation="vertical" />
+          <AssignmentDateField field="dueDate" />
+          <Divider orientation="vertical" />
+          <AssignmentBadgeField field="priority" />
+        </div>
+      </div>
+      {/* <AssignmentBadgeField field="status" /> */}
+      <div className="d-flex flex-row gap-2 align-items-center">
+        <AssignmentTextField field="estTime" />
+        <Divider orientation="vertical" />
+        <AssignmentActions />
+      </div>
+    </div>
   )
 }
 
@@ -447,17 +517,10 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
       </div>
     </div>,
     <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
-    <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" >
-      <Table.ScrollContainer minWidth={500} type="native" key="table">
-        <Table striped>
-          <AssignmentTableHead />
-          <Table.Tbody>
-            {Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED || showCompleted).sort((a, b) => sortingAlg(a, b)).map((homework, index) => {
-              return <AssignmentRow key={index} homeworkJson={homework} />
-            })}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+    <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-2 border-gray-top">
+      {Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED || showCompleted).sort((a, b) => sortingAlg(a, b)).map((homework, index) => {
+        return <Assignment key={index} homeworkJson={homework} />
+      })}
     </Spoiler>
   ]
 }
