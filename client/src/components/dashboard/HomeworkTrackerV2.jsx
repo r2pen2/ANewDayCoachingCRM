@@ -1,7 +1,7 @@
 // Library Imports
 import React, { Component, useState } from "react";
 import { Badge, Button, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Radio, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAB, IconAlignJustified, IconCheck, IconClock, IconClockCancel, IconClockCheck, IconClockDown, IconClockUp, IconDotsCircleHorizontal, IconEdit, IconHourglass, IconHourglassEmpty, IconPlus, IconQuote, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
+import { IconAB, IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockCancel, IconClockCheck, IconClockDown, IconClockUp, IconDotsCircleHorizontal, IconEdit, IconHourglass, IconHourglassEmpty, IconPlus, IconQuote, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -169,6 +169,7 @@ export function Assignment({homeworkJson}) {
     }
   
     render() {
+      const val = this.state.targetField ? this.state.targetField : ""
       const fieldName = this.sanitizeFieldName();
       if (!homework[this.targetField] || homework[this.targetField].length === 0) {
         return <div className="hover-clickable" onClick={this.openPopover.bind(this)}>
@@ -179,7 +180,7 @@ export function Assignment({homeworkJson}) {
               </Tooltip>
             </Popover.Target>
             <Popover.Dropdown className="d-flex flex-row gap-2 align-items-end">
-              <TextInput autoFocus label={this.getSelectLabel()} value={this.state.targetField} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
+              <TextInput autoFocus label={this.getSelectLabel()} value={val} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
               <IconButton onClick={this.handleFieldChange.bind(this)} icon={<IconSend />} buttonProps={{size: 36}} label="Submit" />
             </Popover.Dropdown>
           </Popover>
@@ -194,7 +195,7 @@ export function Assignment({homeworkJson}) {
               </Tooltip>
             </Popover.Target>
             <Popover.Dropdown className="d-flex flex-row gap-2 align-items-end">
-              <TextInput autoFocus label={this.getSelectLabel()} value={this.state.targetField} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
+              <TextInput autoFocus label={this.getSelectLabel()} value={val} onChange={(e) => this.setState({targetField: e.target.value})} onKeyDown={this.handleEnter.bind(this)} />
               <IconButton onClick={this.handleFieldChange.bind(this)} icon={<IconSend />} buttonProps={{size: 36}} label="Submit" />
             </Popover.Dropdown>
           </Popover>
@@ -256,6 +257,19 @@ export function Assignment({homeworkJson}) {
     }
 
     PopoverTarget = () => {
+      
+      const DotPriority = () => {
+        return (
+          <Popover.Target>
+            <Tooltip label="Edit Priority" position="bottom">
+              <div className="p-2 d-flex flex-row align-items-center justify-content-center">
+                <Indicator processing={Homework.checkPriorityPulseThreshold(homework.priority, currentUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
+              </div>
+            </Tooltip>
+          </Popover.Target>
+        )
+      }
+
       const fieldName = this.sanitizeFieldName();
       if (this.targetField === "subject") {
         return <Popover.Target>
@@ -265,13 +279,7 @@ export function Assignment({homeworkJson}) {
         </Popover.Target>
       }
       if (this.targetField === "priority" && currentUser.settings.priorityVerbosity === HomeworkPriorityVerbosity.COLORS) {
-        return <Popover.Target>
-          <Tooltip label="Edit Priority" position="bottom">
-            <div className="p-2 d-flex flex-row align-items-center justify-content-center">
-              <Indicator processing={Homework.checkPriorityPulseThreshold(homework.priority, currentUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
-            </div>
-          </Tooltip>
-        </Popover.Target>
+        return <DotPriority />
       }
       return <Popover.Target>
         <Tooltip position="bottom" label={`Edit ${fieldName.substring(0, 1).toUpperCase()}${fieldName.substring(1)}`}>
@@ -377,37 +385,55 @@ export function Assignment({homeworkJson}) {
   }
 
   const AssignmentActions = () => {
-
     return (
       <div className="d-flex gap-2">
-         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} buttonProps={{color: "gray", variant: "light"}} label="Click to Start Assignment" /> }
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} className="start-button" buttonProps={{color: "gray", variant: "light"}} label="Start Assignment" /> }
          { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} />} buttonProps={{color: "blue", variant: "light"}} label="Click to Pause Assignment" /> }
-        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} buttonProps={{color: "green", variant: "light"}} label="Complete Assignment" />
+        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} className="complete-button" buttonProps={{color: "green", variant: "light"}} label="Complete Assignment" />
+        <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconArrowBackUp />} className="incomplete-button" buttonProps={{color: "orange", variant: "light"}} label="Mark Incomplete"  />
         <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red", variant: "light"}} label="Delete Assignment" />
       </div>
     )
   }
 
   return (
-    <div className="d-flex flex-row align-items-center justify-content-between border-gray-bottom pt-1 pb-1 px-1">
-      <div className="d-flex flex-column align-items-start justify-content-start">
-        <div className="d-flex gap-2 align-items-center mb-1">
-          <AssignmentBadgeField field="subject" />
-          <AssignmentTextField field="description" />
+    <div className={"container-fluid border-gray-bottom pt-1 px-1 " + (homework.status === HomeworkStatus.COMPLETED ? "homework-completed pb-1" : "homework-incomplete pb-2")}>
+      <div className="row d-flex flex-row align-items-center justify-content-between">
+        
+        <div className="col-12 col-sm-8 d-flex flex-column align-items-start justify-content-start">
+          <div className="d-flex gap-2 align-items-center mb-1 w-100">
+            <div className="completed-check">
+              <Tooltip label="This is done!" >
+                <IconCheck color="green" />
+              </Tooltip>
+            </div>
+            <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-start gap-sm-2 gap-1 w-100" style={{flexWrap: "wrap"}}>
+              <div className="d-flex mt-sm-0 mt-1 justify-content-between justify-content-sm-start gap-2">
+                <AssignmentBadgeField field="subject" />
+                <div className="d-sm-none d-flex gap-2">
+                  <Divider orientation="vertical"/>
+                  <AssignmentBadgeField field="priority" />
+                </div>
+              </div>
+              <AssignmentTextField field="description" />
+            </div>
+          </div>
+          <div className="d-flex gap-2 align-items-center homework-deadline-info" style={{flexWrap: "wrap"}}>
+            <AssignmentDateField field="startDate" />
+            <Divider orientation="vertical"/>
+            <AssignmentDateField field="dueDate" />
+            <Divider orientation="vertical" className="d-none d-sm-block" />
+            <div className="d-none d-sm-block">
+              <AssignmentBadgeField field="priority" />
+            </div>
+          </div>
         </div>
-        <div className="d-flex gap-2 align-items-center">
-          <AssignmentDateField field="startDate" />
-          <Divider orientation="vertical" />
-          <AssignmentDateField field="dueDate" />
-          <Divider orientation="vertical" />
-          <AssignmentBadgeField field="priority" />
+
+        <div className="col-12 col-sm-4 d-flex flex-row gap-2 align-items-center justify-content-sm-end justify-content-between" style={{flexWrap: "wrap"}}>
+          <AssignmentTextField field="estTime" />
+          <Divider orientation="vertical" className="d-none d-sm-block"/>
+          <AssignmentActions />
         </div>
-      </div>
-      {/* <AssignmentBadgeField field="status" /> */}
-      <div className="d-flex flex-row gap-2 align-items-center">
-        <AssignmentTextField field="estTime" />
-        <Divider orientation="vertical" />
-        <AssignmentActions />
       </div>
     </div>
   )
@@ -497,6 +523,9 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     }
   }
 
+  const completedHomeworks = currentUser.homework.filter(hw => hw.status === HomeworkStatus.COMPLETED && showCompleted).sort((a, b) => sortingAlg(a, b));
+  const validHomeworks = Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
+
   return [
     <DashboardSectionHeader key="assignemts-header">My Assignments</DashboardSectionHeader>,
     <div className="container-fluid mt-md-0" key="controls">
@@ -518,7 +547,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     </div>,
     <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
     <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-2 border-gray-top">
-      {Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED || showCompleted).sort((a, b) => sortingAlg(a, b)).map((homework, index) => {
+      {validHomeworks.map((homework, index) => {
         return <Assignment key={index} homeworkJson={homework} />
       })}
     </Spoiler>

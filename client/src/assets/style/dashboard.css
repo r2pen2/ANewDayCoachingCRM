@@ -72,3 +72,60 @@
 .border-gray-bottom {
   border-bottom: 1px solid #00000022;
 }
+
+.intent-container {
+  cursor: pointer;
+}
+
+.intent-container .intent-text {
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intent-container .intent-text::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: none;
+  z-index: 1;
+}
+
+.intent-container:hover .intent-text::after {
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+}
+
+.homework-completed * .homework-deadline-info {
+  display: none !important;
+}
+
+.completed-check {
+  display: none;
+}
+
+.homework-completed * .completed-check {
+  display: block !important;
+}
+
+.homework-completed * .complete-button {
+  display: none !important;
+}
+
+.homework-incomplete * .incomplete-button {
+  display: none !important;
+}
+
+.homework-completed * .incomplete-button {
+  display: block !important;
+}
+
+.homework-completed * .start-button {
+  display: none !important;
+}

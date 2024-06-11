@@ -48,9 +48,10 @@ export class User {
 
   settings: any = {
     darkMode: false,
-    priorityVerbosity: HomeworkPriorityVerbosity.DEFAULT,
+    priorityVerbosity: HomeworkPriorityVerbosity.COLORS,
     priorityPulseThreshold: HomeworkPriority.HIGH,
     homeworkLoaderType: HomeworkLoaderType.CIRCLE,
+    requireHomeworkDeleteConfirmation: true,
   }
 
   constructor(firebaseUser: any) {

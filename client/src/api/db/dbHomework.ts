@@ -1,4 +1,5 @@
 import { notifSuccess } from "../../components/Notifications";
+import { isOnMobile } from "../device";
 import { User } from "./dbUser";
 
 /**
@@ -135,7 +136,11 @@ export class Homework {
 
   /** Remove this homework assignment from a user */
   handleRemove(currentUser: User) {
-    if (!currentUser) { console.error("No user found for homework assignment"); return; }
+    if (!currentUser) { console.error("No user found for homework assignment"); return; }    
+    if (!currentUser.settings.requireHomeworkDeleteConfirmation) {
+      currentUser.removeHomework(this).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`))
+      return;
+    }
     if (window.confirm(`Are you sure you want to delete "${this.description}"?`)) {
       currentUser.removeHomework(this).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`))
     }

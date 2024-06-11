@@ -1,7 +1,7 @@
 import React from 'react'
 import { CurrentUserContext } from '../../App'
 import { ActionIcon, Avatar, Modal, Paper, Text, TextInput, Tooltip } from '@mantine/core'
-import { IconEdit, IconHistory, IconSend, IconTools, IconX } from '@tabler/icons-react'
+import { IconCheck, IconEdit, IconHistory, IconSend, IconTools, IconX } from '@tabler/icons-react'
 import IconButton from '../IconButton'
 import { notifSuccess, notifWarn } from '../Notifications'
 
@@ -17,7 +17,7 @@ export default function Intent({height}) {
 
   const IntentTextDisplay = () => {
     if (newIntentText !== null) { return; }
-    return <Text size="lg" className="text-center">{ intentText || "You haven't set an intent yet!"}</Text>
+    return <Text size="lg" className="text-center intent-text">{ intentText || "You haven't set an intent yet!"}</Text>
   }
 
   function updateIntent() {
@@ -35,7 +35,7 @@ export default function Intent({height}) {
   const IntentSubmit = () => ( 
     <Tooltip label="Submit">
       <ActionIcon variant="light" color="#658a54" onClick={() => updateIntent()}>
-        <IconSend />
+        <IconCheck />
       </ActionIcon>
     </Tooltip>  
   )
@@ -50,32 +50,36 @@ export default function Intent({height}) {
 
   const meetingText = "Your next meeting is on 6/25 at 5pm."
 
+  function handleClick(e) {
+    if (newIntentText !== null) { return; }
+    setNewIntentText("");
+  }
+
   return (
     <Paper withBorder style={{height: height}} className="w-100 p-2 d-flex flex-column text-center align-items-center justify-content-start top-green mb-xl-2">
       <Avatar src={currentUser.personalData.pfpUrl} alt={currentUser.personalData.displayName} size="large" />
       <Text size="xl">{welcomeText}</Text>
       <Text>{meetingText}</Text>
-      <div className="container d-flex flex-row">
+      <div className={"container d-flex flex-row " + (newIntentText === null ? "intent-container" : "")} onClick={handleClick}>
         <div className="col-1 gap-2 d-flex flex-column align-items-center justify-content-between py-2">
           {quoteSvg}
         </div>
-        <div className="col-10 p-2 gap-2 d-flex flex-row align-items-center justify-content-center">
+        <div className="col-10 p-2 gap-2 d-flex flex-column intent-edit-container align-items-center justify-content-center">
           <IntentTextDisplay />
           { newIntentText !== null && <TextInput placeholder="What's your intent?" className="w-100" value={newIntentText} onKeyDown={handleEnter} onChange={(e) => setNewIntentText(e.target.value)} /> }
-          { newIntentText !== null && <IntentSubmit /> }
-          { newIntentText !== null && <IntentCancel /> }
+          { newIntentText !== null && <div className="d-flex gap-2"><IntentSubmit /><IntentCancel /></div> }
         </div>
         <div className="col-1 gap-2 d-flex flex-column align-items-center justify-content-start py-2">
           {quoteRightSvg}
         </div>
       </div>
       <div className="d-flex gap-2 align-items-center">
-        <Tooltip label="Edit Intent">
+        {/* <Tooltip label="Edit Intent">
           <ActionIcon variant="light" color="#658a54" onClick={() => setNewIntentText(newIntentText !== null ? null : "")}>
             <IconEdit />
           </ActionIcon>
-        </Tooltip>
-        <Tooltip label="See Intent History">
+        </Tooltip> */}
+        <Tooltip label="See Intent History" position='bottom'>
           <ActionIcon variant="light" color="#658a54" onClick={() => {}}>
             <IconHistory />
           </ActionIcon>
