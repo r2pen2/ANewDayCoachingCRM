@@ -66,7 +66,6 @@ function App() {
       <AppShell
         header={{ height: 60 }}
         navbar={{ width: 300, breakpoint: 'lg', collapsed: { mobile: !burgerOpen } }}
-        padding="md"
       >
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 
         <AppShellNavigator currentTab={currentTab} setCurrentTab={(t) => {window.location.hash = t; setCurrentTab(t)}} setBurgerOpen={setBurgerOpen}/>

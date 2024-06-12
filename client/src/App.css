@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  height: 100vh;
+  overflow-y: hidden;
 }
 
 .App-logo {
@@ -52,4 +54,21 @@
   transition: all 0.25s ease;
   position: relative;
   border-bottom: 1px solid #00000022;
+}
+
+.no-shadow { box-shadow: none !important; }
+
+::-webkit-scrollbar-track {
+  background-color: white;
+  border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar {
+  width: 0.5rem;
+  border: 4px solid white;
+}
+  
+  ::-webkit-scrollbar-thumb {
+  background-color: #60A483;
+  border-radius: 1rem;
 }

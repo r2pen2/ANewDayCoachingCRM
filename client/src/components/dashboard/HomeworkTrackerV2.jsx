@@ -14,6 +14,7 @@ import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
 import DashboardSectionHeader from "./DashboardSectionHeader.jsx";
 import { Tool } from "../../api/db/dbTool.ts";
+import Progress from "./Progress.jsx";
 
 /**
  * A card that displays a subject
@@ -527,21 +528,12 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   const validHomeworks = Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
 
   return [
-    <DashboardSectionHeader key="assignemts-header">My Assignments</DashboardSectionHeader>,
+    <Progress key="progress" setSortType={setSortType} sortType={sortType} showCompleted={showCompleted} setShowCompleted={setShowCompleted} sendQuickEntry={sendQuickEntry} quickEntryError={quickEntryError} quickEntryString={quickEntryString} onQuickEntryChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onQuickEntryKeyDown={handleEnter} />,
     <div className="container-fluid mt-md-0" key="controls">
       <div className="row">
-        <div className="col-12 col-xl-8 mb-2 d-flex flex-row gap-2">
-          <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onKeyDown={handleEnter} />
-          <IconButton label="Submit" icon={<IconSend />} buttonProps={{size: 36}} onClick={sendQuickEntry} />
-        </div>
         <div className="d-flex gap-2 align-items-center justify-content-end col-12 col-xl-4" style={{paddingLeft: 0}}>
-          <Divider orientation="vertical" className="d-none d-xl-block" />
-          <Tooltip label="Show/Hide Completed Assignments">
-            <div><Switch checked={showCompleted} readOnly onClick={() => setShowCompleted(!showCompleted)} /></div>
-          </Tooltip>
           <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
           <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
-          <Select data={["Priority", "Due Date", "Start Date", "Subject"]} value={sortType} onChange={setSortType} />
         </div>
       </div>
     </div>,

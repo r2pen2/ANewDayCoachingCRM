@@ -38,10 +38,10 @@ export default function Dashboard() {
             </CarouselSlide>
           </Carousel>
         </div>
-        <div className="col-12 col-xxl-9">      
+        <div className="col-12 col-xxl-9 right-panel">      
           <Tracker setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>
         </div>
-        <div className="d-none d-xxl-block col-xxl-3">        
+        <div className="d-none d-xxl-block col-xxl-3 left-panel">        
           <Intent />
           <ToolsList />
           <DocumentsList />

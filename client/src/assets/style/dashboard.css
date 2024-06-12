@@ -58,11 +58,30 @@
   bottom: 0;
   width: 100%;
   height: 50px;
-  background-color: #D6E3D1;
+  background-color: #60A483;
+}
+
+.right-panel {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 0.5rem;  /* To make room for scrollbar on other side */
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #DEE2E6;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: calc(100vh - 60px);
+}
+
+.left-panel {
+  background-color: #e9efe7;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  overflow-y: scroll;
+  height: calc(100vh - 60px);
 }
 
 .green-bg {
-  background-color: #D6E3D1;
+  background-color: #60A483;
 }
 
 .border-gray-top {
@@ -128,4 +147,8 @@
 
 .homework-completed * .start-button {
   display: none !important;
+}
+
+.assignment-bar {
+  border: 1px solid #dee2e6;
 }
