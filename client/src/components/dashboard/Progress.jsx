@@ -65,9 +65,9 @@ export default function Progress({setSortType, sortType, quickEntryError, quickE
 
   return (
     <div style={{position: 'relative', height: 280}}>
-      <Paper className="w-100 text-center d-flex flex-column" style={{position: "absolute", top: 10, left: outerCircleRadius / 2, maxWidth: `calc(100% - ${(outerCircleRadius / 2) + 20}px)`}}>
+      <Paper className="w-100 text-center d-flex flex-column" style={{position: "absolute", top: 10, left: 0}}>
         <h3 style={{color:"white", fontSize: "2rem", width: "100%", background: "#60A483", paddingTop: "0.5rem", paddingBottom: "0.5rem", }}>My Assignments</h3>
-        <div className='d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: outerCircleRadius / 2}}>
+        <div className='d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: outerCircleRadius + 10}}>
           <Paper withBorder className="pt-2">
             <Text size="sm" fw={500} mb={3}>
               Progress Context
@@ -87,7 +87,7 @@ export default function Progress({setSortType, sortType, quickEntryError, quickE
             <SegmentedControl data={["Incomplete", "All"]} value={showCompleted ? "All" : "Incomplete"} onChange={handleFilterChange} />
           </Paper>
         </div>
-        <div className='mt-2 d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: outerCircleRadius / 2, width: "100%", maxWidth: `calc(100% - ${outerCircleRadius / 2}px)`}}>
+        <div className='mt-2 d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: outerCircleRadius + 10, width: "100%", maxWidth: `calc(100% - ${outerCircleRadius + 10}px)`}}>
           <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />
           <IconButton label="Submit" icon={<IconSend />} color="#60A483" buttonProps={{size: 36, variant: "light"}} onClick={sendQuickEntry} />
         </div>

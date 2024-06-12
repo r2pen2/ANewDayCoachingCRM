@@ -62,8 +62,7 @@
 }
 
 .right-panel {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.5rem;
   padding-left: 0.5rem;  /* To make room for scrollbar on other side */
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   border-right: 1px solid #DEE2E6;
