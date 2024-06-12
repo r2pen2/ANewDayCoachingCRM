@@ -52,6 +52,7 @@ export class User {
     priorityPulseThreshold: HomeworkPriority.HIGH,
     homeworkLoaderType: HomeworkLoaderType.CIRCLE,
     requireHomeworkDeleteConfirmation: true,
+    ringDeadlineThresholdHours: 24,
   }
 
   constructor(firebaseUser: any) {

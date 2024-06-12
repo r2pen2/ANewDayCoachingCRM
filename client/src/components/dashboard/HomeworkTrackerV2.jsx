@@ -1,7 +1,7 @@
 // Library Imports
 import React, { Component, useState } from "react";
-import { Badge, Button, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Radio, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAB, IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockCancel, IconClockCheck, IconClockDown, IconClockUp, IconDotsCircleHorizontal, IconEdit, IconHourglass, IconHourglassEmpty, IconPlus, IconQuote, IconSchool, IconSend, IconSpeedboat, IconTrash, IconX } from "@tabler/icons-react";
+import { ActionIcon, Badge, Button, Center, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Radio, RingProgress, SegmentedControl, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAB, IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockCancel, IconClockCheck, IconClockDown, IconClockUp, IconDotsCircleHorizontal, IconEdit, IconHourglass, IconHourglassEmpty, IconPlus, IconQuote, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash, IconX } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -12,9 +12,7 @@ import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
 import { shouldUseBlackText } from "../../api/color.ts";
 import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
-import DashboardSectionHeader from "./DashboardSectionHeader.jsx";
-import { Tool } from "../../api/db/dbTool.ts";
-import Progress from "./Progress.jsx";
+import TrackerRing, { GreenCircle, WhiteSpace, trackerOffset } from "./TrackerRing.jsx";
 
 /**
  * A card that displays a subject
@@ -111,7 +109,7 @@ export const QuickEntryResults = ({quickExtract}) => {
 
   return (
     <div className="align-items-center d-flex gap-2 mt-2">
-      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: "1px solid #00000022", color: shouldUseBlackText(subjectColor) ? "#000000" : "#FFFFFF"}}>Subject: {quickExtract.subject}</Badge> }
+      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: shouldUseBlackText(subjectColor) ? "1px solid #00000022" : null, color: shouldUseBlackText(subjectColor) ? "#000000" : "#ffffff"}}>Subject: {quickExtract.subject}</Badge> }
       { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
       { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
@@ -442,6 +440,41 @@ export function Assignment({homeworkJson}) {
 
 export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   
+  const [unitType, setUnitType] = React.useState("Subject");
+
+  const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
+
+  function handleFilterChange(e) {
+    setShowCompleted(e === "All")
+  }
+
+  const SubjectChip = ({subject}) => {
+
+    const selected = selectedSubjects.includes(subject)
+
+    function handleChipClick() {
+      if (selected) {
+        setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
+      } else {
+        setSelectedSubjects([...selectedSubjects, subject]);
+      }
+    }
+
+    const dark = shouldUseBlackText(currentUser.subjects[subject].color);
+    return <Chip variant={selected ? "filled" : "outline"} checked={selected} style={{border: dark && selected ? "1px solid #00000022" : ""}} color={currentUser.subjects[subject].color} readOnly onClick={handleChipClick} className={dark ? "subject-chip subject-chip-dark" : "subject-chip"}>
+      <Text size="sm" className="chip-text">{subject}</Text>
+    </Chip>
+  }
+
+  function handleAddAssignmentPress() {
+    if (quickEntryString.length > 0) {
+      sendQuickEntry();
+    } else {
+      setHomeworkAddMenuOpen(true);
+    }
+  }
+
+  
   /** Get current user from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
 
@@ -455,6 +488,8 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     dueDate: null,
     priority: null
   });
+
+  const [selectedSubjects, setSelectedSubjects] = React.useState(Object.keys(currentUser.subjects));
   
   React.useEffect(() => {
     extractQuickEntry();
@@ -477,7 +512,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
 
   const [quickEntryError, setQuickEntryError] = React.useState(null)
 
-  function handleEnter(e) {
+  function onQuickEntryKeyDown(e) {
     if (e.key !== "Enter") { return; }
     sendQuickEntry();
   }
@@ -525,17 +560,47 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   }
 
   const completedHomeworks = currentUser.homework.filter(hw => hw.status === HomeworkStatus.COMPLETED && showCompleted).sort((a, b) => sortingAlg(a, b));
-  const validHomeworks = Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
+  const validHomeworks = Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).filter(hw => selectedSubjects.includes(hw.subject)).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
 
   return [
-    <Progress key="progress" setSortType={setSortType} sortType={sortType} showCompleted={showCompleted} setShowCompleted={setShowCompleted} sendQuickEntry={sendQuickEntry} quickEntryError={quickEntryError} quickEntryString={quickEntryString} onQuickEntryChange={(e) => { setQuickEntryString(e.target.value); extractQuickEntry(); }} onQuickEntryKeyDown={handleEnter} />,
-    <div className="container-fluid mt-md-0" key="controls">
-      <div className="row">
-        <div className="d-flex gap-2 align-items-center justify-content-end col-12 col-xl-4" style={{paddingLeft: 0}}>
-          <IconButton label="Manage Subjects" icon={<IconSchool />} onClick={() => setSubjectAddMenuOpen(true)} buttonProps={{size: 36}} />
-          <IconButton label="Add Assignment" icon={<IconPlus />} onClick={() => setHomeworkAddMenuOpen(true)} buttonProps={{size: 36}} />
+    
+    <div key="top" style={{position: 'relative', height: 280}}>
+      <Paper className="w-100 text-center d-flex flex-column" style={{position: "absolute", top: 10, left: 0}}>
+        <h3 style={{color:"white", fontSize: "2rem", width: "100%", background: "#60A483", paddingTop: "0.5rem", paddingBottom: "0.5rem", }}>My Assignments</h3>
+        <div className='d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: trackerOffset}}>
+          <Paper withBorder className="pt-2">
+            <Text size="sm" fw={500} mb={3}>
+              Ring Context
+            </Text>
+            <SegmentedControl data={["Subject", `Deadline (${currentUser.settings.ringDeadlineThresholdHours}hrs)`]} value={unitType} onChange={(newUnitType) => setUnitType(newUnitType)} />
+          </Paper>
+          <Paper withBorder className="pt-2">
+            <Text size="sm" fw={500} mb={3}>
+              Sort Order
+            </Text>
+            <SegmentedControl onChange={setSortType} value={sortType} data={["Priority", "Due Date", "Start Date", "Subject"]} />
+          </Paper>
+          <Paper withBorder className="pt-2">
+            <Text size="sm" fw={500} mb={3}>
+              Status
+            </Text>
+            <SegmentedControl data={["Incomplete", "All"]} value={showCompleted ? "All" : "Incomplete"} onChange={handleFilterChange} />
+          </Paper>
         </div>
-      </div>
+        <div className='mt-2 d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: trackerOffset, width: "100%", maxWidth: `calc(100% - ${trackerOffset}px)`}}>
+          <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />        
+          <IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 36, variant: "light"}} onClick={handleAddAssignmentPress} />
+        </div>
+        <div className='mt-2 d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: trackerOffset, width: "100%", maxWidth: `calc(100% - ${trackerOffset}px)`}}>
+          <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36, variant: "light"}} onClick={setSubjectAddMenuOpen} />
+          <div className='pt-1 gap-2 chip-container' >
+            {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
+          </div>
+        </div>
+      </Paper>
+      <WhiteSpace />
+      <GreenCircle />
+      <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} />
     </div>,
     <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
     <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-2 border-gray-top">

@@ -61,6 +61,54 @@
   background-color: #60A483;
 }
 
+.ring {
+  animation: spin 120s linear infinite;
+  border-radius: 50%;
+}
+
+.chip-container {
+  overflow-x: scroll;
+  height: 100%;
+  align-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+}
+
+.subject-chip {
+  overflow: hidden;
+  border-radius: 1rem;
+  min-width: fit-content !important;
+}
+
+.subject-chip-dark .chip-text, .subject-chip-dark * svg {
+  color: black;
+}
+
+.line-icon {
+  animation: spinverse 120s linear infinite;
+  border-radius: 50%;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
 .right-panel {
   padding-top: 0.5rem;
   padding-left: 0.5rem;  /* To make room for scrollbar on other side */

@@ -135,7 +135,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
   }
 
   return (    
-    <AppShell.Navbar p="md" zIndex={300}>
+    <AppShell.Navbar p="md" zIndex={100}>
       <WiggleClickNavLink
         label="Dashboard"
         description="My Assignments, My Intent, My Tools, My Shared Drive, Etc."
