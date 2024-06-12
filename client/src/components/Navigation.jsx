@@ -1,9 +1,11 @@
 // Library Imports
 import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
 import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconBrandGoogleDrive, IconUser, IconUserCog } from '@tabler/icons-react';
-import { useContext } from "react";
+import { useContext, useState } from "react";
 // Component Imports
 import { CurrentUserContext } from "../App";
+
+import "../assets/style/navigation.css"
 
 /**
  * Object containing names for navigation tabs.
@@ -28,15 +30,6 @@ export const navigationItems = {
 }
 
 /**
- * Object containing the navigation styles.
- * @typedef {Object} NavigationStyles
- * @property {string} variant - The variant of the navigation styles.
- */
-const navigationStyles = {
-  variant: null
-};
-
-/**
  * Renders the navigation bar for the app shell.
  * @component
  * @param {Object} props - The component props.
@@ -56,12 +49,9 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
     /** The number to display in invoices badge */
     const invoiceBadgeNumber = currentUser.numUnpaidInvoices;
     /** The text to display as tooltop over forms badge */
-    const invoicesBadgeTooltipText = `You have ${invoiceBadgeNumber} outstanding invoice${invoiceBadgeNumber > 1 ? "s" : ""}.`
     if (invoiceBadgeNumber <= 0) { return; }
     return (
-      <Tooltip label={invoicesBadgeTooltipText}>
-        <Badge size="xs" color="red" circle>{invoiceBadgeNumber}</Badge>
-      </Tooltip>
+      <Badge size="xs" color="red" circle>{invoiceBadgeNumber}</Badge>
     )
   }
 
@@ -70,99 +60,113 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
     /** The number to display in forms badge */
     const formsBadgeNumber = currentUser.formAssignments.filter(fa => fa.completed === false).length;
     /** The text to display as tooltop over invoices badge */
-    const formsBadgeTooltipText = `There ${formsBadgeNumber > 1 ? "are" : "is"} ${formsBadgeNumber} form${formsBadgeNumber > 1 ? "s" : ""} for you to complete.`;
     if (formsBadgeNumber <= 0) { return; }
     return (
-      <Tooltip label={formsBadgeTooltipText}>
-        <Badge size="xs" color="red" circle>{formsBadgeNumber}</Badge>
-      </Tooltip>
+      <Badge size="xs" color="red" circle>{formsBadgeNumber}</Badge>
+    )
+  }
+
+  const iconProps = {
+    className: "nav-icon",
+    size: "2rem"
+  }
+
+  const WiggleClickNavLink = ({label, description, leftSection, active, tabKey}) => {
+    const [wiggling, setWiggling] = useState(false);
+    
+    function handleClick() {
+      setWiggling(true);
+      updateTab(tabKey);
+      setTimeout(() => setWiggling(false), 500);
+    } 
+
+    return (
+      <NavLink
+        color="#2c6116"
+        className={`nav-link-hover-catcher ${wiggling ? "wiggle" : ""}`}
+        label={label}
+        description={description}
+        leftSection={leftSection}
+        active={currentTab === tabKey}
+        onClick={handleClick}
+      />
     )
   }
 
   const AdminTabs = () => {
     if (!currentUser.admin) { return; }
     return [
-      <NavLink
+      <WiggleClickNavLink
         key="admin-tools-nav"
         label="Manage Tools"
-        leftSection={<IconTools />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.ADMINTOOLS}
-        onClick={() => updateTab(navigationItems.ADMINTOOLS)}
+        description="Create new tools or modify existing ones, then assign them to users."
+        leftSection={<IconTools {...iconProps} />}
+        tabKey={navigationItems.ADMINTOOLS}
       />,
-      <NavLink
+      <WiggleClickNavLink
         key="admin-forms-nav"
         label="Manage Forms"
-        leftSection={<IconFiles />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.ADMINFORMS}
-        onClick={() => updateTab(navigationItems.ADMINFORMS)}
+        description="Assign forms to users and view completion statistics."
+        leftSection={<IconFiles {...iconProps} />}
+        tabKey={navigationItems.ADMINFORMS}
       />,
-      <NavLink
+      <WiggleClickNavLink
         key="admin-invoices-nav"
         label="Manage Invoices"
-        leftSection={<IconCreditCard />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.ADMININVOICES}
-        onClick={() => updateTab(navigationItems.ADMININVOICES)}
+        description="Send invoices to users, as well as confirm that you've received payments."
+        leftSection={<IconCreditCard {...iconProps} />}
+        tabKey={navigationItems.ADMININVOICES}
       />,
-      <NavLink
+      <WiggleClickNavLink
         key="admin-drive-nav"
         label="Manage Drive"
-        leftSection={<IconBrandGoogleDrive />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.ADMINDRIVE}
-        onClick={() => updateTab(navigationItems.ADMINDRIVE)}
+        description="Upload shared Google Drive files to appear on users' dashboards."
+        leftSection={<IconBrandGoogleDrive {...iconProps} />}
+        tabKey={navigationItems.ADMINDRIVE}
       />,
-      <NavLink
+      <WiggleClickNavLink
         key="admin-users-nav"
         label="Manage Users"
-        leftSection={<IconUserCog />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.ADMINUSERS}
-        onClick={() => updateTab(navigationItems.ADMINUSERS)}
+        description="Manage all users, including their roles and personal information."
+        leftSection={<IconUserCog {...iconProps} />}
+        tabKey={navigationItems.ADMINUSERS}
       />,
     ]
   }
 
   return (    
-    <AppShell.Navbar p="md">
-      <NavLink
+    <AppShell.Navbar p="md" zIndex={300}>
+      <WiggleClickNavLink
         label="Dashboard"
-        leftSection={<IconHome2 />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.DASHBOARD}
-        onClick={() => updateTab(navigationItems.DASHBOARD)}
+        description="My Assignments, My Intent, My Tools, My Shared Drive, Etc."
+        leftSection={<IconHome2 {...iconProps} />}
+        tabKey={navigationItems.DASHBOARD}
       />
-      <NavLink
+      <WiggleClickNavLink
         label="Invoices"
-        leftSection={<IconCreditCard />}
+        description="View and pay invoices via PayPal, Venmo, or Zelle."
+        leftSection={<IconCreditCard {...iconProps} />}
         rightSection={<InvoicesBadge />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.INVOICES} 
-        onClick={() => updateTab(navigationItems.INVOICES)}
+        tabKey={navigationItems.INVOICES} 
       />
-      <NavLink
+      <WiggleClickNavLink
         label="Schedule"
-        leftSection={<IconCalendarEvent />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.SCHEDULE}
-        onClick={() => updateTab(navigationItems.SCHEDULE)}
+        description="View your upcoming appointments and schedule new ones."
+        leftSection={<IconCalendarEvent {...iconProps} />}
+        tabKey={navigationItems.SCHEDULE}
       />
-      <NavLink
+      <WiggleClickNavLink
         label="Forms"
-        leftSection={<IconFiles />}
+        description="Complete your assigned forms here."
+        leftSection={<IconFiles {...iconProps} />}
         rightSection={<FormsBadge />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.FORMS}
-        onClick={() => updateTab(navigationItems.FORMS)}
+        tabKey={navigationItems.FORMS}
       />
-      <NavLink
+      <WiggleClickNavLink
         label="Settings"
-        leftSection={<IconSettings />}
-        variant={navigationStyles.variant}
-        active={currentTab === navigationItems.SETTINGS}
-        onClick={() => updateTab(navigationItems.SETTINGS)}
+        description="Modify your personal information and the appearance of this portal."
+        leftSection={<IconSettings {...iconProps} />}
+        tabKey={navigationItems.SETTINGS}
       />
       <AdminTabs />
     </AppShell.Navbar>

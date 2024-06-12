@@ -44,3 +44,12 @@
   margin-bottom: 0.5rem;
   margin-top: 0.5rem;
 }
+
+.nav-icon {
+  background-color: #e9efe7;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.25s ease;
+  position: relative;
+  border-bottom: 1px solid #00000022;
+}
