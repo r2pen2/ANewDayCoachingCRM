@@ -1,7 +1,7 @@
 // Library Imports
-import React, { Component, useState } from "react";
-import { ActionIcon, Badge, Button, Center, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Radio, RingProgress, SegmentedControl, Select, Spoiler, Switch, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAB, IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockCancel, IconClockCheck, IconClockDown, IconClockUp, IconDotsCircleHorizontal, IconEdit, IconHourglass, IconHourglassEmpty, IconPlus, IconQuote, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash, IconX } from "@tabler/icons-react";
+import React from "react";
+import { Badge, Button, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Select, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconHourglassEmpty, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -12,7 +12,10 @@ import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
 import { shouldUseBlackText } from "../../api/color.ts";
 import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
-import TrackerRing, { GreenCircle, WhiteSpace, trackerOffset } from "./TrackerRing.jsx";
+import TrackerRing, { TrackerBar, trackerOffset } from "./TrackerRing.jsx";
+import { SortOrderSelector, StatusSelector, RingContextSelector} from "./HomeworkTrackerControl.jsx";
+
+import "../../assets/style/homeworkTracker.css";
 
 /**
  * A card that displays a subject
@@ -444,11 +447,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
 
   const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
 
-  function handleFilterChange(e) {
-    setShowCompleted(e === "All")
-  }
-
-  const SubjectChip = ({subject}) => {
+  const SubjectChip = ({subject, index}) => {
 
     const selected = selectedSubjects.includes(subject)
 
@@ -461,9 +460,21 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     }
 
     const dark = shouldUseBlackText(currentUser.subjects[subject].color);
-    return <Chip variant={selected ? "filled" : "outline"} checked={selected} style={{border: dark && selected ? "1px solid #00000022" : ""}} color={currentUser.subjects[subject].color} readOnly onClick={handleChipClick} className={dark ? "subject-chip subject-chip-dark" : "subject-chip"}>
-      <Text size="sm" className="chip-text">{subject}</Text>
-    </Chip>
+    
+    const ChipDivider = () => {
+      const sKeys = Object.keys(currentUser.subjects)
+      if (subject === sKeys[sKeys.length - 1]) { return; }
+      return <Divider orientation="vertical" />
+    }
+
+    return (
+      <div className="d-flex gap-2">
+        <Chip variant={selected ? "filled" : "outline"} checked={selected} style={{border: dark && selected ? "1px solid #00000022" : ""}} color={currentUser.subjects[subject].color} readOnly onClick={handleChipClick} className={dark ? "subject-chip subject-chip-dark" : "subject-chip"}>
+          <Text size="sm" className="chip-text">{subject}</Text>
+        </Chip>
+        <ChipDivider />
+      </div>
+    )
   }
 
   function handleAddAssignmentPress() {
@@ -562,51 +573,55 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   const completedHomeworks = currentUser.homework.filter(hw => hw.status === HomeworkStatus.COMPLETED && showCompleted).sort((a, b) => sortingAlg(a, b));
   const validHomeworks = Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).filter(hw => selectedSubjects.includes(hw.subject)).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
 
-  return [
-    
-    <div key="top" style={{position: 'relative', height: 280}}>
-      <Paper className="w-100 text-center d-flex flex-column" style={{position: "absolute", top: 10, left: 0}}>
-        <h3 style={{color:"white", fontSize: "2rem", width: "100%", background: "#60A483", paddingTop: "0.5rem", paddingBottom: "0.5rem", }}>My Assignments</h3>
-        <div className='d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: trackerOffset}}>
-          <Paper withBorder className="pt-2">
-            <Text size="sm" fw={500} mb={3}>
-              Ring Context
-            </Text>
-            <SegmentedControl data={["Subject", `Deadline (${currentUser.settings.ringDeadlineThresholdHours}hrs)`]} value={unitType} onChange={(newUnitType) => setUnitType(newUnitType)} />
-          </Paper>
-          <Paper withBorder className="pt-2">
-            <Text size="sm" fw={500} mb={3}>
-              Sort Order
-            </Text>
-            <SegmentedControl onChange={setSortType} value={sortType} data={["Priority", "Due Date", "Start Date", "Subject"]} />
-          </Paper>
-          <Paper withBorder className="pt-2">
-            <Text size="sm" fw={500} mb={3}>
-              Status
-            </Text>
-            <SegmentedControl data={["Incomplete", "All"]} value={showCompleted ? "All" : "Incomplete"} onChange={handleFilterChange} />
-          </Paper>
-        </div>
-        <div className='mt-2 d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: trackerOffset, width: "100%", maxWidth: `calc(100% - ${trackerOffset}px)`}}>
-          <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />        
-          <IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 36, variant: "light"}} onClick={handleAddAssignmentPress} />
-        </div>
-        <div className='mt-2 d-flex gap-2 flex-row w-100 justify-content-start' style={{marginLeft: trackerOffset, width: "100%", maxWidth: `calc(100% - ${trackerOffset}px)`}}>
-          <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36, variant: "light"}} onClick={setSubjectAddMenuOpen} />
-          <div className='pt-1 gap-2 chip-container' >
-            {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
+  const TrackerControls = () => (
+    <div className='tracker-controls gap-2'>
+      <RingContextSelector unitType={unitType} setUnitType={setUnitType} />
+      <StatusSelector showCompleted={showCompleted} setShowCompleted={setShowCompleted} />
+      <SortOrderSelector sortType={sortType} setSortType={setSortType} />
+    </div>
+  )
+
+  const SubjectFilter = () => (
+    <Spoiler maxHeight={60} showLabel="Expand Subjects" hideLabel="Collapse Subjects">
+      <Paper withBorder className='p-2 gap-2 chip-container' >
+        <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36, variant: "light"}} onClick={setSubjectAddMenuOpen} />
+        <Divider orientation="vertical" />
+        {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
+      </Paper>
+    </Spoiler>
+  )
+
+  return (
+    <div className="d-flex flex-column">
+      <div className="tracker-header">
+        <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center">
+          My Assignments
+          <IconButton label="TimelineView" className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={handleAddAssignmentPress} />
+        </h3>
+        <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} />
+        <div className="d-flex flex-row w-100" >
+          <div className="ring-container d-none d-md-flex" >
+            <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} />
+          </div>
+          <div className="d-flex w-100 flex-column align-items-start">
+            <TrackerControls />
+            <div className="tracker-inputs gap-1" >
+              <div className='mt-1 d-flex gap-2 flex-row w-100 justify-content-start' >
+                <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />        
+                <IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 36, variant: "light"}} onClick={handleAddAssignmentPress} />
+              </div>
+              <SubjectFilter />
+            </div>
+          <QuickEntryResults key="quick-results" quickExtract={quickExtract} />
           </div>
         </div>
-      </Paper>
-      <WhiteSpace />
-      <GreenCircle />
-      <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} />
-    </div>,
-    <QuickEntryResults key="quick-results" quickExtract={quickExtract} />,
-    <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-2 border-gray-top">
-      {validHomeworks.map((homework, index) => {
-        return <Assignment key={index} homeworkJson={homework} />
-      })}
-    </Spoiler>
-  ]
+      </div>
+      <div className="coaching-line mb-0"></div>
+      <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-0 border-gray-top">
+        {validHomeworks.map((homework, index) => {
+          return <Assignment key={index} homeworkJson={homework} />
+        })}
+      </Spoiler>
+    </div>
+  )
 }

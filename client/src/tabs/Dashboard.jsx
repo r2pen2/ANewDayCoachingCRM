@@ -22,8 +22,8 @@ export default function Dashboard() {
   return (
     <div className="container-fluid w-100">
       <div className="row">     
-        <div className="d-xxl-none col-12">
-          <Carousel height="auto" slideSize="90%" slideGap={10} withControls={false}>
+        <div className="d-xxl-none col-12 indicator-container">
+          <Carousel height="auto" slideGap={10} withControls={false} withIndicators>
             <CarouselSlide>
               <Intent height="100%" />
             </CarouselSlide>

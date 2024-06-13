@@ -1,4 +1,4 @@
-import { ActionIcon, Center, RingProgress, Tooltip } from '@mantine/core'
+import { ActionIcon, Center, Paper, Progress, RingProgress, SegmentedControl, Text, Tooltip } from '@mantine/core'
 import { IconTimeline } from '@tabler/icons-react'
 import React from 'react'
 import { CurrentUserContext } from '../../App'
@@ -23,50 +23,54 @@ export const WhiteSpace = () => (
   </svg>
 )
 
+
+
+function getSections(currentUser, unitType, selectedSubjects) {
+  const sections = [];
+  const incompleteAssignments = currentUser.homework.filter(h => h.status !== HomeworkStatus.COMPLETED && selectedSubjects.includes(h.subject));
+  const dueAssignments = currentUser.homework.filter(h => h.dueDate && h.dueDate?.seconds < ((Date.now()/1000) + currentUser.settings.ringDeadlineThresholdHours * 3600) && selectedSubjects.includes(h.subject) && h.status !== HomeworkStatus.COMPLETED);
+  const subjects = {};
+
+  let denominator = 1;
+
+  if (unitType === "Subject") {
+    denominator = incompleteAssignments.length;
+    for (const hw of incompleteAssignments) {
+      if (hw.subject in subjects) {
+        subjects[hw.subject]++;
+      } else {
+        subjects[hw.subject] = 1;
+      }
+    }
+  } else {
+    for (const hw of dueAssignments) {
+      denominator = dueAssignments.length;
+      if (hw.subject in subjects) {
+        subjects[hw.subject]++;
+      } else {
+        subjects[hw.subject] = 1;
+      }
+    }
+  }
+
+  for (const subjectKey of Object.keys(subjects)) {
+    const count = subjects[subjectKey];
+    const val = count * 100 / denominator;
+    sections.push({value: val, color: currentUser.subjects[subjectKey].color});
+  }
+
+  return sections;
+}
+
 export default function TrackerRing({selectedSubjects, unitType}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
 
-  function getRingSections() {
-    const sections = [];
-    const incompleteAssignments = currentUser.homework.filter(h => h.status !== HomeworkStatus.COMPLETED && selectedSubjects.includes(h.subject));
-    const dueAssignments = currentUser.homework.filter(h => h.dueDate && h.dueDate?.seconds < ((Date.now()/1000) + currentUser.settings.ringDeadlineThresholdHours * 3600) && selectedSubjects.includes(h.subject) && h.status !== HomeworkStatus.COMPLETED);
-    const subjects = {};
-
-    let denominator = 1;
-
-    if (unitType === "Subject") {
-      denominator = incompleteAssignments.length;
-      for (const hw of incompleteAssignments) {
-        if (hw.subject in subjects) {
-          subjects[hw.subject]++;
-        } else {
-          subjects[hw.subject] = 1;
-        }
-      }
-    } else {
-      for (const hw of dueAssignments) {
-        denominator = dueAssignments.length;
-        if (hw.subject in subjects) {
-          subjects[hw.subject]++;
-        } else {
-          subjects[hw.subject] = 1;
-        }
-      }
-    }
-
-    for (const subjectKey of Object.keys(subjects)) {
-      const count = subjects[subjectKey];
-      const val = count * 100 / denominator;
-      sections.push({value: val, color: currentUser.subjects[subjectKey].color});
-    }
-
-    return sections;
-  }
-
-  return (
+  return [
+    <WhiteSpace key="white"/>,
+    <GreenCircle key="green"/>,  
     <RingProgress
-      style={{position: "absolute", top: 0, left: 0,}}
+      key="ring-progress"
       className="ring"
       size={260}
       thickness={16}
@@ -79,7 +83,18 @@ export default function TrackerRing({selectedSubjects, unitType}) {
           </Tooltip>
         </Center>
       }
-      sections={getRingSections()}
+      sections={getSections(currentUser, unitType, selectedSubjects)}
     />
-  )
+    ]
+}
+
+export function TrackerBar({selectedSubjects, unitType}) {
+
+  const {currentUser} = React.useContext(CurrentUserContext)
+
+  return <Paper withBorder className="d-block d-md-none" style={{marginTop: "-0.5rem", marginBottom: "0.5rem"}}>
+    <Progress.Root >
+      {getSections(currentUser, unitType, selectedSubjects).map((section, index) => <Progress.Section key={index} value={section.value} color={section.color}></Progress.Section>)}
+    </Progress.Root>
+  </Paper>
 }
