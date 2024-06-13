@@ -16,6 +16,7 @@ import TrackerRing, { TrackerBar, trackerOffset } from "./TrackerRing.jsx";
 import { SortOrderSelector, StatusSelector, RingContextSelector} from "./HomeworkTrackerControl.jsx";
 
 import "../../assets/style/homeworkTracker.css";
+import useWindowDimensions from "../Window.jsx";
 
 /**
  * A card that displays a subject
@@ -581,16 +582,19 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     </div>
   )
 
-  const SubjectFilter = () => (
-    <Spoiler maxHeight={60} showLabel="Expand Subjects" hideLabel="Collapse Subjects">
+  const SubjectFilter = () => {
+    
+    
+    return (
       <Paper withBorder className='p-2 gap-2 chip-container' >
         <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36, variant: "light"}} onClick={setSubjectAddMenuOpen} />
         <Divider orientation="vertical" />
         {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
       </Paper>
-    </Spoiler>
-  )
-
+  )}
+  
+  const { height, width } = useWindowDimensions();
+  
   return (
     <div className="d-flex flex-column">
       <div className="tracker-header">
@@ -610,14 +614,16 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
                 <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />        
                 <IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 36, variant: "light"}} onClick={handleAddAssignmentPress} />
               </div>
-              <SubjectFilter />
+              <Spoiler maxHeight={width >= 1000 ? 60 : 130} showLabel="Expand Subjects" hideLabel="Collapse Subjects">
+                <SubjectFilter />
+              </Spoiler>
             </div>
           <QuickEntryResults key="quick-results" quickExtract={quickExtract} />
           </div>
         </div>
       </div>
-      <div className="coaching-line mb-0"></div>
-      <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-0 border-gray-top">
+      <div className="coaching-line mb-0 "></div>
+      <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-1 px-md-5">
         {validHomeworks.map((homework, index) => {
           return <Assignment key={index} homeworkJson={homework} />
         })}
