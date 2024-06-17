@@ -270,4 +270,15 @@ export class User {
       });
     })
   }
+
+  async setIntent(intent: string): Promise<void> { 
+    return new Promise<void>((resolve, reject) => {
+      this.intents.push(intent);
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
 }

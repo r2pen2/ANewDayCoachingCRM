@@ -23,11 +23,13 @@ export default function Intent({height}) {
   function updateIntent() {
     if (newIntentText === null) { return; }
     if (newIntentText.length === 0) {
-      notifWarn("Intent Not Updated", "Your intent cannot be empty!")
+      notifWarn("Intent Not Updated", "Your intent cannot be empty!");
       return;
     }
-    notifSuccess("Intent Updated", "Your intent has been updated!");
-    setNewIntentText(null);
+    currentUser.setIntent(newIntentText).then(() => {
+      notifSuccess("Intent Updated", "Your intent has been updated!");
+      setNewIntentText(null);
+    })
   }
 
   function handleEnter(e) { if (e.key === "Enter") { updateIntent(); } }
