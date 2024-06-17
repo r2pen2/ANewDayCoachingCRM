@@ -375,7 +375,7 @@ export function Assignment({homeworkJson}) {
           <Popover opened={this.state.editPopoverOpen} onClose={() => this.setState({editPopoverOpen: false})}>
             <Popover.Target>
               <Tooltip position="bottom" label={this.getTooltipLabel()}>
-                <Text><strong>{this.getDateInputLabelShort()}</strong>{this.getDateString()}</Text>
+                <Text c="dimmed">{this.getDateInputLabelShort()}{this.getDateString()}</Text>
               </Tooltip>
             </Popover.Target>
             <Popover.Dropdown>

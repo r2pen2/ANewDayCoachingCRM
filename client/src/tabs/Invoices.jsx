@@ -15,8 +15,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import IconButton from '../components/IconButton.jsx';
 import { FirstPage } from '../components/invoices/PaymentProcess.jsx';
-import { navigationItems } from '../components/Navigation.jsx';
-import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
+import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 
 export default function Invoices() {
 
@@ -105,8 +104,6 @@ export default function Invoices() {
   
   /** Get the total balance of all unpaid invoices */  
   function getUnpaidBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + parseInt(i.amount), 0); }
-  /** Get the total balance of all unpaid invoices minus those that are pending */
-  function getBalance() { return invoices.filter(i => !i.paid && !i.paidAt).reduce((acc, i) => acc + parseInt(i.amount), 0); }
   /** Get the total balance of all pending invoices */
   function getPendingBalance() { return invoices.filter(i => !i.paid && i.paidAt).reduce((acc, i) => acc + parseInt(i.amount), 0); }
 
@@ -180,12 +177,6 @@ export default function Invoices() {
     </Modal>
   }
 
-  /** Get the total balance of all unpaid invoices in a NumberFormatter with prefix $ */
-  const BalanceFormatter = () => <NumberFormatter value={getBalance()} prefix='$' />;
-
-  /** Display the total balance of all unpaid invoices minus those that are pending */
-  const BalanceDisplay = () => <div className="d-flex flex-column gap-2"><p style={{marginBottom: 0}}><strong>Outstanding Balance: </strong><BalanceFormatter /></p></div>;
-
   /** Show the user how their balance got to it's current point. This is only displayed when there are approval pending payments */
   const BalanceExplanation = () => {
     
@@ -202,17 +193,16 @@ export default function Invoices() {
         - 
         <p style={{marginBottom: 0, color: "#FD7314"}}>Pending ({<NumberFormatter value={getPendingBalance()} prefix='$' style={{color: "#FD7314"}} />})</p>
         =
-        <BalanceFormatter />
+        {/* <BalanceFormatter /> */}
       </span>
     )
   }
 
   return [
     <PayModal key="pay-modal"/>,
-    <CRMBreadcrumbs key="breadcrumbs" items={[{title: "Invoices", href: navigationItems.INVOICES}]} />,
     <hgroup key="invoices-headers" className="d-flex align-items-center flex-column">
-      <p>This is a list of all invoices: paid and unpaid. They are sorted by invoice number.</p>
-      <BalanceDisplay />
+      <InvoiceStats invoices={invoices} />
+      {/* <BalanceDisplay /> */}
       <BalanceExplanation />
     </hgroup>,
     <InvoiceList key="invoice-list" />
