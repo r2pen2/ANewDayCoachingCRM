@@ -58,3 +58,45 @@
   fill: transparent !important;
   stroke: white !important;
 }
+
+
+
+.pay-modal-card {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+}
+
+.pay-modal-title {
+  font-family:
+    Greycliff CF,
+    var(--mantine-font-family);
+  font-weight: 700;
+}
+
+.pay-modal-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: var(--mantine-radius-md);
+  height: rem(90px);
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
+  transition:
+    box-shadow 150ms ease,
+    transform 100ms ease;
+}
+
+.pay-modal-item:hover {
+  box-shadow: var(--mantine-shadow-md);
+  transform: scale(1.05);
+}
+
+.pay-modal-icon-svg {
+  max-height: 40px;
+  max-width: 40px;
+  fill: var(--icon-color);
+}
+
+.pay-modal-item p {
+  margin-bottom: 0;
+}

@@ -1,6 +1,7 @@
 
 import { Progress, Box, Text, Group, Paper, SimpleGrid, rem, NumberFormatter } from '@mantine/core';
 import { IconCoin, IconCreditCardPay, IconDeviceAnalytics, IconPercentage, IconReceipt, IconReceipt2 } from '@tabler/icons-react';
+import { lateColor, pendingColor, unpaidColor } from '../../tabs/Invoices';
 
 
 export function InvoiceStats({invoices}) {
@@ -9,9 +10,9 @@ export function InvoiceStats({invoices}) {
 
   const data = [
     { label: paidUp ? 'All paid up!' : "", count: paidUp ? `100%` : "", part: paidUp ? 100 : 0, color: '#74b496' },
-    { label: 'Late Unpaid', count: `${getLateBalance()}`, part: getLateBalance() * 100 / getUnpaidBalance(), color: 'red' },
-    { label: 'Unpaid', count: `${getBalance() - getLateBalance()}`, part: (getBalance() - getLateBalance()) * 100 / getUnpaidBalance(), color: 'orange' },
-    { label: 'Pending', count: `${getPendingBalance()}`, part: getPendingBalance() * 100 / getUnpaidBalance(), color: 'cyan.5' },
+    { label: 'Late Unpaid', count: `${getLateBalance()}`, part: getLateBalance() * 100 / getUnpaidBalance(), color: lateColor },
+    { label: 'Unpaid', count: `${getBalance() - getLateBalance()}`, part: (getBalance() - getLateBalance()) * 100 / getUnpaidBalance(), color: unpaidColor },
+    { label: 'Pending', count: `${getPendingBalance()}`, part: getPendingBalance() * 100 / getUnpaidBalance(), color: pendingColor },
   ];
 
   const segments = data.map((segment) => (

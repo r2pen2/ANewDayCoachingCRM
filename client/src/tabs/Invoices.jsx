@@ -14,8 +14,12 @@ import { notifSuccess } from '../components/Notifications.jsx';
 
 // Style Imports
 import IconButton from '../components/IconButton.jsx';
-import { FirstPage } from '../components/invoices/PaymentProcess.jsx';
+import { FirstPage, FirstPageV2 } from '../components/invoices/PaymentProcess.jsx';
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
+
+export const lateColor = "red"
+export const unpaidColor = "orange"
+export const pendingColor = "cyan.5"
 
 export default function Invoices() {
 
@@ -43,9 +47,9 @@ export default function Invoices() {
 
     function getBadgeColor(invoice) {
       if (invoice.paid) { return "green"; }             // This is paid
-      if (invoice.paidAt) { return "orange"; }          // This is pending approval
-      if (invoice.checkLate()) { return "red"; }        // This is late
-      return "yellow";                                  // This is just unpaid
+      if (invoice.paidAt) { return pendingColor; }          // This is pending approval
+      if (invoice.checkLate()) { return lateColor; }        // This is late
+      return unpaidColor;                                  // This is just unpaid
     }
 
     function getPaidMessage(invoice) {
@@ -91,8 +95,8 @@ export default function Invoices() {
                   <Badge color={getBadgeColor(invoice)}>{getPaidMessage(invoice)}</Badge>
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
-                  <IconButton label="View Invoice" icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
-                  <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? "orange" : "green"} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
+                  <IconButton label="View Invoice" color="gray" icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
+                  <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? "cyan.5" : ""} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
                 </Table.Td>
               </Table.Tr>
             ))}
@@ -101,11 +105,6 @@ export default function Invoices() {
       </Table.ScrollContainer>
     )
   }
-  
-  /** Get the total balance of all unpaid invoices */  
-  function getUnpaidBalance() { return invoices.filter(i => !i.paid).reduce((acc, i) => acc + parseInt(i.amount), 0); }
-  /** Get the total balance of all pending invoices */
-  function getPendingBalance() { return invoices.filter(i => !i.paid && i.paidAt).reduce((acc, i) => acc + parseInt(i.amount), 0); }
 
   /** Invoice payment modal that appears when {@link currentInvoice} is not null. */
   const PayModal = () => {
@@ -115,7 +114,7 @@ export default function Invoices() {
     function getPayModalTitle() {
       /** Whether wer're on the thanks-venmo or thanks-mark pages */
       const onThanks = secondPage === "thanks-venmo" || secondPage === "thanks-mark";
-      if (!secondPage)              { return "Choose how you'd like to pay:"; } // We're on the first page
+      if (!secondPage)              { return <strong>Invoice #{currentInvoice?.invoiceNumber}: <NumberFormatter value={currentInvoice?.amount} prefix='$' /></strong>; } // We're on the first page
       if (secondPage === "venmo")   { return "Paying with Venmo:";            } // We're on the Venmo page
       if (secondPage === "mark")    { return "Mark this invoice as paid:";    } // We're trying to mark an invoice as paid
       if (secondPage === "oops")    { return "Undo mark as paid:";            } // We're trying to undo an invoice being marked as paid
@@ -153,12 +152,7 @@ export default function Invoices() {
     function handleUndoMarkPaid() { currentInvoice?.tellRachelIHaveNotBeenPaid(); setSecondPage("oops"); }
 
     return <Modal opened={currentInvoice} onClose={() => setCurrentInvoice(null)} title={getPayModalTitle()} className='container-fluid'>
-        <div className="d-flex flex-column align-items-center">
-          <strong>Invoice #{currentInvoice?.invoiceNumber}: <NumberFormatter value={currentInvoice?.amount} prefix='$' /></strong>
-          <p style={{marginBottom: 0}}>Assigned: {getSlashDateString(currentInvoice?.createdAt)}</p>
-          <p>Due: {getSlashDateString(currentInvoice?.dueAt)}</p>
-        </div>
-        <FirstPage secondPage={secondPage} setSecondPage={setSecondPage} currentInvoice={currentInvoice} />
+        <FirstPageV2 secondPage={secondPage} setSecondPage={setSecondPage} currentInvoice={currentInvoice} />
         {secondPage && 
           <div className="row h-100 p-2 text-center">
             { secondPage === "venmo" && <p>Thanks for choosing to pay with <strong style={{color: "#228BE6"}}>Venmo</strong>! A new tab should have opened with your payment already filled out. Click <strong>"Done!"</strong> when the payment has been sent, and I'll let Rachel know.</p> }
