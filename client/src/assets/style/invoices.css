@@ -30,10 +30,6 @@
   color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
 }
 
-.invoice-settings-card {
-  background-color: var(--mantine-color-body);
-}
-
 .invoice-settings-item {
   & + & {
     padding-top: var(--mantine-spacing-sm);

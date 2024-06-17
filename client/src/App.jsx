@@ -1,8 +1,10 @@
 import './App.css';
 import '@mantine/core/styles.css';
 
+import "./assets/style/colorTheme.css";
+
 import { AppShell } from '@mantine/core';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, memo, useEffect, useMemo, useState } from 'react';
 import { AppShellNavigator, navigationItems } from './components/Navigation';
 import { AppShellHeader } from './components/Header';
 import Invoices from './tabs/Invoices';
@@ -18,16 +20,34 @@ import FormManagement from './tabs/FormManagement.jsx';
 import InvoiceManagement from './tabs/InvoiceManagement.jsx';
 import DriveManagement from './tabs/DriveManagement.jsx';
 import UserManagement from './tabs/UserManagement.jsx';
-import { LinkMaster } from './api/links.ts';
+
 
 export const CurrentUserContext = createContext();
+export const SettingsContext = createContext();
 
 function App() {
+  
+  const [currentUserState, setCurrentUser] = useState({id: null});   // State for the current user
+  const currentUser = useMemo(() => currentUserState, [currentUserState.id]) // We only want to re-render the entire App state when the current userId changes
+  
+  /** Get the current user on load */
+  useEffect(() => { getCurrentUser(setCurrentUser); }, []);
+  
+  return (
+    <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
+      {/* This context needs to go on the outside of the AppContent! */}
+      <AppContent currentUser={currentUser} setCurrentUser={setCurrentUser} />
+    </CurrentUserContext.Provider>
+  )
+}
+    
+export default App;
 
+const AppContent = memo(function AppContent({currentUser, setCurrentUser}) {
+  
   const [burgerOpen, setBurgerOpen] = useState(false);    // State for the burger menu
   const [currentTab, setCurrentTab] = useState(getTab()); // Get the current tab from the URL
-  const [currentUser, setCurrentUser] = useState(null);   // State for the current user
-
+  
   const CurrentTab = () => {
     switch (currentTab) {
       case navigationItems.DASHBOARD:
@@ -54,15 +74,11 @@ function App() {
     }
   }
 
-  /** Get the current user on load */
-  useEffect(() => { getCurrentUser(setCurrentUser); }, [])
-
-  if (!currentUser) {
+  if (!currentUser.id) {
     return <Login />
   }
 
   return (
-    <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
       <AppShell
         header={{ height: 60 }}
         navbar={{ width: 300, breakpoint: 'lg', collapsed: { mobile: !burgerOpen } }}
@@ -70,11 +86,8 @@ function App() {
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 
         <AppShellNavigator currentTab={currentTab} setCurrentTab={(t) => {window.location.hash = t; setCurrentTab(t)}} setBurgerOpen={setBurgerOpen}/>
         <AppShell.Main>
-          <CurrentTab />
+            <CurrentTab />
         </AppShell.Main>
       </AppShell>
-    </CurrentUserContext.Provider>
-  );
-}
-
-export default App;
+  )
+})

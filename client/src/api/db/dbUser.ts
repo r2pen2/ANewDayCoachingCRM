@@ -287,9 +287,9 @@ export class User {
     })
   }
 
-  async changeSetting(setting: string, newValue: any): Promise<void> {
+  async changeInvoiceSetting(setting: string, newValue: any): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.settings[setting] = newValue;
+      this.settings.invoices[setting] = newValue;
       this.setData().then(() => {
         resolve();
       }).catch((error) => {
@@ -297,16 +297,4 @@ export class User {
       });
     })
   }
-
-  async toggleSetting(setting: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.settings[setting] = !this.settings[setting];
-      this.setData().then(() => {
-        resolve();
-      }).catch((error) => {
-        reject(error);
-      });
-    })
-  }
-  
 }

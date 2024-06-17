@@ -1,5 +1,5 @@
 // Library Imports
-import { Anchor, Card, Group, Paper, SimpleGrid, Text, UnstyledButton, useMantineTheme } from "@mantine/core"
+import { Anchor, Button, Card, Group, Paper, SimpleGrid, Text, UnstyledButton, useMantineTheme } from "@mantine/core"
 import React from "react"
 // API Imports
 import { LinkMaster } from "../../api/links.ts"
@@ -7,6 +7,8 @@ import { LinkMaster } from "../../api/links.ts"
 import { CurrentUserContext } from "../../App"
 // Style Imports
 import "../../assets/style/paymentProcess.css";
+import { notifSuccess } from "../Notifications.jsx";
+import { unpaidColor } from "../../tabs/Invoices.jsx";
 
 const PayPalLogo = () => <svg role="img" viewBox="0 0 24 24" className="pay-modal-icon-svg" xmlns="http://www.w3.org/2000/svg"><title>PayPal</title><path d="M7.016 19.198h-4.2a.562.562 0 0 1-.555-.65L5.093.584A.692.692 0 0 1 5.776 0h7.222c3.417 0 5.904 2.488 5.846 5.5-.006.25-.027.5-.066.747A6.794 6.794 0 0 1 12.071 12H8.743a.69.69 0 0 0-.682.583l-.325 2.056-.013.083-.692 4.39-.015.087zM19.79 6.142c-.01.087-.01.175-.023.261a7.76 7.76 0 0 1-7.695 6.598H9.007l-.283 1.795-.013.083-.692 4.39-.134.843-.014.088H6.86l-.497 3.15a.562.562 0 0 0 .555.65h3.612c.34 0 .63-.249.683-.585l.952-6.031a.692.692 0 0 1 .683-.584h2.126a6.793 6.793 0 0 0 6.707-5.752c.306-1.95-.466-3.744-1.89-4.906z"/></svg>
 const VenmoLogo = () => <svg role="img" viewBox="0 0 448 512" className="pay-modal-icon-svg" xmlns="http://www.w3.org/2000/svg"><title>Venmo</title><path d="M447.8 153.6c-2 43.6-32.4 103.3-91.4 179.1-60.9 79.2-112.4 118.8-154.6 118.8-26.1 0-48.2-24.1-66.3-72.3C100.3 250 85.3 174.3 56.2 174.3c-3.4 0-15.1 7.1-35.2 21.1L0 168.2c51.6-45.3 100.9-95.7 131.8-98.5 34.9-3.4 56.3 20.5 64.4 71.5 28.7 181.5 41.4 208.9 93.6 126.7 18.7-29.6 28.8-52.1 30.2-67.6 4.8-45.9-35.8-42.8-63.3-31 22-72.1 64.1-107.1 126.2-105.1 45.8 1.2 67.5 31.1 64.9 89.4z"/></svg>
@@ -24,7 +26,7 @@ export const FirstPageV2 = ({secondPage, currentInvoice, setSecondPage}) => {
 
   /** Get the current user */
   const {currentUser} = React.useContext(CurrentUserContext);
-
+  
   if (secondPage) { return; } // We're on the second page
   /** Link to venmo payment */
   const venmoLink = LinkMaster.createVenmoLink(currentInvoice?.amount, currentInvoice?.invoiceNumber, currentUser.personalData.displayName);
@@ -43,6 +45,64 @@ export const FirstPageV2 = ({secondPage, currentInvoice, setSecondPage}) => {
     </Card>
   )
 }
+  
+  export const SecondPage = ({secondPage, currentInvoice, setSecondPage, setCurrentInvoice, fetchInvoices}) => {
+  
+  /** Get the current user */
+  const {currentUser} = React.useContext(CurrentUserContext);
+  
+  if (!secondPage) { return; } // We're on the first page
+
+  const VenmoAndMarkActions = () => {
+
+    if (!secondPage)                                                              { return; } // If we're not on the second page, don't show these action buttons
+    if (secondPage !== "venmo" && secondPage !== "mark" && secondPage !== "oops") { return; } // If somehow we're on the wrong page, don't show these action buttons
+    
+    /** When the done button is pressed, tell Rachel that this invoice is paid & go to the right page */
+    function handleDone() { 
+      currentInvoice?.tellRachelIHaveBeenPaid(secondPage).then(() => {
+        setSecondPage(`thanks-${secondPage}`);
+        fetchInvoices();
+        setCurrentInvoice(null);
+        notifSuccess("Marked Paid", 'Your invoice has been marked as "paid" and is pending approval.');
+      } );
+    }
+    
+    const DoneButton = () => {
+      if (secondPage === "oops") { return; } // Don't show the done button if we're undoing a mark
+      return <Button key="done-button" style={{marginBottom: "0.5rem"}} color="green" onClick={handleDone}>{secondPage === "venmo" ? "Done!" : "Yes, I've already paid."}</Button>
+    }
+    
+    return [
+      <DoneButton key="done-button" />,
+      <Button key="back-button" onClick={() => { setSecondPage(null); setCurrentInvoice(null)}}>Close</Button>
+    ]
+  }
+
+  /** When the user wants to undo a mark as paid, tell Rachel that this invoice is unpaid */
+  function handleUndoMarkPaid() { 
+    currentInvoice?.tellRachelIHaveNotBeenPaid().then(() => {
+      setCurrentInvoice(null);
+      fetchInvoices();
+    });
+  }
+
+  return (
+    <div className="row h-100 p-2 text-center">
+      { secondPage === "venmo" && <p>Thanks for choosing to pay with <strong style={{color: "#228BE6"}}>Venmo</strong>! A new tab should have opened with your payment already filled out. Click <strong>"Done!"</strong> when the payment has been sent, and I'll let Rachel know.</p> }
+      { secondPage === "mark" && <p>Would you like me to inform Rachel that this invoice has already been paid?</p>}
+      { secondPage === "cancel" && <p>Are you sure you want to mark this invoice as unpaid and cancel the approval process?</p>}
+      <VenmoAndMarkActions />
+      { secondPage === "thanks-venmo" && <p>You're all set! I've let Rachel know that you paid through <strong style={{color: "#228BE6"}}>Venmo</strong>. The table will update shortly once she's approved the payment.</p> }
+      { secondPage === "thanks-mark" && <p>You're all set! I've let Rachel know that you've declared this invoice as paid. The table will update shortly once she's approved the payment.</p> }
+      { (secondPage === "thanks-venmo" || secondPage === "thanks-mark") && <Button color="red"  style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Wait! I Didn't mean to do that!</Button>}
+      { (secondPage === "cancel") && <Button color={unpaidColor} style={{marginBottom: "0.5rem"}} onClick={handleUndoMarkPaid}>Mark unpaid</Button>}
+      { (secondPage === "thanks-venmo" || secondPage === "thanks-mark") && <Button color="gray" onClick={() => setCurrentInvoice(null)}>Close</Button>}
+      { (secondPage === "cancel") && <Button color="blue" onClick={() => setCurrentInvoice(null)}>Cancel</Button>}
+    </div>
+  )
+  
+}
 
 
 export const PayButtonV2 = (props) => {
@@ -59,9 +119,9 @@ export const PayButtonV2 = (props) => {
   }
   
   return (
-      <UnstyledButton onClick={handleClick} withBorder className="pay-modal-item p-3 d-flex flex-column align-items-center justify-content-center" style={{ "--icon-color": payButtonData[props.method].color }}>
-        {payButtonData[props.method].logo}
-        {payButtonData[props.method].text}
-      </UnstyledButton>
+    <UnstyledButton onClick={handleClick} withBorder className="pay-modal-item p-3 d-flex flex-column align-items-center justify-content-center" style={{ "--icon-color": payButtonData[props.method].color }}>
+      {payButtonData[props.method].logo}
+      {payButtonData[props.method].text}
+    </UnstyledButton>
   )
 }

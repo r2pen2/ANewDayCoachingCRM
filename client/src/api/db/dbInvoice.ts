@@ -89,11 +89,16 @@ export class Invoice {
     })
   }
 
-  tellRachelIHaveNotBeenPaid(): void {
-    console.log("Rachel, I've made a mistake!");
-    this.paidAt = null;
-    this.limbo = null;
-    this.setData();
+  tellRachelIHaveNotBeenPaid(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.paidAt = null;
+      this.limbo = null;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      })
+    })
   }
 
   checkLate(): boolean {

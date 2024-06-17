@@ -1,10 +1,10 @@
 
-import { Progress, Box, Text, Group, Paper, SimpleGrid, rem, NumberFormatter } from '@mantine/core';
-import { IconCoin, IconCreditCardPay, IconDeviceAnalytics, IconPercentage, IconReceipt, IconReceipt2 } from '@tabler/icons-react';
+import { Progress, Box, Text, Group, Paper, SimpleGrid, NumberFormatter } from '@mantine/core';
+import { IconCreditCardPay } from '@tabler/icons-react';
 import { lateColor, pendingColor, unpaidColor } from '../../tabs/Invoices';
+import { memo } from 'react';
 
-
-export function InvoiceStats({invoices}) {
+export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled}) {
 
   const paidUp = getBalance() === 0 && getPendingBalance() === 0;
 
@@ -47,49 +47,50 @@ export function InvoiceStats({invoices}) {
   
 
   function hasUnpaidInvoices() {
-    return invoices.filter(i =>!i.paid &&!i.paidAt).length > 0;
+    return invoices.filter(i => !i.paid &&!i.paidAt).length > 0;
   }
 
   function hasPendingInvoices() {
-    return invoices.filter(i => i.limbo !== null).length > 0;
+    return invoices.filter(i => !i.paid && i.paidAt).length > 0;
   }
 
   function getUnpaidMessage() {
-    if (!hasUnpaidInvoices()) { return; }
+    if (!hasUnpaidInvoices() || !invoicesPulled) { return; }
     return <span>You can pay by clicking the <IconCreditCardPay /> button next to an invoice.</span>
   }
 
   function getPendingMessage() {
-    if (hasPendingInvoices()) { return; }
+    if (hasPendingInvoices() || !invoicesPulled) { return; }
     return "Pending invoices do not count towards your balance."
   }
 
   function getLateMessage() {
-    if (hasPendingInvoices()) { return; }
+    if (getLateBalance() === 0 || !invoicesPulled) { return; }
     return <span>You have some <strong style={{color: "#fa5252"}}>late</strong> payments.</span>
   }
 
   return (
-    <Paper withBorder className="p-3" style={{maxWidth: 500}}>
-      <Group justify="space-between">
-        <Group align="flex-end" gap="xs">
-          <Text fz="xl" fw={700}>
-            <NumberFormatter value={getBalance()} prefix='$' />
-          </Text>
+    <div className="col-12 col-md-6 mh-100 p-2" >    
+      <Paper withBorder className="p-3 card-bg-1 h-100">
+        <Group justify="space-between">
+          <Group align="flex-end" gap="xs">
+            <Text fz="xl" fw={700}>
+              <NumberFormatter value={getBalance()} prefix='$' />
+            </Text>
+          </Group>
         </Group>
-        <IconReceipt2 size="1.4rem" className="invoice-stat-icon" stroke={1.5} />
-      </Group>
 
-      <Text c="dimmed">
-        Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
-      </Text>
+        <Text c="dimmed">
+          Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
+        </Text>
 
-      <Progress.Root size={34} classNames="invoice-stat-progress-label" mt={40}>
-        {segments}
-      </Progress.Root>
-      <SimpleGrid cols={{ base: 1, xs: 3 }} mt="xl">
-        {descriptions}
-      </SimpleGrid>
-    </Paper>
+        <Progress.Root size={34} classNames="invoice-stat-progress-label" mt={40}>
+          { invoicesPulled && segments }
+        </Progress.Root>
+        <SimpleGrid cols={{ base: 1, xs: 3 }} mt="xl">
+          { invoicesPulled && descriptions }
+        </SimpleGrid>
+      </Paper>
+    </div>
   );
-}
+})
