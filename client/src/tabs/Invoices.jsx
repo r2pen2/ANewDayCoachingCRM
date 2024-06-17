@@ -177,33 +177,10 @@ export default function Invoices() {
     </Modal>
   }
 
-  /** Show the user how their balance got to it's current point. This is only displayed when there are approval pending payments */
-  const BalanceExplanation = () => {
-    
-    /**
-     * Boolean whether there exists any invoices that are pending approval
-     * @returns {boolean} Whether or not the balance explanation should be visible
-     */
-    function getBalanceExplanationVisibility() { return invoices.filter(i => !i.paid && i.paidAt).length > 0; }
-
-    if (!getBalanceExplanationVisibility()) { return; } // Don't show the balance explanation if there are no pending payments
-    return (
-      <span className="flex-row d-flex gap-2 align-items-center" style={{marginBottom: "1rem", fontWeight: 600}}>
-        <p style={{marginBottom: 0, color: "#FAB005"}}>Unpaid ({<NumberFormatter value={getUnpaidBalance()} prefix='$' style={{color: "#FAB005"}} />})</p>
-        - 
-        <p style={{marginBottom: 0, color: "#FD7314"}}>Pending ({<NumberFormatter value={getPendingBalance()} prefix='$' style={{color: "#FD7314"}} />})</p>
-        =
-        {/* <BalanceFormatter /> */}
-      </span>
-    )
-  }
-
   return [
     <PayModal key="pay-modal"/>,
     <hgroup key="invoices-headers" className="d-flex align-items-center flex-column">
       <InvoiceStats invoices={invoices} />
-      {/* <BalanceDisplay /> */}
-      <BalanceExplanation />
     </hgroup>,
     <InvoiceList key="invoice-list" />
   ]

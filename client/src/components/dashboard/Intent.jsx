@@ -61,7 +61,7 @@ export default function Intent({height}) {
     <Paper withBorder style={{height: height}} className="w-100 p-2 d-flex flex-column text-center align-items-center justify-content-start top-green mb-xl-2">
       <Avatar src={currentUser.personalData.pfpUrl} alt={currentUser.personalData.displayName} size="large" />
       <Text size="xl">{welcomeText}</Text>
-      <Text>{meetingText}</Text>
+      <Text c="dimmed">{meetingText}</Text>
       <div className={"container d-flex flex-row " + (newIntentText === null ? "intent-container" : "")} onClick={handleClick}>
         <div className="col-1 gap-2 d-flex flex-column align-items-center justify-content-between py-2">
           {quoteSvg}
