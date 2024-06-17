@@ -70,7 +70,7 @@ export function InvoiceStats({invoices}) {
   }
 
   return (
-    <Paper withBorder className="p-3 mt-2 mb-2" style={{maxWidth: 500}}>
+    <Paper withBorder className="p-3" style={{maxWidth: 500}}>
       <Group justify="space-between">
         <Group align="flex-end" gap="xs">
           <Text fz="xl" fw={700}>

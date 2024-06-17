@@ -29,3 +29,25 @@
 .invoice-stat-icon {
   color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
 }
+
+.invoice-settings-card {
+  background-color: var(--mantine-color-body);
+}
+
+.invoice-settings-item {
+  & + & {
+    padding-top: var(--mantine-spacing-sm);
+    margin-top: var(--mantine-spacing-sm);
+    border-top: rem(1px) solid light-dark(var(--mantine-color-gray-2) var(--mantine-color-dark-4));
+  }
+}
+
+.invoice-settings-switch {
+  & * {
+    cursor: pointer;
+  }
+}
+
+.invoice-settings-title {
+  line-height: 1;
+}

@@ -53,6 +53,11 @@ export class User {
     homeworkLoaderType: HomeworkLoaderType.CIRCLE,
     requireHomeworkDeleteConfirmation: true,
     ringDeadlineThresholdHours: 24,
+    invoices: {
+      studentVisibility: false,
+      newInvoiceEmailNotification: false,
+      pendingStatusEmailNotification: false,
+    }
   }
 
   constructor(firebaseUser: any) {
@@ -281,4 +286,27 @@ export class User {
       });
     })
   }
+
+  async changeSetting(setting: string, newValue: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.settings[setting] = newValue;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async toggleSetting(setting: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.settings[setting] = !this.settings[setting];
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+  
 }

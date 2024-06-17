@@ -16,6 +16,7 @@ import { notifSuccess } from '../components/Notifications.jsx';
 import IconButton from '../components/IconButton.jsx';
 import { FirstPage, FirstPageV2 } from '../components/invoices/PaymentProcess.jsx';
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
+import InvoiceSettings from '../components/invoices/InvoiceSettings.jsx';
 
 export const lateColor = "red"
 export const unpaidColor = "orange"
@@ -60,7 +61,7 @@ export default function Invoices() {
     }
 
     return (
-      <Table.ScrollContainer minWidth={500} type="native">
+      <Table.ScrollContainer minWidth={500} className="w-100" type="native">
         <Table striped>
           <Table.Thead>
             <Table.Tr>
@@ -171,11 +172,12 @@ export default function Invoices() {
     </Modal>
   }
 
-  return [
-    <PayModal key="pay-modal"/>,
-    <hgroup key="invoices-headers" className="d-flex align-items-center flex-column">
+  return <div className="d-flex flex-column align-items-center w-100">
+    <PayModal />
+    <div className="d-flex gap-2 p-2 w-100">
       <InvoiceStats invoices={invoices} />
-    </hgroup>,
-    <InvoiceList key="invoice-list" />
-  ]
+      <InvoiceSettings />
+    </div>
+    <InvoiceList />
+  </div>
 }
