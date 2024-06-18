@@ -12,18 +12,22 @@ export class FormAssignment {
   comment: string | null;
   href: string;
   assignedLink: string | null;
+  minuteEstimate: number | null;
+  started: boolean;
 
-  constructor(formId: string, formTitle: string, formDescription: string, href: string) {
+  constructor(formId: string, formTitle: string, formDescription: string, href: string, minuteEstimate: number) {
     this.formId = formId;
     this.formTitle = formTitle;
     this.assignedDate = null;
     this.dueDate = null;
     this.completed = false;
+    this.started = false;
     this.completedDate = null;
     this.assignedTo = null;
     this.formDescription = formDescription;
     this.href = href;
     this.assignedLink = null;
+    this.minuteEstimate = minuteEstimate;
   }
   
   toJson() {
@@ -38,11 +42,17 @@ export class FormAssignment {
       formDescription: this.formDescription,
       href: this.href,
       assignedLink: this.assignedLink,
+      minuteEstImate: this.minuteEstimate,
+      started: this.started
     }
   }
 
   setDueDate(dueDate: Date): void {
     this.dueDate = dueDate;
+  }
+
+  setMinuteEstimate(minutes: number): void {
+    this.minuteEstimate = minutes;
   }
 
   /**
@@ -155,7 +165,7 @@ export class FormAssignment {
     return new Promise<FormAssignment[]>((resolve, reject) => {
       fetch(hostname + "/forms").then((response) => {
         response.json().then((data) => {
-          resolve(data.map((d: any) => new FormAssignment(d.formId, d.formTitle, d.formDescription, d.href)));
+          resolve(data.map((d: any) => new FormAssignment(d.formId, d.formTitle, d.formDescription, d.href, d.minuteEstimate)));
         })
       }).catch((error) => {
         reject(error);

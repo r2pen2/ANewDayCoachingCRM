@@ -16,6 +16,7 @@ import { notifSuccess } from '../components/Notifications.jsx'
 import { getFormById } from '../api/forms.ts'
 import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx'
 import { navigationItems } from '../components/Navigation.jsx'
+import { FormCard } from '../components/forms/FormCard.jsx'
 
 /** How much confetti to add when a form is completed */
 const dConfetti = 500;
@@ -39,7 +40,7 @@ export default function Forms() {
   }, [currentUser, confettiLeft]);
 
   /** List of all forms. Clicking a form brings the user to the Google Form in a new tab */
-  const FormsList = () => {
+  const FormsDisplay = () => {
 
     if (currentUser.formAssignments.length < 1) { 
       return <div className="text-center">
@@ -49,65 +50,16 @@ export default function Forms() {
     }
 
     return (
-      currentUser.formAssignments.map((form, index) => {
-        
-        /** Component that displays a "Incomplete" message when the form is incomplete */
-        const IncompleteNotifier = () => {
-          if (form.completed) { return; }
-          return (
-            <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
-              <Text c="orange">Incomplete</Text>
-              <Tooltip label="This form has not been completed."><IconAlertCircle color="orange" /></Tooltip>
-            </div>
-          )
-        }
-
-        /** Component that displays a "Complete" message when the form has been completed */
-        const CompleteNotifier = () => {
-          if (!form.completed) { return; }
-          return (
-            <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
-              <Text c="green">Complete</Text>
-              <Tooltip label="All set!"><IconCircleCheckFilled color="green" /></Tooltip>
-            </div>
-          ) 
-        }
-
-        /** This is the left content on the form card: title and description */
-        const FormTitle = () => (
-          <div className="form-title">
-            <h3>{form.formTitle}</h3>
-            <p>{form.formDescription}</p>
-          </div>
-        )
-
-        return (  
-          <Paper key={index} onClick={() => window.open(form.assignedLink, "_blank")} className="col-6 col-sm-12 mb-2 p-2 form-paper d-flex flex-row align-items-center justify-content-between" withBorder padding="md" shadow="xs" style={{ width: "100%" }}>
-            <FormTitle />
-            <CompleteNotifier />
-            <IncompleteNotifier />
-            <div className="form-decor" style={{backgroundColor: form.completed ? "#008000" : "#ffa500"}} />
-          </Paper>
-        )
-      })
+      currentUser.formAssignments.map((form, index) => <div className="col-4 mb-2" key={index}><FormCard form={form} /></div>)
     )
   }
-
-  /** Header that describes the Forms page */
-  const Header = () => (
-    <hgroup className="d-flex align-items-center flex-column">
-      <p>This is a list of all forms assigned to a given client The client can use this page to fill them out for the first time, confirm that they've been filled, and view them at any point.</p>
-    </hgroup>
-  )
   
   return (
     <div>
-      <CRMBreadcrumbs items={[{title: "Forms", href: navigationItems.FORMS}]} />
       <Confetti recycle={false} numberOfPieces={confettiLeft} />
-      <Header />
       <div className="container-fluid">
-        <div className="row">
-          <FormsList />
+        <div className="row pt-2">
+          <FormsDisplay />
         </div>
       </div>
     </div>

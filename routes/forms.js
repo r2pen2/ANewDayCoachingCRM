@@ -18,6 +18,19 @@ router.get("/confetti", (req, res) => {
   }
 })
 
+router.post("/started", (req, res) => {
+  const formId = req.body.formId;
+  const userId = req.body.userId;
+
+  const user = getUser(userId);
+  for (const formAssignment of user.formAssignments) {
+    if (formAssignment.formId === formId) {
+      formAssignment.started = true;
+    }
+  }
+  setUser(user);
+})
+
 router.post("/submitted", (req, res) => {
   const formId = req.body.formId;
   const userId = req.body.userId;
