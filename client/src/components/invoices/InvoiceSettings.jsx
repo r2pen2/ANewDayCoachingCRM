@@ -3,6 +3,10 @@ import { CurrentUserContext } from '../../App'
 import { Card, Group, Switch, Text } from '@mantine/core'
 import "../../assets/style/invoices.css"
 
+const visibilityDisabled = true;
+const newEmailDisabled = true;
+const pendingEmailDisabled = true;
+
 export const InvoiceSettings = memo(function InvoiceSettings({settings}) {
 
   return (
@@ -31,12 +35,12 @@ const VisibilitySetting = ({settings}) => {
   return (
     <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
       <div>
-        <Text>Student Accessible</Text>
+        <Text>Student Accessible (Coming Soon)</Text>
         <Text size="xs" c="dimmed">
           Allow my student to view and manage invoices
         </Text>
       </div>
-      <Switch onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.studentVisibility} onClick={changeVisibility}/>
+      <Switch disabled={visibilityDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.studentVisibility} onClick={changeVisibility}/>
     </Group>
   )
 }
@@ -52,12 +56,12 @@ const PendingEmailNotificationSetting = ({settings}) => {
   return (
     <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
       <div>
-        <Text>Pending Update Emails</Text>
+        <Text>Pending Update Emails (Coming Soon)</Text>
         <Text size="xs" c="dimmed">
           Get an email notification when an invoice's pending status is updated
         </Text>
       </div>
-      <Switch onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.pendingStatusEmailNotification} onClick={changePendingNotificationSetting}/>
+      <Switch disabled={pendingEmailDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.pendingStatusEmailNotification} onClick={changePendingNotificationSetting}/>
     </Group>
   )
 }
@@ -73,12 +77,12 @@ const NewInvoiceEmailNotificationSetting = ({settings}) => {
   return (
     <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
       <div>
-        <Text>New Invoice Emails</Text>
+        <Text>New Invoice Emails (Coming Soon)</Text>
         <Text size="xs" c="dimmed">
           Get an email notification when an invoice is assigned to you
         </Text>
       </div>
-      <Switch onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.newInvoiceEmailNotification} onClick={changeNewNotificationSetting}/>
+      <Switch disabled={newEmailDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.newInvoiceEmailNotification} onClick={changeNewNotificationSetting}/>
     </Group>
   )
 }
