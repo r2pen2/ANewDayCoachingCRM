@@ -1,5 +1,5 @@
 import { Card, Text, Group, Badge, Center, Button, Progress, Loader } from '@mantine/core';
-import { IconCode } from '@tabler/icons-react';
+import { IconBackpack, IconCode, IconHeartHandshake, IconShieldCheckered, IconUsersGroup } from '@tabler/icons-react';
 import { pendingColor, unpaidColor } from '../../tabs/Invoices';
 import { hostname } from '../../api/db/dbManager.ts';
 
@@ -39,12 +39,26 @@ export function FormCard({form}) {
     return 0
   }
 
+  function getButtonText() {
+    if (form.completed) {
+      return "Thanks!"
+    }
+    if (form.started) {
+      return "Resume"
+    }
+    return "Start Now"
+  }
+
   const FormIcon = () => {
     switch (form.formId) {
       case "webhookTestForm":
-        return <IconCode color="#868e96"/>;
+        return <IconCode style={{color: "var(--mantine-color-dimmed)"}}/>;
       case "parentGuardianForm":
-        return <IconCode color="#868e96"/>;
+        return <IconHeartHandshake style={{color: "var(--mantine-color-dimmed)"}}/>;
+      case "concentForm":
+        return <IconShieldCheckered style={{color: "var(--mantine-color-dimmed)"}}/>;
+      case "studentForm":
+        return <IconBackpack style={{color: "var(--mantine-color-dimmed)"}}/>;
       default:
         return null;
     }
@@ -56,7 +70,7 @@ export function FormCard({form}) {
   }
 
   return (
-    <Card withBorder padding="lg" className="card-bg-1 justify-content-between" radius="md" style={{minHeight: "100%"}}>
+    <Card withBorder padding="lg" className="justify-content-between" radius="md" style={{minHeight: "100%"}}>
       
       <Card.Section className="form-card-section">
         <div className="d-flex align-item-center justify-content-between">      
@@ -76,7 +90,7 @@ export function FormCard({form}) {
 
 
       <Card.Section className="form-card-section">
-        <Progress value={getProressValue()} className="mb-2" animated={form.started} color={form.started ? startedColor : null} />
+        <Progress value={getProressValue()} className="mb-2" animated={form.started && !form.completed} color={form.started && !form.completed ? startedColor : null} />
         <Group gap={30}>
           <div>
             <Text fz="xl" fw={700} style={{ lineHeight: 1 }}>
@@ -87,8 +101,8 @@ export function FormCard({form}) {
             </Text>
           </div>
 
-          <Button color={form.started ? startedColor : null} radius="xl" style={{ flex: 1 }} onClick={openForm}>
-            {form.started ? "Resume" : "Start Now"}
+          <Button disabled={form.completed} color={form.started ? startedColor : null} radius="xl" style={{ flex: 1 }} onClick={openForm}>
+            {getButtonText()}
           </Button>
         </Group>
       </Card.Section>

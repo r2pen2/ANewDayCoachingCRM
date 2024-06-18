@@ -12,7 +12,7 @@ export const InvoiceSettings = memo(function InvoiceSettings({settings}) {
 
   return (
     <div className="col-12 col-md-6 mh-100 p-2" >
-      <Card withBorder p="md" className='card-bg-1 invoice-settings-card h-100'>
+      <Card withBorder p="md" className='invoice-settings-card h-100'>
         <Text fz="lg" className="invoice-settings-title" fw={500}>
           Invoice Settings
         </Text>

@@ -42,7 +42,7 @@ export class FormAssignment {
       formDescription: this.formDescription,
       href: this.href,
       assignedLink: this.assignedLink,
-      minuteEstImate: this.minuteEstimate,
+      minuteEstimate: this.minuteEstimate,
       started: this.started
     }
   }

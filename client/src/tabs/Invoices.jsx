@@ -1,5 +1,5 @@
 // Library Imports
-import { Badge, Button, Modal, NumberFormatter, Table } from '@mantine/core';
+import { Badge, Button, Modal, NumberFormatter, Paper, Table } from '@mantine/core';
 import React, { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { IconCreditCardPay, IconCreditCardRefund, IconEye } from '@tabler/icons-react';
 
@@ -67,9 +67,11 @@ export default function Invoices() {
       <div className="row d-flex">
         <InvoiceStats invoices={invoicesMemo} invoicesPulled={invoicesPulledMemo} />
         <InvoiceSettings settings={invoiceSettings} />
+        <div className="col-12 px-2">
+          <InvoiceList invoices={invoicesMemo} setCurrentInvoice={setCurrentInvoice} setCancellingPending={setCancellingPending} />
+        </div>
       </div>
     </div>
-    <InvoiceList invoices={invoicesMemo} setCurrentInvoice={setCurrentInvoice} setCancellingPending={setCancellingPending} />
   </div>
 }
 
@@ -92,7 +94,9 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
   }
 
   return (
-    <Table.ScrollContainer minWidth={500} className="w-100 mt-1" type="native">
+    <Paper withBorder className="w-100">
+
+    <Table.ScrollContainer minWidth={500} className="w-100" type="native">
       <Table striped>
         <Table.Thead>
           <Table.Tr>
@@ -135,5 +139,6 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
         </Table.Tbody>
       </Table>
     </Table.ScrollContainer>
+    </Paper>
   )
 })

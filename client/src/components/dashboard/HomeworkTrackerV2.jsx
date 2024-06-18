@@ -597,7 +597,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   
   return (
     <div className="d-flex flex-column">
-      <div className="tracker-header">
+      <Paper withBorder className="tracker-header">
         <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center">
           My Assignments
           <IconButton label="TimelineView" className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={handleAddAssignmentPress} />
@@ -621,12 +621,14 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
           <QuickEntryResults key="quick-results" quickExtract={quickExtract} />
           </div>
         </div>
-      </div>
-      <div className="coaching-line mb-0 "></div>
-      <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-1 px-md-5">
-        {validHomeworks.map((homework, index) => {
-          return <Assignment key={index} homeworkJson={homework} />
-        })}
+      </Paper>
+      <div className="coaching-line "></div>
+      <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-1">
+        <Paper withBorder className="w-100">
+          {validHomeworks.map((homework, index) => {
+            return <Assignment key={index} homeworkJson={homework} />
+          })}
+        </Paper>
       </Spoiler>
     </div>
   )

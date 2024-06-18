@@ -1,3 +1,11 @@
 .card-bg-1 {
   background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
 }
+
+.bg-gray-1 {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+  }
+  
+  .bg-light-platform {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));  
+}

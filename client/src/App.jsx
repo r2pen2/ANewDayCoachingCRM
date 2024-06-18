@@ -85,7 +85,7 @@ const AppContent = memo(function AppContent({currentUserId}) {
       >
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 
         <AppShellNavigator currentTab={currentTab} setCurrentTab={(t) => {window.location.hash = t; setCurrentTab(t)}} setBurgerOpen={setBurgerOpen}/>
-        <AppShell.Main>
+        <AppShell.Main className="bg-gray-1">
             <CurrentTab />
         </AppShell.Main>
       </AppShell>
