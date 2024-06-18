@@ -92,7 +92,7 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
   }
 
   return (
-    <Table.ScrollContainer minWidth={500} className="w-100" type="native">
+    <Table.ScrollContainer minWidth={500} className="w-100 mt-1" type="native">
       <Table striped>
         <Table.Thead>
           <Table.Tr>
