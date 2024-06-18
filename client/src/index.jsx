@@ -17,7 +17,8 @@ root.render(
       colors: {
         'cool-green': ['#2f4b37', "#3d674e", "#45775a", "#4d8768", "#549472", "#60a483", "#74b496", "#96cab2", "#bdded0", "#e4f2ec"],
       }
-    }}>
+    }}
+    >
       <Notifications style={{zIndex: 9999, position: 'fixed', top: "1rem", right: "1rem"}}/>
       <App />
     </MantineProvider>

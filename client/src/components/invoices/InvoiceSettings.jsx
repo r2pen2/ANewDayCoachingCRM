@@ -33,7 +33,7 @@ const VisibilitySetting = ({settings}) => {
   
   function changeVisibility() {
     currentUser.changeInvoiceSetting('studentVisibility', !settings.studentVisibility);
-    notifSuccess("Setting Updated", "Your student can now see the Invoices page.")
+    notifSuccess("Student Access Updated", `Your student can now ${settings.studentVisibility ? "" : "no longer"} view and manage invoices.`)
   }
 
   return (
@@ -55,7 +55,7 @@ const PendingEmailNotificationSetting = ({settings}) => {
   
   function changePendingNotificationSetting() {
     currentUser.changeInvoiceSetting('pendingStatusEmailNotification', !settings.pendingStatusEmailNotification);
-    notifSuccess("Setting Updated", "You will now receive an email when a pending invoice is updated.")
+    notifSuccess("Email Preferences Updated Updated", `You will now ${settings.pendingStatusEmailNotification ? "" : "no longer"} receive an email when the pending status of an invoice is updated.`)
   }
 
   return (
@@ -77,7 +77,7 @@ const NewInvoiceEmailNotificationSetting = ({settings}) => {
   
   function changeNewNotificationSetting() {
     currentUser.changeInvoiceSetting('newInvoiceEmailNotification', !settings.newInvoiceEmailNotification);
-    notifSuccess("Setting Updated", "You will now receive an email when a new invoice is assigned.")
+    notifSuccess("Email Preferences Updated Updated", `You will now ${settings.newInvoiceEmailNotification ? "" : "no longer"} receive an email when a new invoice is assigned to you.`)
   }
 
   return (

@@ -3,7 +3,7 @@ import '@mantine/core/styles.css';
 
 import "./assets/style/colorTheme.css";
 
-import { AppShell } from '@mantine/core';
+import { AppShell, useMantineColorScheme } from '@mantine/core';
 import { createContext, memo, useEffect, useMemo, useState } from 'react';
 import { AppShellNavigator, navigationItems } from './components/Navigation';
 import { AppShellHeader } from './components/Header';
@@ -29,9 +29,11 @@ function App() {
   
   const [currentUser, setCurrentUser] = useState({id: null});   // State for the current user
   const currentUserId = useMemo(() => currentUser.id, [currentUser.id]) // We only want to re-render the entire App state when the current userId changes
-  
+
+  const {setColorScheme, clearColorScheme} = useMantineColorScheme(); // State for the color scheme
+
   /** Get the current user on load */
-  useEffect(() => { getCurrentUser(setCurrentUser); }, []);
+  useEffect(() => { getCurrentUser(setCurrentUser, setColorScheme); }, []);
   
   return (
     <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>

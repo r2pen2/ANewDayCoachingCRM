@@ -29,12 +29,12 @@ export const auth = getAuth(app);
  * Return the current user's details
  * @param {Function} setter - React setState function 
  * */
-export async function getCurrentUser(setter) {
+export async function getCurrentUser(setter, colorSchemeSetter) {
   auth.onAuthStateChanged(async (user) => {
     if (user) {
       const userObject = new User(user);
       await userObject.createDocument();
-      userObject.subscribe(setter)
+      userObject.subscribe(setter, colorSchemeSetter)
     } else {
       setter(null)
     }

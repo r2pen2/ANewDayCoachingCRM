@@ -66,7 +66,7 @@ export function FormCard({form}) {
 
   function openForm() {
     window.open(form.assignedLink, "_blank")
-    fetch(hostname + "/forms/started", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({formId: form.formId, userId: form.assignedTo})})
+    fetch(hostname + "/forms/started", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({formId: form.formId, userId: form.assignedTo})}).catch(console.error)
   }
 
   return (

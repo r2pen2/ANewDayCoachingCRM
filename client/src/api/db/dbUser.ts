@@ -7,6 +7,14 @@ import { FormAssignment } from "./dbFormAssignment.ts";
 import { Homework, HomeworkLoaderType, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
 import { Document } from "./dbDocument.ts";
 
+export enum UserRole {
+  STUDENT = "Student",
+  PARENT = "Parent",
+  COACH = "Coach",
+  ADMIN = "Admin",
+  DEVELOPER = "Developer"
+}
+
 export class User {
   
   firebaseUser: UserCredential;
@@ -48,6 +56,7 @@ export class User {
     city: "",
     state: "",
     zip: "",
+    role: "",
   }
 
   settings: any = {
@@ -164,26 +173,17 @@ export class User {
   /** Need to be able to create a shallow clione so that state can update */
   clone(): User { return new User(this.firebaseUser).fillData(this); }
 
-  subscribe(setter: Function) {
+  subscribe(setter: Function, setColorScheme: Function) {
     onSnapshot(this.docRef, (doc) => {
       if (doc.exists()) {
         this.fillData(doc.data());
         // We need to create a clone of this User object so that the state actually updates
         const cloneUser = this.clone()
-        setter(cloneUser);
+        setter(cloneUser); 
+        setColorScheme(cloneUser.settings.darkMode ? "dark" : "light");
       }
     })
   }
-
-  // async forceUpdate() {
-  //   fetch(hostname + `'users/force-update?userId=${this.id}`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify(this)
-  //   })
-  // }
 
   async addSubject(subject: HomeworkSubject): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -305,6 +305,17 @@ export class User {
   async changeInvoiceSetting(setting: string, newValue: any): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.settings.invoices[setting] = newValue;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async changeSetting(setting: string, newValue: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.settings[setting] = newValue;
       this.setData().then(() => {
         resolve();
       }).catch((error) => {
