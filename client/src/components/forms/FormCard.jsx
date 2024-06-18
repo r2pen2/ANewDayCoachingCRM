@@ -88,7 +88,7 @@ export function FormCard({form}) {
           </div>
 
           <Button color={form.started ? startedColor : null} radius="xl" style={{ flex: 1 }} onClick={openForm}>
-            {form.started ? "Resume" : "Complete Now"}
+            {form.started ? "Resume" : "Start Now"}
           </Button>
         </Group>
       </Card.Section>

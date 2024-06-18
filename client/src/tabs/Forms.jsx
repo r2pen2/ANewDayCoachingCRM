@@ -1,6 +1,6 @@
 // Library Imports
 import {Paper, Text, Tooltip } from '@mantine/core'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { IconAlertCircle, IconCircleCheckFilled } from '@tabler/icons-react'
 import Confetti from "react-confetti"
 
@@ -14,8 +14,6 @@ import { hostname } from '../api/db/dbManager.ts'
 import "../assets/style/forms.css"
 import { notifSuccess } from '../components/Notifications.jsx'
 import { getFormById } from '../api/forms.ts'
-import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx'
-import { navigationItems } from '../components/Navigation.jsx'
 import { FormCard } from '../components/forms/FormCard.jsx'
 
 /** How much confetti to add when a form is completed */
@@ -38,11 +36,25 @@ export default function Forms() {
       }
     })
   }, [currentUser, confettiLeft]);
+  
+  const formsMemo = useMemo(() => currentUser.formAssignments, [currentUser.formAssignments])
+
+  return (
+    <div>
+      <Confetti recycle={false} numberOfPieces={confettiLeft} />
+      <div className="container-fluid">
+        <div className="row pt-2">
+          <FormsDisplay forms={formsMemo}/>
+        </div>
+      </div>
+    </div>
+  )
+}
 
   /** List of all forms. Clicking a form brings the user to the Google Form in a new tab */
-  const FormsDisplay = () => {
+const FormsDisplay = memo(function FormsDisplay({forms}) {
 
-    if (currentUser.formAssignments.length < 1) { 
+    if (forms.length < 1) { 
       return <div className="text-center">
         <Text size='7rem' style={{marginBottom: "2rem"}}>😴</Text>
         <Text>There's nothing for you to complete!</Text>
@@ -50,18 +62,7 @@ export default function Forms() {
     }
 
     return (
-      currentUser.formAssignments.map((form, index) => <div className="col-4 mb-2" key={index}><FormCard form={form} /></div>)
+      forms.map((form, index) => <div className="col-4 mb-2" key={index}><FormCard form={form} /></div>)
     )
   }
-  
-  return (
-    <div>
-      <Confetti recycle={false} numberOfPieces={confettiLeft} />
-      <div className="container-fluid">
-        <div className="row pt-2">
-          <FormsDisplay />
-        </div>
-      </div>
-    </div>
-  )
-}
+)

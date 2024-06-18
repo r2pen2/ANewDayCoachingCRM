@@ -4,9 +4,9 @@ import { Card, Group, Switch, Text } from '@mantine/core'
 import "../../assets/style/invoices.css"
 import { notifSuccess } from '../Notifications';
 
-const visibilityDisabled = true;
-const newEmailDisabled = true;
-const pendingEmailDisabled = true;
+const visibilityDisabled = false;
+const newEmailDisabled = false;
+const pendingEmailDisabled = false;
 
 export const InvoiceSettings = memo(function InvoiceSettings({settings}) {
 

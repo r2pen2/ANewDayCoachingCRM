@@ -27,8 +27,8 @@ export const SettingsContext = createContext();
 
 function App() {
   
-  const [currentUserState, setCurrentUser] = useState({id: null});   // State for the current user
-  const currentUser = useMemo(() => currentUserState, [currentUserState.id]) // We only want to re-render the entire App state when the current userId changes
+  const [currentUser, setCurrentUser] = useState({id: null});   // State for the current user
+  const currentUserId = useMemo(() => currentUser.id, [currentUser.id]) // We only want to re-render the entire App state when the current userId changes
   
   /** Get the current user on load */
   useEffect(() => { getCurrentUser(setCurrentUser); }, []);
@@ -36,14 +36,14 @@ function App() {
   return (
     <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
       {/* This context needs to go on the outside of the AppContent! */}
-      <AppContent currentUser={currentUser} setCurrentUser={setCurrentUser} />
+      <AppContent currentUserId={currentUserId} />
     </CurrentUserContext.Provider>
   )
 }
     
 export default App;
 
-const AppContent = memo(function AppContent({currentUser, setCurrentUser}) {
+const AppContent = memo(function AppContent({currentUserId}) {
   
   const [burgerOpen, setBurgerOpen] = useState(false);    // State for the burger menu
   const [currentTab, setCurrentTab] = useState(getTab()); // Get the current tab from the URL
@@ -74,7 +74,7 @@ const AppContent = memo(function AppContent({currentUser, setCurrentUser}) {
     }
   }
 
-  if (!currentUser.id) {
+  if (!currentUserId) {
     return <Login />
   }
 

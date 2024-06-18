@@ -10,6 +10,10 @@ import { Document } from "./dbDocument.ts";
 export class User {
   
   firebaseUser: UserCredential;
+
+  metadata: any = {
+    lastUpdated: null
+  };
   
   invoices: string[] = [];
   admin: boolean = false;
@@ -84,6 +88,7 @@ export class User {
         documents: this.documents.map((d) => d.toJson()),
         intents: this.intents,
         settings: this.settings,
+        metadata: this.metadata
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -169,6 +174,16 @@ export class User {
       }
     })
   }
+
+  // async forceUpdate() {
+  //   fetch(hostname + `'users/force-update?userId=${this.id}`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify(this)
+  //   })
+  // }
 
   async addSubject(subject: HomeworkSubject): Promise<void> {
     return new Promise<void>((resolve, reject) => {
