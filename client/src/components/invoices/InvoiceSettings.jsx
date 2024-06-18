@@ -2,6 +2,7 @@ import React, { useContext, memo } from 'react'
 import { CurrentUserContext } from '../../App'
 import { Card, Group, Switch, Text } from '@mantine/core'
 import "../../assets/style/invoices.css"
+import { notifSuccess } from '../Notifications';
 
 const visibilityDisabled = true;
 const newEmailDisabled = true;
@@ -30,7 +31,10 @@ const VisibilitySetting = ({settings}) => {
     
   const {currentUser} = useContext(CurrentUserContext)
   
-  function changeVisibility() { currentUser.changeInvoiceSetting('studentVisibility', !settings.studentVisibility); }
+  function changeVisibility() {
+    currentUser.changeInvoiceSetting('studentVisibility', !settings.studentVisibility);
+    notifSuccess("Setting Updated", "Your student can now see the Invoices page.")
+  }
 
   return (
     <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
@@ -51,6 +55,7 @@ const PendingEmailNotificationSetting = ({settings}) => {
   
   function changePendingNotificationSetting() {
     currentUser.changeInvoiceSetting('pendingStatusEmailNotification', !settings.pendingStatusEmailNotification);
+    notifSuccess("Setting Updated", "You will now receive an email when a pending invoice is updated.")
   }
 
   return (
@@ -72,6 +77,7 @@ const NewInvoiceEmailNotificationSetting = ({settings}) => {
   
   function changeNewNotificationSetting() {
     currentUser.changeInvoiceSetting('newInvoiceEmailNotification', !settings.newInvoiceEmailNotification);
+    notifSuccess("Setting Updated", "You will now receive an email when a new invoice is assigned.")
   }
 
   return (
