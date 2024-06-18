@@ -71,23 +71,24 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
 
   return (
     <div className="col-12 col-md-6 mh-100 p-2" >    
-      <Paper withBorder className="p-3 card-bg-1 h-100">
+      <Paper withBorder className="p-3 card-bg-1 h-100 d-flex flex-column justify-content-between">
         <Group justify="space-between">
-          <Group align="flex-end" gap="xs">
+          <div className="d-flex flex-column align-items-start">
             <Text fz="xl" fw={700}>
               <NumberFormatter value={getBalance()} prefix='$' />
             </Text>
-          </Group>
+            <Text c="dimmed">
+              Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
+            </Text>
+          </div>
         </Group>
 
-        <Text c="dimmed">
-          Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
-        </Text>
 
-        <Progress.Root size={34} classNames="invoice-stat-progress-label" mt={40}>
+        <Progress.Root size={34} classNames="invoice-stat-progress-label">
           { invoicesPulled && segments }
         </Progress.Root>
-        <SimpleGrid cols={{ base: 1, xs: 3 }} mt="xl">
+
+        <SimpleGrid cols={{ base: 1, xs: 3 }}>
           { invoicesPulled && descriptions }
         </SimpleGrid>
       </Paper>
