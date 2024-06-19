@@ -1,8 +1,9 @@
-import React, { useContext, memo } from 'react'
+import React, { useContext, memo, useState } from 'react'
 import { CurrentUserContext } from '../../App'
 import { Card, Group, Switch, Text } from '@mantine/core'
 import "../../assets/style/invoices.css"
 import { notifSuccess } from '../Notifications';
+import { updateAfterSwitchFlip } from '../../api/settings.ts';
 
 const visibilityDisabled = false;
 const newEmailDisabled = false;
@@ -30,10 +31,14 @@ export const InvoiceSettings = memo(function InvoiceSettings({settings}) {
 const VisibilitySetting = ({settings}) => {
     
   const {currentUser} = useContext(CurrentUserContext)
+
+  const [tempSetting, setTempSetting] = useState(settings.studentVisibility);
   
   function changeVisibility() {
-    currentUser.changeInvoiceSetting('studentVisibility', !settings.studentVisibility);
-    notifSuccess("Student Access Updated", `Your student can now ${settings.studentVisibility ? "" : "no longer"} view and manage invoices.`)
+    updateAfterSwitchFlip(tempSetting, setTempSetting, () => {
+      currentUser.changeInvoiceSetting('studentVisibility', !settings.studentVisibility);
+      notifSuccess("Student Access Updated", `Your student can now ${settings.studentVisibility ? "" : "no longer"} view and manage invoices.`)
+    })
   }
 
   return (
@@ -44,7 +49,7 @@ const VisibilitySetting = ({settings}) => {
           Allow my student to view and manage invoices
         </Text>
       </div>
-      <Switch disabled={visibilityDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.studentVisibility} onClick={changeVisibility}/>
+      <Switch disabled={visibilityDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={tempSetting} onClick={changeVisibility}/>
     </Group>
   )
 }
@@ -52,10 +57,14 @@ const VisibilitySetting = ({settings}) => {
 const PendingEmailNotificationSetting = ({settings}) => {
     
   const {currentUser} = useContext(CurrentUserContext)
+
+  const [tempSetting, setTempSetting] = useState(settings.pendingStatusEmailNotification)
   
   function changePendingNotificationSetting() {
-    currentUser.changeInvoiceSetting('pendingStatusEmailNotification', !settings.pendingStatusEmailNotification);
-    notifSuccess("Email Preferences Updated Updated", `You will now ${settings.pendingStatusEmailNotification ? "" : "no longer"} receive an email when the pending status of an invoice is updated.`)
+    updateAfterSwitchFlip(tempSetting, setTempSetting, () => {
+      currentUser.changeInvoiceSetting('pendingStatusEmailNotification', !settings.pendingStatusEmailNotification);
+      notifSuccess("Email Preferences Updated Updated", `You will now ${settings.pendingStatusEmailNotification ? "" : "no longer"} receive an email when the pending status of an invoice is updated.`)
+    })
   }
 
   return (
@@ -66,7 +75,7 @@ const PendingEmailNotificationSetting = ({settings}) => {
           Get an email notification when an invoice's pending status is updated
         </Text>
       </div>
-      <Switch disabled={pendingEmailDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.pendingStatusEmailNotification} onClick={changePendingNotificationSetting}/>
+      <Switch disabled={pendingEmailDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={tempSetting} onClick={changePendingNotificationSetting}/>
     </Group>
   )
 }
@@ -74,10 +83,14 @@ const PendingEmailNotificationSetting = ({settings}) => {
 const NewInvoiceEmailNotificationSetting = ({settings}) => {
     
   const {currentUser} = useContext(CurrentUserContext)
+
+  const [tempSetting, setTempSetting] = useState(settings.newInvoiceEmailNotification)
   
   function changeNewNotificationSetting() {
-    currentUser.changeInvoiceSetting('newInvoiceEmailNotification', !settings.newInvoiceEmailNotification);
-    notifSuccess("Email Preferences Updated Updated", `You will now ${settings.newInvoiceEmailNotification ? "" : "no longer"} receive an email when a new invoice is assigned to you.`)
+    updateAfterSwitchFlip(tempSetting, setTempSetting, () => {
+      currentUser.changeInvoiceSetting('newInvoiceEmailNotification', !settings.newInvoiceEmailNotification);
+      notifSuccess("Email Preferences Updated Updated", `You will now ${settings.newInvoiceEmailNotification ? "" : "no longer"} receive an email when a new invoice is assigned to you.`)
+    })
   }
 
   return (
@@ -88,7 +101,7 @@ const NewInvoiceEmailNotificationSetting = ({settings}) => {
           Get an email notification when an invoice is assigned to you
         </Text>
       </div>
-      <Switch disabled={newEmailDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={settings.newInvoiceEmailNotification} onClick={changeNewNotificationSetting}/>
+      <Switch disabled={newEmailDisabled} onLabel="ON" offLabel="OFF" readOnly className="invoice-settings-switch" size='lg' checked={tempSetting} onClick={changeNewNotificationSetting}/>
     </Group>
   )
 }

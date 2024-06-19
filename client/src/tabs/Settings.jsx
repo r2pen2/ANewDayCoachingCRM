@@ -10,27 +10,34 @@ import { CurrentUserContext } from '../App'
 import { HomeworkPriority, HomeworkPriorityVerbosity } from '../api/db/dbHomework.ts'
 import { notifSuccess } from '../components/Notifications'
 import { UserRole } from '../api/db/dbUser.ts'
+import { updateAfterSwitchFlip } from '../api/settings.ts'
 
 export default function Settings() {
 
   const {currentUser} = useContext(CurrentUserContext)
 
-  function changeDarkmode() {
-    currentUser.changeSetting('darkMode', !currentUser.settings.darkMode);
-    notifSuccess("Color Theme Updated", `Darkmode has been turned ${currentUser.settings.darkMode ? "on" : "off"}.`)
-  }
-
+  
   const GeneralSettings = () => {
+    
+    const [tempDarkmodeSetting, setTempDarkmodeSetting] = useState(currentUser.settings.darkMode)
+    
+    function changeDarkmode() {
+      updateAfterSwitchFlip(tempDarkmodeSetting, setTempDarkmodeSetting, () => {
+        currentUser.changeSetting('darkMode', !currentUser.settings.darkMode);
+        notifSuccess("Color Theme Updated", `Darkmode has been turned ${currentUser.settings.darkMode ? "on" : "off"}.`)
+      })
+    }
+
     return (
       <div className="py-2">
         <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
           <div>
-            <Text>Darkmode</Text>
+            <Text>Darkmode (In Progress)</Text>
             <Text size="xs" c="dimmed">
               Switch to the dark color scheme
             </Text>
           </div>
-          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={currentUser.settings.darkMode} onClick={changeDarkmode}/>
+          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempDarkmodeSetting} onClick={changeDarkmode}/>
         </Group>
       </div>
     )
@@ -72,9 +79,13 @@ export default function Settings() {
       notifSuccess("Priority Pulse Threshold Updated", `The priority pulse threshold has been set to "${threshold}".`)
     }
 
+    const [tempDeleteConfirmationSetting, setTempDeleteConfirmationSetting] = useState(currentUser.settings.requireHomeworkDeleteConfirmation)
+
     function handleDeleteConfirmationChange() {
-      currentUser.changeSetting('requireHomeworkDeleteConfirmation', !currentUser.settings.requireHomeworkDeleteConfirmation);
-      notifSuccess("Delete Confirmation Updated", `You will ${currentUser.settings.requireHomeworkDeleteConfirmation ? "now" : "no longer"} be asked to confirm before deleting an assignment.`)
+      updateAfterSwitchFlip(tempDeleteConfirmationSetting, setTempDeleteConfirmationSetting, () => {
+        currentUser.changeSetting('requireHomeworkDeleteConfirmation', !currentUser.settings.requireHomeworkDeleteConfirmation);
+        notifSuccess("Delete Confirmation Updated", `You will ${currentUser.settings.requireHomeworkDeleteConfirmation ? "now" : "no longer"} be asked to confirm before deleting an assignment.`)
+      })
     }
     
     return (
@@ -110,7 +121,7 @@ export default function Settings() {
               Require confirmation of a popup before assignments are allowed to be deleted
             </Text>
           </div>
-          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={currentUser.settings.requireHomeworkDeleteConfirmation} onClick={handleDeleteConfirmationChange}/>
+          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempDeleteConfirmationSetting} onClick={handleDeleteConfirmationChange}/>
         </Group>
         <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
           <div>
@@ -153,22 +164,60 @@ export default function Settings() {
 
   const InvoiceSettings = () => {
 
+    const [tempStudentAccessibleSetting, setTempStudentAccessibleSetting] = useState(currentUser.settings.invoices.studentVisibility)
+    const [tempPendingNotificationSetting, setTempPendingNotificationSetting] = useState(currentUser.settings.invoices.pendingStatusEmailNotification)
+    const [tempNewNotificationSetting, setTempNewNotificationSetting] = useState(currentUser.settings.invoices.newInvoiceEmailNotification)
+
     function handleStudentVisibilityChange() {
-      currentUser.changeInvoiceSetting('studentVisibility', !currentUser.settings.invoices.studentVisibility);
-      notifSuccess("Student Access Updated", `Your student can now ${currentUser.settings.invoices.studentVisibility ? "no longer" : ""} view and manage invoices.`)
+      updateAfterSwitchFlip(tempStudentAccessibleSetting, setTempStudentAccessibleSetting, () => {
+        currentUser.changeInvoiceSetting('studentVisibility', !currentUser.settings.invoices.studentVisibility);
+        notifSuccess("Student Access Updated", `Your student can now ${currentUser.settings.invoices.studentVisibility ? "no longer" : ""} view and manage invoices.`)
+      })
     }
     
+    function handlePendingNotificationChange() {
+      updateAfterSwitchFlip(tempPendingNotificationSetting, setTempPendingNotificationSetting, () => {
+        currentUser.changeInvoiceSetting('pendingStatusEmailNotification', !currentUser.settings.invoices.pendingStatusEmailNotification);
+        notifSuccess("Email Preferences Updated Updated", `You will now ${currentUser.settings.invoices.pendingStatusEmailNotification ? "" : "no longer"} receive an email when the pending status of an invoice is updated.`)
+      })
+    }
+
+    function handleNewNotificationChange() {
+      updateAfterSwitchFlip(tempNewNotificationSetting, setTempNewNotificationSetting, () => {
+        currentUser.changeInvoiceSetting('newInvoiceEmailNotification', !currentUser.settings.invoices.newInvoiceEmailNotification);
+        notifSuccess("Email Preferences Updated Updated", `You will now ${currentUser.settings.invoices.newInvoiceEmailNotification ? "" : "no longer"} receive an email when a new invoice is assigned to you.`)
+      })
+    }
+
     return (
       <div className="py-2">
-        {currentUser.personalData.role === UserRole.PARENT && <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
+        <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
           <div>
             <Text>Student Accessible (Coming Soon)</Text>
             <Text size="xs" c="dimmed">
               Allow my student to view and manage invoices
             </Text>
           </div>
-          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={currentUser.settings.invoices.studentVisibility} onClick={handleStudentVisibilityChange}/>
-        </Group>}
+          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempStudentAccessibleSetting} onClick={handleStudentVisibilityChange}/>
+        </Group>
+        <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
+          <div>
+            <Text>Pending Update Emails (Coming Soon)</Text>
+            <Text size="xs" c="dimmed">
+              Get an email notification when an invoice's pending status is updated
+            </Text>
+          </div>
+          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempPendingNotificationSetting} onClick={handlePendingNotificationChange}/>
+        </Group>
+        <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
+          <div>
+            <Text>New Invoice Emails (Coming Soon)</Text>
+            <Text size="xs" c="dimmed">
+              Get an email notification when a invoice is assigned to
+            </Text>
+          </div>
+          <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempNewNotificationSetting} onClick={handleNewNotificationChange}/>
+        </Group>
       </div>
     )
   }
