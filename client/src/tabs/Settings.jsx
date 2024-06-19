@@ -9,13 +9,13 @@ import { auth } from '../api/firebase'
 import { CurrentUserContext } from '../App'
 import { HomeworkPriority, HomeworkPriorityVerbosity } from '../api/db/dbHomework.ts'
 import { notifSuccess } from '../components/Notifications'
-import { UserRole } from '../api/db/dbUser.ts'
+import { LMS } from '../api/db/dbUser.ts'
 import { updateAfterSwitchFlip } from '../api/settings.ts'
+import { LMSIcon } from '../components/LMS.jsx'
 
 export default function Settings() {
 
   const {currentUser} = useContext(CurrentUserContext)
-
   
   const GeneralSettings = () => {
     
@@ -70,11 +70,13 @@ export default function Settings() {
     }
 
     function handleVerbosityChange(verbosity) {
+      if (verbosity === null) { return; }
       currentUser.changeSetting('priorityVerbosity', verbosity);
       notifSuccess("Priority Verbosity Updated", `The priority verbosity has been set to "${verbosity}".`)
     }
 
     function handlePulseThresholdChange(threshold) {
+      if (threshold === null) { return; }
       currentUser.changeSetting('priorityPulseThreshold', threshold);
       notifSuccess("Priority Pulse Threshold Updated", `The priority pulse threshold has been set to "${threshold}".`)
     }
@@ -145,18 +147,124 @@ export default function Settings() {
     const [tempState, setTempState] = useState(currentUser.personalData.state)
     const [tempZip, setTempZip] = useState(currentUser.personalData.zip)
 
+    function handleDisplayNameKeyDown(e) { if (e.key === "Enter") { handleSubmitDisplayName() } }
+    function handlePhoneNumberKeyDown(e) { if (e.key === "Enter") { handleSubmitPhoneNumber() } }
+    function handleAddressKeyDown(e) { if (e.key === "Enter") { handleSubmitAddress() } }
+    function handleCityKeyDown(e) { if (e.key === "Enter") { handleSubmitCity() } }
+    function handleStateKeyDown(e) { if (e.key === "Enter") { handleSubmitState() } }
+    function handleZipKeyDown(e) { if (e.key === "Enter") { handleSubmitZip() } }
+
+    function handleSubmitDisplayName() { 
+      if (tempDisplayName === "") { return; }
+      if (tempDisplayName === currentUser.personalData.displayName) { return; }
+      currentUser.changePersonalData('displayName', tempDisplayName);
+      notifSuccess("Display Name Updated", `You will now be referred to as ${tempDisplayName}.`) 
+    }
+
+    function handleSubmitPhoneNumber() { 
+      if (tempPhoneNumber === "") { return; }
+      if (tempPhoneNumber === currentUser.personalData.phoneNumber) { return; }
+      currentUser.changePersonalData('phoneNumber', tempPhoneNumber);
+      notifSuccess("Phone Number Updated", `Your phone number has been set to ${tempPhoneNumber}.`) 
+    }
+
+    function handleSubmitAddress() { 
+      if (tempAddress === "") { return; }
+      if (tempAddress === currentUser.personalData.address) { return; }
+      currentUser.changePersonalData('address', tempAddress);
+      notifSuccess("Address Updated", `Your address has been set to ${tempAddress}.`) 
+    }
+
+    function handleSubmitCity() { 
+      if (tempCity === "") { return; }
+      if (tempCity === currentUser.personalData.city) { return; }
+      currentUser.changePersonalData('city', tempCity);
+      notifSuccess("City Updated", `Your city has been set to ${tempCity}.`) 
+    }
+
+    function handleSubmitState() { 
+      if (tempState === "") { return; }
+      if (tempState === currentUser.personalData.state) { return; }
+      currentUser.changePersonalData('state', tempState);
+      notifSuccess("State Updated", `Your state has been set to ${tempState}.`) 
+    }
+
+    function handleSubmitZip() { 
+      if (tempZip === "") { return; }
+      if (tempZip === currentUser.personalData.zip) { return; }
+      currentUser.changePersonalData('zip', tempZip);
+      notifSuccess("Zip Code Updated", `Your zip code has been set to ${tempZip}.`) 
+    }
+
+
     return (
       <div className="container-fluid px-0 py-2">
         <div className="row">
-          <TextInput className="col-12 col-md-6" label="Display Name" placeholder='Johnny Appleseed' value={tempDisplayName} onChange={t => setTempDisplayName(t)}/>        
-          <TextInput className="col-12 col-md-6" label="Email" disabled placeholder='hire@joed.dev' value={currentUser.personalData.email}/>        
-          <TextInput className="col-12 col-md-6" label="Phone Number" placeholder='(202) 456-1111' value={tempPhoneNumber} onChange={t => setTempPhoneNumber(t)}/>        
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Display Name"
+            placeholder='Johnny Appleseed' 
+            value={tempDisplayName} 
+            onChange={e => setTempDisplayName(e.target.value)}
+            onBlur={handleSubmitDisplayName}
+            onKeyDown={handleDisplayNameKeyDown}
+          />        
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Email" 
+            disabled 
+            type='email'
+            placeholder='hire@joed.dev' 
+            value={currentUser.personalData.email}
+          />        
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Phone Number"
+            placeholder='(202) 456-1111'
+            value={tempPhoneNumber}
+            type="tel"
+            onChange={e => setTempPhoneNumber(e.target.value)}
+            onBlur={handleSubmitPhoneNumber}
+            onKeyDown={handlePhoneNumberKeyDown}
+          />        
         </div>
         <div className="row">
-          <TextInput className="col-12 col-md-6" label="Address" placeholder='1600 Pennsylvania Avenue' value={tempAddress} onChange={t => setTempAddress(t)}/>
-          <TextInput className="col-12 col-md-6" label="City" placeholder='Washington' value={tempCity} onChange={t => setTempCity(t)}/>
-          <TextInput className="col-12 col-md-6" label="State" placeholder='District of Columbia' value={tempState} onChange={t => setTempState(t)}/>
-          <TextInput className="col-12 col-md-6" label="Zip" placeholder='20500' value={tempZip} onChange={t => setTempZip(t)}/>
+          <TextInput
+            className="col-12 col-md-6"
+            label="Address"
+            placeholder='1600 Pennsylvania Avenue'
+            value={tempAddress}
+            onChange={e => setTempAddress(e.target.value)}
+            onBlur={handleSubmitAddress}
+            onKeyDown={handleAddressKeyDown}
+          />
+          <TextInput
+            className="col-12 col-md-6"
+            label="City"
+            placeholder='Washington'
+            value={tempCity}
+            onChange={e => setTempCity(e.target.value)}
+            onBlur={handleSubmitCity}
+            onKeyDown={handleCityKeyDown}
+          />
+          <TextInput
+            className="col-12 col-md-6"
+            label="State"
+            placeholder='District of Columbia' 
+            value={tempState}
+            onChange={e => setTempState(e.target.value)}
+            onBlur={handleSubmitState}
+            onKeyDown={handleStateKeyDown}
+          />
+          <TextInput
+            className="col-12 col-md-6"
+            label="Zip"
+            placeholder='20500'
+            value={tempZip}
+            onChange={e => setTempZip(e.target.value)}
+            onBlur={handleSubmitZip}
+            onKeyDown={handleZipKeyDown}
+          />
         </div>
       </div>
     )
@@ -222,6 +330,134 @@ export default function Settings() {
     )
   }
 
+  const SchoolSettings = () => {
+    
+    const [tempAdvisorName, setTempAdvisorName] = useState(currentUser.schoolInfo.advisorName)
+    const [tempAdvisorHref, setTempAdvisorHref] = useState(currentUser.schoolInfo.advisorHref)
+    const [tempAdvisorEmail, setTempAdvisorEmail] = useState(currentUser.schoolInfo.advisorEmail)
+    const [tempAdvisorOffice, setTempAdvisorOffice] = useState(currentUser.schoolInfo.advisorOffice)
+    const [tempLMSHref, setTempLMSHref] = useState(currentUser.schoolInfo.LMSHref)
+    const [tempLMSName, setTempLMSName] = useState(currentUser.schoolInfo.LMSName)
+
+    function handleLMSNameChange(lms) {
+      if (lms === null) { return; }
+      setTempLMSName(lms);
+      currentUser.changeSchoolInfo('LMSName', lms);
+      notifSuccess("LMS Updated", `The Learning Management System has been set to "${lms}".`)
+    }
+
+    function handleLMSLinkChange(e) {
+      const link = e.target.value
+      setTempLMSHref(link);
+      if (link.toLowerCase().includes("canvas")) { setTempLMSName(LMS.CANVAS); return; }
+      if (link.toLowerCase().includes("blackboard")) { setTempLMSName(LMS.BLACKBOARD); return; }
+      if (link.toLowerCase().includes("classroom")) { setTempLMSName(LMS.GOOGLE_CLASSROOM); return; }
+      if (link.toLowerCase().includes("schoology")) { setTempLMSName(LMS.SCHOOLOGY); return; }
+      setTempLMSName(LMS.OTHER);
+    }
+
+    function handleLMSLinkKeyDown(e) { if (e.key === "Enter") { handleLMSLinkSubmit() } }
+    function handleAdvisorNameKeyDown(e) { if (e.key === "Enter") { handleAdvisorNameSubmit() } }
+    function handleAdvisorOfficeKeyDown(e) { if (e.key === "Enter") { handleAdvisorOfficeSubmit() } }
+    function handleAdvisorEmailKeyDown(e) { if (e.key === "Enter") { handleAdvisorEmailSubmit() } }
+    function handleAdvisorHrefKeyDown(e) { if (e.key === "Enter") { handleAdvisorHrefSubmit() } }
+
+    function handleLMSLinkSubmit() {
+      if (tempLMSHref === "") { return; }
+      if (tempLMSHref === currentUser.schoolInfo.LMSHref) { return; }
+      currentUser.changeSchoolInfo('LMSHref', tempLMSHref);
+      notifSuccess("LMS Link Updated", `The Learning Management System link has been set to ${tempLMSHref}.`)
+      if (tempLMSName === currentUser.schoolInfo.LMSName) { return; }
+      currentUser.changeSchoolInfo('LMSName', tempLMSName);
+    }
+
+    function handleAdvisorNameSubmit() {
+      if (tempAdvisorName === "") { return; }
+      if (tempAdvisorName === currentUser.schoolInfo.advisorName) { return; }
+      currentUser.changeSchoolInfo('advisorName', tempAdvisorName);
+      notifSuccess("Advisor Name Updated", `The advisor's name has been set to ${tempAdvisorName}.`)
+    }
+
+    function handleAdvisorHrefSubmit() {
+      if (tempAdvisorHref === "") { return; }
+      if (tempAdvisorHref === currentUser.schoolInfo.advisorHref) { return; }
+      currentUser.changeSchoolInfo('advisorHref', tempAdvisorHref);
+      notifSuccess("Advisor Link Updated", `The advisor's link has been set to ${tempAdvisorHref}.`)
+    }
+
+    function handleAdvisorEmailSubmit() {
+      if (tempAdvisorEmail === "") { return; }
+      if (tempAdvisorEmail === currentUser.schoolInfo.advisorEmail) { return; }
+      currentUser.changeSchoolInfo('advisorEmail', tempAdvisorEmail);
+      notifSuccess("Advisor Email Updated", `The advisor's email has been set to ${tempAdvisorEmail}.`)
+    }
+
+    function handleAdvisorOfficeSubmit() {
+      if (tempAdvisorOffice === "") { return; }
+      if (tempAdvisorOffice === currentUser.schoolInfo.advisorOffice) { return; }
+      currentUser.changeSchoolInfo('advisorOffice', tempAdvisorOffice);
+      notifSuccess("Advisor Office Updated", `The advisor's office has been set to ${tempAdvisorOffice}.`)
+    }
+
+    return (
+      <div className="container-fluid px-0 py-2">
+        <div className="row">
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Advisor Name" 
+            placeholder='Talia Wendigo'
+            value={tempAdvisorName}
+            onChange={t => setTempAdvisorName(t)}
+            onBlur={handleAdvisorNameSubmit}
+            onKeyDown={handleAdvisorNameKeyDown}
+          />        
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Adviror Link" 
+            placeholder='https://www.myschool.edu/advisors/talia-wendigo'
+            type='url'
+            value={tempAdvisorHref}
+            onChange={t => setTempAdvisorHref(t)}
+            onBlur={handleAdvisorHrefSubmit}
+            onKeyDown={handleAdvisorHrefKeyDown}
+          />        
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Advisor Email" 
+            placeholder='twendigo@myschool.edu'
+            value={tempAdvisorEmail}
+            onChange={t => setTempAdvisorEmail(t)}
+            onBlur={handleAdvisorEmailSubmit}
+            onKeyDown={handleAdvisorEmailKeyDown}
+          />
+          <TextInput
+            className="col-12 col-md-6" 
+            label="Advisor Office" 
+            placeholder='The Woods and The Prairies'
+            value={tempAdvisorOffice}
+            onChange={t => setTempAdvisorOffice(t)}
+            onBlur={handleAdvisorOfficeSubmit}
+            onKeyDown={handleAdvisorOfficeKeyDown}
+          />
+        </div>
+        <Group justify='space-between' align="flex-end" className="settings-item gap-2" wrap="nowrap" >
+          <TextInput
+            leftSection={<LMSIcon name={tempLMSName} />}
+            className="w-100"
+            label="LMS Link"
+            type='url'
+            placeholder='https://lms.myschool.edu/'
+            value={tempLMSHref}
+            onChange={handleLMSLinkChange}
+            onBlur={handleLMSLinkSubmit}
+            onKeyDown={handleLMSLinkKeyDown}
+          />
+          <Select label="LMS Name" data={[LMS.BLACKBOARD, LMS.CANVAS, LMS.GOOGLE_CLASSROOM, LMS.SCHOOLOGY, LMS.OTHER]} value={tempLMSName} onChange={handleLMSNameChange}/>
+        </Group>
+      </div>
+    )
+  }
+
   return (
     <div className="d-flex flex-column gap-2 align-items-center justify-content-center p-2 container-fluid">
       <div className="row w-100">
@@ -239,6 +475,8 @@ export default function Settings() {
             <PersonalInformationSettings />
             <Text fz="xl" fw={500}>General Settings</Text>
             <GeneralSettings />
+            <Text fz="xl" fw={500}>School Settings</Text>
+            <SchoolSettings />
             <Text fz="xl" fw={500}>Homework Tracker Settings</Text>
             <HomeworkTrackerSettings />
             <Text fz="xl" fw={500}>Invoice Settings</Text>

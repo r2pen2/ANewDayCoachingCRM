@@ -1,0 +1,22 @@
+import { LMS } from "../api/db/dbUser.ts"
+
+import canvasLogo from "../assets/images/lms/canvas.svg"
+import blackboardLogo from "../assets/images/lms/blackboard.svg"
+import classroomLogo from "../assets/images/lms/classroom.svg"
+import schoologyLogo from "../assets/images/lms/schoology.webp"
+
+export const LMSIcon = ({name, size = "1.25rem"}) => {
+  const lmsIconStyle = {height: size, width: size}
+  switch (name) {
+    case LMS.BLACKBOARD:
+      return <img src={blackboardLogo} alt="Blackboard" style={lmsIconStyle}/>
+    case LMS.CANVAS:
+        return <img src={canvasLogo} alt="Canvas" style={lmsIconStyle}/>
+    case LMS.GOOGLE_CLASSROOM:
+      return <img src={classroomLogo} alt="Google Classroom" style={lmsIconStyle}/>
+    case LMS.SCHOOLOGY:
+      return <img src={schoologyLogo} alt="Schoology" style={lmsIconStyle}/>
+    default:
+      return null;
+  }
+}

@@ -15,6 +15,14 @@ export enum UserRole {
   DEVELOPER = "Developer"
 }
 
+export enum LMS {
+  CANVAS = "Canvas",
+  GOOGLE_CLASSROOM = "Google Classroom",
+  SCHOOLOGY = "Schoology",
+  BLACKBOARD = "Blackboard",
+  OTHER = "Other"
+}
+
 export class User {
   
   firebaseUser: UserCredential;
@@ -59,6 +67,15 @@ export class User {
     role: "",
   }
 
+  schoolInfo: any = {
+    advisorName: "",
+    advisorHref: "",
+    advisorEmail: "",
+    advisorOffice: "",
+    LMSHref: "",
+    LMSName: "",
+  }
+
   settings: any = {
     darkMode: false,
     priorityVerbosity: HomeworkPriorityVerbosity.COLORS,
@@ -97,7 +114,8 @@ export class User {
         documents: this.documents.map((d) => d.toJson()),
         intents: this.intents,
         settings: this.settings,
-        metadata: this.metadata
+        metadata: this.metadata,
+        schoolInfo: this.schoolInfo,
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -157,6 +175,7 @@ export class User {
     this.documents = data.documents.map((d: any) => Document.load(d));
     this.intents = data.intents;
     this.settings = data.settings;
+    this.schoolInfo = data.schoolInfo;
     return this;
   }
 
@@ -316,6 +335,28 @@ export class User {
   async changeSetting(setting: string, newValue: any): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.settings[setting] = newValue;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async changePersonalData(field: string, newValue: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.personalData[field] = newValue;
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  async changeSchoolInfo(field: string, newValue: any): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.schoolInfo[field] = newValue;
       this.setData().then(() => {
         resolve();
       }).catch((error) => {
