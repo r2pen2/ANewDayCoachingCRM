@@ -400,7 +400,7 @@ export function Assignment({homeworkJson}) {
   }
 
   return (
-    <div className={"container-fluid border-gray-bottom pt-1 px-1 " + (homework.status === HomeworkStatus.COMPLETED ? "homework-completed pb-1" : "homework-incomplete pb-2")}>
+    <div className={"container-fluid border-gray-bottom p-2 " + (homework.status === HomeworkStatus.COMPLETED ? "homework-completed pb-1" : "homework-incomplete pb-2")}>
       <div className="row d-flex flex-row align-items-center justify-content-between">
         
         <div className="col-12 col-sm-8 d-flex flex-column align-items-start justify-content-start">
