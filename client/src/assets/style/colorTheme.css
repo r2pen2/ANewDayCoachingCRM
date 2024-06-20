@@ -12,8 +12,18 @@
 
 /* Coloring for Light / Dark */
 
-button span, .mantine-Switch-trackLabel {
-  color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-7));
+button span {
+  color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
+}
+button:disabled {
+  background-color: light-dark(var(--mantine-color-gray-1), #424242);
+}
+button:disabled span {
+  color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-9));
+}
+
+.mantine-Switch-trackLabel {
+  color: light-dark(var(--mantine-color-gray-6), #c9c9c9);
 }
 
 .mantine-Switch-body:has(> input:checked) .mantine-Switch-trackLabel {

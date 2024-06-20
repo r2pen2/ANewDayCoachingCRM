@@ -75,7 +75,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
       </div>
       <div className="row">
         <TextInput
-          className="col-12 col-md-6" 
+          className="col-12 col-lg-6 col-md-12 col-sm-6" 
           label="Display Name"
           placeholder='Johnny Appleseed' 
           value={tempDisplayName} 
@@ -84,7 +84,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
           onKeyDown={handleDisplayNameKeyDown}
         />        
         <TextInput
-          className="col-12 col-md-6" 
+          className="col-12 col-lg-6 col-md-12 col-sm-6" 
           label="Email" 
           disabled 
           type='email'
@@ -92,7 +92,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
           value={currentUser.personalData.email}
         />        
         <TextInput
-          className="col-12 col-md-6" 
+          className="col-12 col-lg-6 col-md-12 col-sm-6" 
           label="Phone Number"
           placeholder='(202) 456-1111'
           value={tempPhoneNumber}
@@ -104,7 +104,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
       </div>
       <div className="row">
         <TextInput
-          className="col-12 col-md-6"
+          className="col-12 col-lg-6 col-md-12 col-sm-6"
           label="Address"
           placeholder='1600 Pennsylvania Avenue'
           value={tempAddress}
@@ -113,7 +113,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
           onKeyDown={handleAddressKeyDown}
         />
         <TextInput
-          className="col-12 col-md-6"
+          className="col-12 col-lg-6 col-md-12 col-sm-6"
           label="City"
           placeholder='Washington'
           value={tempCity}
@@ -122,7 +122,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
           onKeyDown={handleCityKeyDown}
         />
         <TextInput
-          className="col-12 col-md-6"
+          className="col-12 col-lg-6 col-md-12 col-sm-6"
           label="State"
           placeholder='District of Columbia' 
           value={tempState}
@@ -131,7 +131,7 @@ export const PersonalInformationSettings = memo(function PersonalInformationSett
           onKeyDown={handleStateKeyDown}
         />
         <TextInput
-          className="col-12 col-md-6"
+          className="col-12 col-lg-6 col-md-12 col-sm-6"
           label="Zip"
           placeholder='20500'
           value={tempZip}
@@ -251,7 +251,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
         </div>
         <div className="row">
           <TextInput
-            className="col-12 col-md-6" 
+            className="col-12 col-lg-6 col-md-12 col-sm-6" 
             label="Advisor Name" 
             placeholder='Talia Wendigo'
             value={tempAdvisorName}
@@ -260,7 +260,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             onKeyDown={handleAdvisorNameKeyDown}
           />        
           <TextInput
-            className="col-12 col-md-6" 
+            className="col-12 col-lg-6 col-md-12 col-sm-6" 
             label="Adviror Link" 
             placeholder='https://www.myschool.edu/advisors/talia-wendigo'
             type='url'
@@ -270,7 +270,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             onKeyDown={handleAdvisorHrefKeyDown}
           />        
           <TextInput
-            className="col-12 col-md-6" 
+            className="col-12 col-lg-6 col-md-12 col-sm-6" 
             label="Advisor Email" 
             placeholder='twendigo@myschool.edu'
             value={tempAdvisorEmail}
@@ -279,7 +279,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             onKeyDown={handleAdvisorEmailKeyDown}
           />
           <TextInput
-            className="col-12 col-md-6" 
+            className="col-12 col-lg-6 col-md-12 col-sm-6" 
             label="Advisor Office" 
             placeholder='The Woods and The Prairies'
             value={tempAdvisorOffice}

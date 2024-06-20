@@ -9,16 +9,15 @@ import { mockEvents } from "../api/calendar.ts";
 
 // Style Imports
 import "../assets/style/schedule.css";
-import { CRMBreadcrumbs } from "../components/Breadcrumbs.jsx";
-import { navigationItems } from "../components/Navigation.jsx";
 
 
 export default function Schedule() {
-  return [
-    <CRMBreadcrumbs key="breadcrumbs" items={[{title: "Schedule", href: navigationItems.SCHEDULE}]} />,
-    <AppointmentList key="appointments-list" />,
-    <CalendarFrame key="calendar-frame" />
-  ]
+  return (
+    <div>
+      <AppointmentList />
+      <CalendarFrame />
+    </div>
+  )
 }
 
 /**
