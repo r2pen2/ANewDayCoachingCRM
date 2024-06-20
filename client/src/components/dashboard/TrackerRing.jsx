@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Paper, Progress, RingProgress, SegmentedControl, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Center, Paper, Progress, RingProgress, Tooltip } from '@mantine/core'
 import { IconTimeline } from '@tabler/icons-react'
 import React from 'react'
 import { CurrentUserContext } from '../../App'
@@ -7,19 +7,18 @@ import { HomeworkStatus } from '../../api/db/dbHomework.ts'
 
 const innerCircleRadius = 240
 const outerCircleRadius = innerCircleRadius + 20
-const backgroundColor = "#D6E3D1"
 
 export const trackerOffset = outerCircleRadius + 10;
 
 export const GreenCircle = () => (
-  <svg width={innerCircleRadius} height={innerCircleRadius} style={{position: "absolute", top: 10, left: 10, border: "1px solid #00000022", borderRadius: "50%"}}>
-    <circle cx={innerCircleRadius / 2} cy={innerCircleRadius / 2} r={innerCircleRadius / 2} fill={backgroundColor} />
+  <svg width={innerCircleRadius} className="tracker-ring-svg" height={innerCircleRadius} style={{position: "absolute", top: 10, left: 10, border: "1px solid #00000022", borderRadius: "50%"}}>
+    <circle cx={innerCircleRadius / 2} cy={innerCircleRadius / 2} r={innerCircleRadius / 2} className="green-space" />
   </svg>
 )
 
 export const WhiteSpace = () => (
-  <svg width={outerCircleRadius} height={outerCircleRadius} style={{position: "absolute", top: 0, left: 0}}>
-    <circle cx={outerCircleRadius / 2} cy={outerCircleRadius / 2} r={outerCircleRadius / 2} fill="white" className="white-space" />
+  <svg width={outerCircleRadius} className="tracker-ring-svg" height={outerCircleRadius} style={{position: "absolute", top: 0, left: 0}}>
+    <circle cx={outerCircleRadius / 2} cy={outerCircleRadius / 2} r={outerCircleRadius / 2} className="white-space" />
   </svg>
 )
 

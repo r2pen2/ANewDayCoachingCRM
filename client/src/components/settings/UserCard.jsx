@@ -8,7 +8,7 @@ export const UserCard = memo(function UserCard({user}) {
 
   return (
     <div className="col-12 col-md-6 col-lg-4 col-xxl-2 px-0 px-md-2 mb-2 ">
-      <Paper withBorder p="lg" className="d-flex flex-column align-items-center" bg="var(--mantine-color-body)">
+      <Paper withBorder p="lg" className="d-flex flex-column top-green align-items-center" bg="var(--mantine-color-body)">
         <SettingsAvatar />
         <Text ta="center" fz="lg" fw={500} mt="md">{user.displayName}</Text>
         <Text ta="center" fz="sm" c="dimmed">{user.role}</Text>

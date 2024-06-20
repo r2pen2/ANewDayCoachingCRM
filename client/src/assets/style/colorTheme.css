@@ -9,3 +9,25 @@
   .bg-light-platform {
   background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));  
 }
+
+/* Coloring for Light / Dark */
+
+button span, .mantine-Switch-trackLabel {
+  color: light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-7));
+}
+
+.mantine-Switch-body:has(> input:checked) .mantine-Switch-trackLabel {
+  color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
+}
+.mantine-Switch-thumb {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
+  border-color: light-dark(var(--mantine-color-white), var(--mantine-color-black));
+}
+
+body {
+  color: var(--mantine-color-text) !important;
+}
+
+svg.nav-icon {
+  stroke: light-dark(var(--mantine-color-black), var(--mantine-color-dark-7));
+}
