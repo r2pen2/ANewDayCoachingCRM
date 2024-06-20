@@ -17,6 +17,7 @@ import IconButton from '../components/IconButton.jsx';
 import { FirstPageV2, SecondPage } from '../components/invoices/PaymentProcess.jsx';
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
+import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 
 export const lateColor = "red"
 export const unpaidColor = "orange"
@@ -95,6 +96,7 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
 
   return (
     <Paper withBorder className="w-100">
+    <ModuleHeader>My Invoices</ModuleHeader>
 
     <Table.ScrollContainer minWidth={500} className="w-100" type="native">
       <Table striped>

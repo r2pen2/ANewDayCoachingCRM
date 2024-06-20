@@ -1,16 +1,3 @@
-.event-list::-webkit-scrollbar {
-    height: 0.75rem;
-  }
-
-.event-list::-webkit-scrollbar-track {
-    border-radius: 8px;
-    background-color: #e7e7e7;
-    border: 1px solid #cacaca;
-}
-
-.event-list::-webkit-scrollbar-thumb {
-    border-radius: 8px;
-    border: 3px solid transparent;
-    background-clip: content-box;
-    background-color: rgb(100,118,89);
+.mantine-Spoiler-root.centered-expander button {
+  width: 100%;
 }

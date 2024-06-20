@@ -4,6 +4,7 @@ import { Card, Group, Switch, Text } from '@mantine/core'
 import "../../assets/style/invoices.css"
 import { notifSuccess } from '../Notifications';
 import { updateAfterSwitchFlip } from '../../api/settings.ts';
+import ModuleHeader from '../dashboard/ModuleHeader.jsx';
 
 const visibilityDisabled = false;
 const newEmailDisabled = false;
@@ -13,16 +14,13 @@ export const InvoiceSettings = memo(function InvoiceSettings({settings}) {
 
   return (
     <div className="col-12 col-md-6 mh-100 p-2" >
-      <Card withBorder p="md" className='invoice-settings-card h-100'>
-        <Text fz="lg" className="invoice-settings-title" fw={500}>
-          Invoice Settings
-        </Text>
-        <Text fz="xs" c="dimmed" mt={3} mb="xl">
-          Make changes to invoice visiblity and notifications
-        </Text>
+      <Card withBorder className='invoice-settings-card h-100 p-0'>
+      <ModuleHeader>Invoice Settings</ModuleHeader>  
+      <div className="d-flex flex-column p-2 gap-2">
         <VisibilitySetting settings={settings} />
         <PendingEmailNotificationSetting settings={settings} />
         <NewInvoiceEmailNotificationSetting settings={settings} />
+      </div>
       </Card>
     </div>
   )
@@ -42,7 +40,7 @@ const VisibilitySetting = ({settings}) => {
   }
 
   return (
-    <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
+    <Group justify='space-between' className="invoice-settings-item pb-2" wrap="nowrap" gap="xl">
       <div>
         <Text>Student Accessible (Coming Soon)</Text>
         <Text size="xs" c="dimmed">
@@ -68,7 +66,7 @@ const PendingEmailNotificationSetting = ({settings}) => {
   }
 
   return (
-    <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
+    <Group justify='space-between' className="invoice-settings-item pb-2" wrap="nowrap" gap="xl">
       <div>
         <Text>Pending Update Emails (Coming Soon)</Text>
         <Text size="xs" c="dimmed">
@@ -94,7 +92,7 @@ const NewInvoiceEmailNotificationSetting = ({settings}) => {
   }
 
   return (
-    <Group justify='space-between' className="invoice-settings-item" wrap="nowrap" gap="xl">
+    <Group justify='space-between' className="invoice-settings-item pb-2" wrap="nowrap" gap="xl">
       <div>
         <Text>New Invoice Emails (Coming Soon)</Text>
         <Text size="xs" c="dimmed">

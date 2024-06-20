@@ -22,7 +22,7 @@ export default function DocumentsList({height}) {
     <Paper withBorder className="mb-2" style={{height: height}}>
       <ModuleHeader>My Shared Documents</ModuleHeader>
       <div className="p-2">
-        <Spoiler maxHeight={180} showLabel="See All Shared" hideLabel="Hide">
+        <Spoiler maxHeight={180} showLabel="See All Shared" hideLabel="Collapse Shared" className="centered-expander">
           <div className="container-fluid">
             <div className="row">
               <DocList />

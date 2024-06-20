@@ -26,7 +26,7 @@ export const ToolsList = ({height}) => {
     <Paper withBorder className="mb-2" style={{height: height}}>
       <ModuleHeader>My Tools</ModuleHeader>
       <div className="p-2">
-        <Spoiler maxHeight={180} showLabel="See All Tools" hideLabel="Collapse">
+        <Spoiler maxHeight={180} showLabel="See All Tools" hideLabel="Collapse Tools" className="centered-expander">
           <ToolDisplay />
         </Spoiler>
       </div>

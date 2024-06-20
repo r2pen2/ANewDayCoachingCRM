@@ -9,7 +9,7 @@ export default function ExternalToolsList({height}) {
     <Paper withBorder className="mb-2" style={{height: height}}>
       <ModuleHeader>My External Resources</ModuleHeader>
       <div className="p-2">
-        <Spoiler maxHeight={180} showLabel="See All Resources" hideLabel="Hide">
+        <Spoiler maxHeight={180} showLabel="See All Resources" hideLabel="Collapse Resources" className="centered-expander">
           <div className="container-fluid">
             <div className="row">
               {/* <DocList /> */}

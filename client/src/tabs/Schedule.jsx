@@ -1,6 +1,6 @@
 // Library Imports
 import { useRef, useState } from "react";
-import { Loader, Paper } from "@mantine/core";
+import { Loader, Paper, Spoiler, Text } from "@mantine/core";
 
 // API Imports
 import { getEventTime, getVerboseDateString } from "../api/strings.js";
@@ -9,13 +9,16 @@ import { mockEvents } from "../api/calendar.ts";
 
 // Style Imports
 import "../assets/style/schedule.css";
+import ModuleHeader from "../components/dashboard/ModuleHeader.jsx";
 
 
 export default function Schedule() {
   return (
-    <div>
-      <AppointmentList />
-      <CalendarFrame />
+    <div className="container-fluid d-flex flex-column align-items-center justify-content-center p-0">
+      <div className="row p-2 w-100">
+        <AppointmentList />
+        <CalendarFrame />
+      </div>
     </div>
   )
 }
@@ -34,20 +37,30 @@ function AppointmentList() {
    */
   const EventCard = ({event}) => {
     return (
-      <Paper withBorder className="p-2 mt-2 mb-2" style={{marginRight: "1rem", cursor: "pointer", minWidth: 200}} onClick={() => window.open(event.href, "_blank")}>
-        <strong>{event.summary}</strong>
-        <p style={{marginBottom: 0}}>{getVerboseDateString(event.startAt)}</p>
-        <p style={{marginBottom: 0}}>{getEventTime(event.startAt)} - {getEventTime(event.endAt)}</p>
+      <Paper withBorder className="p-2 mb-2 mb-xl-0 w-100" style={{cursor: "pointer", minWidth: 200}} onClick={() => window.open(event.href, "_blank")}>
+        <Text fz="lg" fw={500}>
+          {event.summary}
+        </Text>
+        <Text fz="sm" c="dimmed" mt={5}>
+          {getVerboseDateString(event.startAt)}
+        </Text>
+        <Text fz="sm" c="dimmed">
+          {getEventTime(event.startAt)} - {getEventTime(event.endAt)}
+        </Text>
       </Paper>
     )
   }
 
   return (
-    <div className='d-flex flex-column align-items-start justify-content-start p-4'>
-      <h2>My Upcoming Appointments:</h2>
-      <div className="d-flex flex-row w-100 event-list pb-2" style={{overflowX: "scroll", flexWrap: "nowrap"}}>
-        {events.map((event, index) => <EventCard key={index} event={event} />)}
-      </div>
+    <div className="p-0 col-12 col-xl-3">
+      <Paper withBorder >
+        <ModuleHeader>Upcoming</ModuleHeader>
+        <Spoiler showLabel="Show All Appointments" className="centered-expander" hideLabel="Show Fewer Appointments" maxHeight={400}>
+          <div style={{overflowX: "scroll", flexWrap: "nowrap"}} className="d-flex gap-2 flex-row flex-xl-column align-items-start px-2">
+            {events.map((event, index) => <EventCard key={index} event={event} />)}
+          </div>
+        </Spoiler>
+      </Paper>
     </div>
   )
 }
@@ -72,9 +85,14 @@ function CalendarFrame() {
   }
 
   return (
-    <div style={{height: "100vh", position: "relative"}} className="d-flex flex-column align-items-center justify-content-center">
-      <LoadingNotif />
-      <iframe ref={iframeRef} onLoad={handleIframeLoad} title="Schedule" src={LinkMaster.schedule.calendarEmbed} style={{border: 0, position: "absolute"}} width="100%" height="100%" frameBorder="0" />
+    <div className="mt-2 mt-xl-0 col-12 col-xl-9">
+      <Paper withBorder style={{height: "100vh", position: "relative", paddingTop: "calc(50px + 2rem)"}} className="d-flex flex-column align-items-center justify-content-center">
+        <div style={{position: "absolute", top:0, width: "100%"}}>
+          <ModuleHeader>Schedule Appointments</ModuleHeader>
+        </div>
+        <LoadingNotif />
+        <iframe ref={iframeRef} onLoad={handleIframeLoad} title="Schedule" src={LinkMaster.schedule.calendarEmbed} style={{border: 0, position: "absolute"}} width="100%" height="100%" frameBorder="0" />
+      </Paper>
     </div>
   )
 }

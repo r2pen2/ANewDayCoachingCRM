@@ -3,6 +3,7 @@ import { Progress, Box, Text, Group, Paper, SimpleGrid, NumberFormatter } from '
 import { IconCreditCardPay } from '@tabler/icons-react';
 import { lateColor, pendingColor, unpaidColor } from '../../tabs/Invoices';
 import { memo } from 'react';
+import ModuleHeader from '../dashboard/ModuleHeader';
 
 export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled}) {
 
@@ -71,7 +72,10 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
 
   return (
     <div className="col-12 col-md-6 mh-100 p-2" >    
-      <Paper withBorder className="p-3 h-100 d-flex flex-column justify-content-between">
+      <Paper withBorder className="h-100">
+        <ModuleHeader>Overview</ModuleHeader>
+        <div className="p-2 d-flex flex-column gap-2">
+
         <Group justify="space-between">
           <div className="d-flex flex-column align-items-start">
             <Text fz="xl" fw={700}>
@@ -83,7 +87,6 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
           </div>
         </Group>
 
-
         <Progress.Root size={34} classNames="invoice-stat-progress-label">
           { invoicesPulled && segments }
         </Progress.Root>
@@ -91,6 +94,7 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
         <SimpleGrid cols={{ base: 1, xs: 3 }}>
           { invoicesPulled && descriptions }
         </SimpleGrid>
+        </div>
       </Paper>
     </div>
   );
