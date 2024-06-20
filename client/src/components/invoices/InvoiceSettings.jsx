@@ -13,16 +13,14 @@ const pendingEmailDisabled = false;
 export const InvoiceSettings = memo(function InvoiceSettings({settings}) {
 
   return (
-    <div className="col-12 col-md-6 mh-100 p-2" >
-      <Card withBorder className='invoice-settings-card h-100 p-0'>
-      <ModuleHeader>Invoice Settings</ModuleHeader>  
-      <div className="d-flex flex-column p-2 gap-2">
-        <VisibilitySetting settings={settings} />
-        <PendingEmailNotificationSetting settings={settings} />
-        <NewInvoiceEmailNotificationSetting settings={settings} />
-      </div>
-      </Card>
+    <Card withBorder className='invoice-settings-card w-100 p-0'>
+    <ModuleHeader>Invoice Settings</ModuleHeader>  
+    <div className="d-flex flex-column p-2 gap-2">
+      <VisibilitySetting settings={settings} />
+      <PendingEmailNotificationSetting settings={settings} />
+      <NewInvoiceEmailNotificationSetting settings={settings} />
     </div>
+    </Card>
   )
 })
 

@@ -15,7 +15,7 @@ import ModuleHeader from "../components/dashboard/ModuleHeader.jsx";
 export default function Schedule() {
   return (
     <div className="container-fluid d-flex flex-column align-items-center justify-content-center p-0">
-      <div className="row p-2 w-100">
+      <div className="row p-1 w-100">
         <AppointmentList />
         <CalendarFrame />
       </div>
@@ -52,7 +52,7 @@ function AppointmentList() {
   }
 
   return (
-    <div className="p-0 col-12 col-xl-3">
+    <div className="p-1 col-12 col-xl-3">
       <Paper withBorder >
         <ModuleHeader>Upcoming</ModuleHeader>
         <Spoiler showLabel="Show All Appointments" className="centered-expander" hideLabel="Show Fewer Appointments" maxHeight={400}>
@@ -85,11 +85,11 @@ function CalendarFrame() {
   }
 
   return (
-    <div className="mt-2 mt-xl-0 col-12 col-xl-9">
-      <Paper withBorder style={{height: "100vh", position: "relative", paddingTop: "calc(50px + 2rem)"}} className="d-flex flex-column align-items-center justify-content-center">
-        <div style={{position: "absolute", top:0, width: "100%"}}>
+    <div className="mt-2 p-1 mt-xl-0 col-12 col-xl-9">
+      <Paper withBorder style={{height: "100vh", position: "relative", }} className="d-flex flex-column align-items-center justify-content-center">
+        {/* <div style={{position: "absolute", top:0, width: "100%"}}>
           <ModuleHeader>Schedule Appointments</ModuleHeader>
-        </div>
+        </div> */}
         <LoadingNotif />
         <iframe ref={iframeRef} onLoad={handleIframeLoad} title="Schedule" src={LinkMaster.schedule.calendarEmbed} style={{border: 0, position: "absolute"}} width="100%" height="100%" frameBorder="0" />
       </Paper>

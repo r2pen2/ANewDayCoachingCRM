@@ -1,7 +1,7 @@
 // Library Imports
 import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconAlertCircle, IconSearch, IconUserCancel, IconUserShare } from '@tabler/icons-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 // API Imports
 import { User } from '../api/db/dbUser.ts';
@@ -14,7 +14,9 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import "../assets/style/formsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
-import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
+import { CRMScrollContainer } from '../components/Tables.jsx';
+import { FormTableHead } from '../components/formManagement/formsTable.jsx';
+import { FormStats } from '../components/formManagement/formStats.jsx';
 
 export default function FormManagement() {
 
@@ -157,69 +159,66 @@ export default function FormManagement() {
     return `${assignMode} "${currentForm?.formTitle}" to Users:`
   }
 
+  const [scrolled, setScrolled] = useState(false)
+
   return (
-    <div>
-      <CRMBreadcrumbs items={[{title: "Form Management", href: navigationItems.ADMINFORMS}]} />
-      <Table.ScrollContainer minWidth={500} type="native">
-        <Table striped>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>
-                Name
-              </Table.Th>
-              <Table.Th>
-                Description
-              </Table.Th>
-              <Table.Th>
-                Actions
-              </Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {
-              
-              function handleAssign() {
-                if (assignMode !== null && assignMode !== "Assign") { setAssignees([]) }
-                if (currentForm?.formId !== form.formId) { setAssignees([]) }
-                setCurrentForm(form);
-                setUserSearchMenuOpen(true);
-                setAssignMode("Assign");
-              }
-              
-              function handleUnassign() {
-                if (assignMode !== null && assignMode !== "Unssign") { setAssignees([]) }
-                if (currentForm?.formId !== form.formId) { setAssignees([]) }
-                setCurrentForm(form);
-                setUserSearchMenuOpen(true);
-                setAssignMode("Unassign");
-              }
+    <div className='d-flex flex-column gap-2 py-2 px-1 align-items-center justify-content-center container-fluid'>
+      <div className="row w-100">
+        <FormStats />
+        <div className="col-12 col-lg-9 px-1">
+      <Paper withBorder className="w-100">
+        <CRMScrollContainer setScrolled={setScrolled}>
+          <Table striped>
+            <FormTableHead scrolled={scrolled} />
+            <Table.Tbody>
+              {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {
 
-              function handleIncomplete() {
-                if (assignMode !== null && assignMode !== "Incomplete") { setAssignees([]) }
-                if (currentForm?.formId !== form.formId) { setAssignees([]) }
-                setCurrentForm(form);
-                setUserSearchMenuOpen(true);
-                setAssignMode("Incomplete");
-              }
+                function handleAssign() {
+                  if (assignMode !== null && assignMode !== "Assign") { setAssignees([]) }
+                  if (currentForm?.formId !== form.formId) { setAssignees([]) }
+                  setCurrentForm(form);
+                  setUserSearchMenuOpen(true);
+                  setAssignMode("Assign");
+                }
 
-              return (
-              <Table.Tr key={index}>
-                <Table.Td>
-                  {form.formTitle}
-                </Table.Td>
-                <Table.Td>
-                  {form.formDescription}
-                </Table.Td>
-                <Table.Td className='d-flex gap-2'>
-                  <IconButton label={`Assign "${form.formTitle}"`} icon={<IconUserShare />} onClick={handleAssign} />
-                  <IconButton label={`Unassign "${form.formTitle}"`} icon={<IconUserCancel />} color="red" onClick={handleUnassign} />
-                  <IconButton label={`Mark "${form.formTitle}" as Incomplete`} icon={<IconAlertCircle />} color="orange" onClick={handleIncomplete} />
-                </Table.Td>
-              </Table.Tr>
-            )})}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+                function handleUnassign() {
+                  if (assignMode !== null && assignMode !== "Unssign") { setAssignees([]) }
+                  if (currentForm?.formId !== form.formId) { setAssignees([]) }
+                  setCurrentForm(form);
+                  setUserSearchMenuOpen(true);
+                  setAssignMode("Unassign");
+                }
+
+                function handleIncomplete() {
+                  if (assignMode !== null && assignMode !== "Incomplete") { setAssignees([]) }
+                  if (currentForm?.formId !== form.formId) { setAssignees([]) }
+                  setCurrentForm(form);
+                  setUserSearchMenuOpen(true);
+                  setAssignMode("Incomplete");
+                }
+
+                return (
+                <Table.Tr key={index}>
+                  <Table.Td>
+                    {form.formTitle}
+                  </Table.Td>
+                  <Table.Td>
+                    {form.formDescription}
+                  </Table.Td>
+                  <Table.Td className='d-flex gap-2'>
+                    <IconButton label={`Assign "${form.formTitle}"`} icon={<IconUserShare />} onClick={handleAssign} />
+                    <IconButton label={`Unassign "${form.formTitle}"`} icon={<IconUserCancel />} color="red" onClick={handleUnassign} />
+                    <IconButton label={`Mark "${form.formTitle}" as Incomplete`} icon={<IconAlertCircle />} color="orange" onClick={handleIncomplete} />
+                  </Table.Td>
+                </Table.Tr>
+              )})}
+            </Table.Tbody>
+          </Table>
+        </CRMScrollContainer>
+      </Paper>
+        
+        </div>
+      </div>
       <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={getModalTitle()}>
         <Text style={{marginBottom: "1rem"}}>{getModalHelpText()}</Text>
         <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>

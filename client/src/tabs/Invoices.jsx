@@ -18,6 +18,7 @@ import { FirstPageV2, SecondPage } from '../components/invoices/PaymentProcess.j
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
+import { CRMScrollContainer } from '../components/Tables.jsx';
 
 export const lateColor = "red"
 export const unpaidColor = "orange"
@@ -62,17 +63,17 @@ export default function Invoices() {
   const invoicesMemo = useMemo(() => { return invoices; }, [invoices])
   const invoicesPulledMemo = useMemo(() => invoicesPulled, [invoicesPulled])
   
-  return <div className="d-flex flex-column align-items-center w-100">
+  return <div className='d-flex flex-column gap-2 py-2 px-1 align-items-center justify-content-center container-fluid'>
     <PayModal />
-    <div className="container-fluid">
-      <div className="row d-flex">
-        <InvoiceStats invoices={invoicesMemo} invoicesPulled={invoicesPulledMemo} />
-        <InvoiceSettings settings={invoiceSettings} />
-        <div className="col-12 px-2">
+      <div className="row w-100">
+        <div className="p-1 col-12 col-lg-3 gap-2 d-flex flex-column align-items-start justify-content-start">
+          <InvoiceStats invoices={invoicesMemo} invoicesPulled={invoicesPulledMemo} />
+          <InvoiceSettings settings={invoiceSettings} />
+        </div>
+        <div className="col-12 col-lg-9 p-1">
           <InvoiceList invoices={invoicesMemo} setCurrentInvoice={setCurrentInvoice} setCancellingPending={setCancellingPending} />
         </div>
       </div>
-    </div>
   </div>
 }
 
@@ -94,13 +95,13 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
     return "Unpaid";                                                                                                // This is just unpaid
   }
 
+  const [scrolled, setScrolled] = useState(false)
+
   return (
     <Paper withBorder className="w-100">
-    <ModuleHeader>My Invoices</ModuleHeader>
-
-    <Table.ScrollContainer minWidth={500} className="w-100" type="native">
+    <CRMScrollContainer setScrolled={setScrolled}>
       <Table striped>
-        <Table.Thead>
+        <Table.Thead className={"scroll-table-header " + (scrolled ? "scrolled" : "")}>
           <Table.Tr>
             <Table.Th>
               No.
@@ -140,7 +141,7 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
           ))}
         </Table.Tbody>
       </Table>
-    </Table.ScrollContainer>
+    </CRMScrollContainer>
     </Paper>
   )
 })

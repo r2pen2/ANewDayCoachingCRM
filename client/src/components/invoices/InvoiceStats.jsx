@@ -70,32 +70,30 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
     return <span>You have some <strong style={{color: "#fa5252"}}>late</strong> payments.</span>
   }
 
-  return (
-    <div className="col-12 col-md-6 mh-100 p-2" >    
-      <Paper withBorder className="h-100">
-        <ModuleHeader>Overview</ModuleHeader>
-        <div className="p-2 d-flex flex-column gap-2">
+  return (   
+    <Paper withBorder className="w-100">
+      <ModuleHeader>Overview</ModuleHeader>
+      <div className="p-2 d-flex flex-column gap-2">
 
-        <Group justify="space-between">
-          <div className="d-flex flex-column align-items-start">
-            <Text fz="xl" fw={700}>
-              <NumberFormatter value={getBalance()} prefix='$' />
-            </Text>
-            <Text c="dimmed">
-              Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
-            </Text>
-          </div>
-        </Group>
-
-        <Progress.Root size={34} classNames="invoice-stat-progress-label">
-          { invoicesPulled && segments }
-        </Progress.Root>
-
-        <SimpleGrid cols={{ base: 1, xs: 3 }}>
-          { invoicesPulled && descriptions }
-        </SimpleGrid>
+      <Group justify="space-between">
+        <div className="d-flex flex-column align-items-start">
+          <Text fz="xl" fw={700}>
+            <NumberFormatter value={getBalance()} prefix='$' />
+          </Text>
+          <Text c="dimmed">
+            Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
+          </Text>
         </div>
-      </Paper>
-    </div>
+      </Group>
+
+      <Progress.Root size={34} classNames="invoice-stat-progress-label">
+        { invoicesPulled && segments }
+      </Progress.Root>
+
+      <SimpleGrid cols={{ base: 1, xs: 3 }}>
+        { invoicesPulled && descriptions }
+      </SimpleGrid>
+      </div>
+    </Paper>
   );
 })

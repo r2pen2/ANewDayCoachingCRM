@@ -1,4 +1,4 @@
-.header {
+.scroll-table-header {
   position: sticky;
   top: 0;
   background-color: var(--mantine-color-body);
@@ -15,6 +15,6 @@
   }
 }
 
-.scrolled {
+.scroll-table-header.scrolled {
   box-shadow: var(--mantine-shadow-sm);
 }
