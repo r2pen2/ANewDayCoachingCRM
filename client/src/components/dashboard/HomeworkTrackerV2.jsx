@@ -266,7 +266,7 @@ export function Assignment({homeworkJson}) {
           <Popover.Target>
             <Tooltip label="Edit Priority" position="bottom">
               <div className="p-2 d-flex flex-row align-items-center justify-content-center">
-                <Indicator processing={Homework.checkPriorityPulseThreshold(homework.priority, currentUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
+                <Indicator zIndex={1} processing={Homework.checkPriorityPulseThreshold(homework.priority, currentUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
               </div>
             </Tooltip>
           </Popover.Target>

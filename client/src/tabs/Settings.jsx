@@ -28,7 +28,7 @@ export default function Settings() {
   const invoiceSettingsMemo = useMemo(() => currentUser.settings.invoices, [currentUser.settings.invoices])
 
   return (
-    <div className="d-flex flex-column gap-2 align-items-center justify-content-center p-2 container-fluid">
+    <div className="d-flex flex-column gap-2 p-0 align-items-center justify-content-center py-2 container-fluid">
       <div className="row w-100">
         <UserCard user={userCardDataMemo}/>
         <div className="col-12 col-md-6 col-lg-8 col-xxl-10 px-0">

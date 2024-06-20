@@ -1,6 +1,6 @@
 // Library Imports
-import React from 'react';
-import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
+import React, { useState } from 'react';
+import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, ScrollArea, Table, Text, TextInput, Tooltip } from '@mantine/core';
 import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
 
 // API Imports
@@ -14,23 +14,13 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import "../assets/style/toolsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
-import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx';
+import classes from "../assets/style/toolsAdmin.css";
+import { CRMScrollContainer } from '../components/Tables.jsx';
+import { ToolCreation } from '../components/toolManagement/ToolCreation.jsx';
+import { ToolTableHead } from '../components/toolManagement/ToolsTable.jsx';
+
 
 export default function ToolManagement() {
-  
-  /** Create tool on database w/ fields from form */
-  function addTool(event) {
-    event.preventDefault();
-    const name = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
-    Tool.createOnDatabase(name, description).then(async (toolId) => {
-      await fetchTools();
-      notifSuccess("Tool Created", `Created "${name}"`);
-      setCurrentTool({title: name, description: description, id: toolId})
-      setUserSearchMenuOpen(true);
-      setAssignMode("Assign");
-    })
-  }
 
   /** Whether search menu is open */
   const [userSearchMenuOpen, setUserSearchMenuOpen] = React.useState(false);
@@ -46,6 +36,8 @@ export default function ToolManagement() {
   const [assignees, setAssignees] = React.useState([]);
   /** Whether we are in assign or unassign mode */
   const [assignMode, setAssignMode] = React.useState(null);
+  /** Whether the table has been scrolled */
+  const [scrolled, setScrolled] = useState(false);
 
   /** Fetch all tools from database */
   async function fetchTools() { await Tool.fetchAll().then((tools) => { setAllTools(tools); }) }
@@ -55,6 +47,22 @@ export default function ToolManagement() {
     fetchTools()
     User.fetchSearch(navigationItems.ADMINTOOLS).then((users) => { setAllUsers(users); })
   }, [])
+
+  /** Create tool on database w/ fields from form */
+  function addTool(event) {
+    event.preventDefault();
+    const name = document.getElementById("name").value;
+    const description = document.getElementById("description").value;
+    document.getElementById("name").value = "";
+    document.getElementById("description").value = "";
+    Tool.createOnDatabase(name, description).then(async (toolId) => {
+      await fetchTools();
+      notifSuccess("Tool Created", `Created "${name}"`);
+      setCurrentTool({title: name, description: description, id: toolId})
+      setUserSearchMenuOpen(true);
+      setAssignMode("Assign");
+    })
+  }
 
   const UserSearchResults = () => {
 
@@ -146,97 +154,80 @@ export default function ToolManagement() {
     )
   }
 
+  const ToolRow = ({tool}) => {
+
+    /** Delete this tool on DB and refresh list */
+    function handleDelete() {
+      Tool.delete(tool.id).then((success) => {
+        if (success) {
+          fetchTools();
+          notifSuccess("Tool Deleted", `Deleted "${tool.title}".`)
+        }
+      })
+    }
+  
+    /** Assign this tool to users on DB */
+    function handleAssign() {
+      if (currentTool?.title !== tool.title) { setAssignees([]) }
+      setCurrentTool(tool)
+      setUserSearchMenuOpen(true);
+      setAssignMode("Assign");
+    }
+  
+    /** Unssign this tool to users on DB */
+    function handleUnassign() {
+      if (currentTool?.title !== tool.title) { setAssignees([]) }
+      setCurrentTool(tool)
+      setUserSearchMenuOpen(true);
+      setAssignMode("Unassign");
+    }
+  
+    /** Confirm deletion of tool */
+    function confirmDelete() { 
+      const numAssigned = tool.assignedTo.length;
+      if (window.confirm(`Are you sure you want to delete "${tool.title}"? It's assigned to ${numAssigned} user${numAssigned !== 1 ? "s" : '' }.`)) { handleDelete(); }
+    }
+  
+    return (
+      <Table.Tr>
+        <Table.Td>{tool.title}</Table.Td>
+        <Table.Td>{tool.description}</Table.Td>
+        <Table.Td>{tool.assignedTo.length}</Table.Td>
+        <Table.Td className='d-flex gap-2'>
+          <IconButton icon={<IconTrash />} color="red" onClick={confirmDelete} label={`Delete "${tool.title}"`} />
+          <IconButton icon={<IconUserShare />} onClick={handleAssign} label={`Assign "${tool.title}"`} />
+          <IconButton icon={<IconUserCancel />} color="orange" onClick={handleUnassign} label={`Unassign "${tool.title}"`} />
+        </Table.Td>
+      </Table.Tr>
+    )
+  }
+
+  const AssignModal = () => (
+    <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`${assignMode} "${currentTool?.title}" ${assignMode === "Assign" ? "to" : "from"} Users:`}>
+      <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
+      <UserSearchResults />
+      <Assignees />
+    </Modal>
+  )
+
   return (
-
-    <div>
-      <CRMBreadcrumbs items={[{title: "Tool Management", href: navigationItems.ADMINTOOLS}]} />
-      <form onSubmit={addTool} className="gap-2 d-flex flex-column">
-        <TextInput id="name" label="Tool Name" placeholder="Enter the tool name" required />
-        <TextInput id="description" label="Tool Description" placeholder="Enter the tool description" required />
-        <Button type="submit">Create Tool</Button>
-      </form>
-      <Table.ScrollContainer minWidth={500} type="native">
-        <Table striped>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>
-                Name
-              </Table.Th>
-              <Table.Th>
-                Description
-              </Table.Th>
-              <Table.Th>
-                Users
-              </Table.Th>
-              <Table.Th>
-                Actions
-              </Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {Object.values(allTools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => {
-              
-              /** Delete this tool on DB and refresh list */
-              function handleDelete() {
-                Tool.delete(tool.id).then((success) => {
-                  if (success) {
-                    fetchTools();
-                    notifSuccess("Tool Deleted", `Deleted "${tool.title}".`)
-                  }
-                })
-              }
-              
-              /** Assign this tool to users on DB */
-              function handleAssign() {
-                if (currentTool?.title !== tool.title) { setAssignees([]) }
-                setCurrentTool(tool)
-                setUserSearchMenuOpen(true);
-                setAssignMode("Assign");
-              }
-
-              /** Unssign this tool to users on DB */
-              function handleUnassign() {
-                if (currentTool?.title !== tool.title) { setAssignees([]) }
-                setCurrentTool(tool)
-                setUserSearchMenuOpen(true);
-                setAssignMode("Unassign");
-              }
-
-              /** Confirm deletion of tool */
-              function confirmDelete() { 
-                const numAssigned = tool.assignedTo.length;
-                if (window.confirm(`Are you sure you want to delete "${tool.title}"? It's assigned to ${numAssigned} user${numAssigned !== 1 ? "s" : '' }.`)) { handleDelete(); }
-              }
-
-              return (
-                <Table.Tr key={index}>
-                  <Table.Td>
-                    {tool.title}
-                  </Table.Td>
-                  <Table.Td>
-                    {tool.description}
-                  </Table.Td>
-                  <Table.Td>
-                    {tool.assignedTo.length}
-                  </Table.Td>
-                  <Table.Td className='d-flex gap-2'>
-                    <IconButton icon={<IconTrash />} color="red" onClick={confirmDelete} label={`Delete "${tool.title}"`} />
-                    <IconButton icon={<IconUserShare />} color="blue" onClick={handleAssign} label={`Assign "${tool.title}"`} />
-                    <IconButton icon={<IconUserCancel />} color="orange" onClick={handleUnassign} label={`Unassign "${tool.title}"`} />
-                  </Table.Td>
-                </Table.Tr>
-              )
-            })}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
-      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`${assignMode} "${currentTool?.title}" ${assignMode === "Assign" ? "to" : "from"} Users:`}>
-        { assignMode === "Assign" && <p>Search for users to assign {currentTool?.title} to:</p>}
-        { assignMode === "Unassign" && <p>Search for users to unassign {currentTool?.title} from:</p>}
-        <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
-        <UserSearchResults />
-        <Assignees />
-      </Modal>
+    <div className='d-flex flex-column gap-2 p-0 align-items-center justify-content-center py-2 px-1 container-fluid'>
+      <div className="row w-100">
+        <ToolCreation onSubmit={addTool}/>
+        <div className="col-xl-9 col-12 px-1">
+          <Paper withBorder className="w-100">
+            <CRMScrollContainer setScrolled={setScrolled}>
+              <Table striped>
+                <ToolTableHead scrolled={scrolled}/>
+                <Table.Tbody>
+                  {Object.values(allTools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => <ToolRow key={index} tool={tool} />)}
+                </Table.Tbody>
+              </Table>
+            </CRMScrollContainer>
+          </Paper>
+        </div>
+      </div>
+      <AssignModal />
     </div>
   )
 }

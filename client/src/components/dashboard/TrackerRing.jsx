@@ -76,7 +76,7 @@ export default function TrackerRing({selectedSubjects, unitType}) {
       label={
         <Center>
           <Tooltip position='bottom' label="Switch to Timeline View">
-            <ActionIcon className="line-icon" color="#60A483" variant="light" size={innerCircleRadius - 80}>
+            <ActionIcon className="line-icon" variant="light" size={innerCircleRadius - 80}>
               <IconTimeline size={80}/>
             </ActionIcon>
           </Tooltip>

@@ -2,6 +2,7 @@ import './App.css';
 import '@mantine/core/styles.css';
 
 import "./assets/style/colorTheme.css";
+import "./assets/style/tables.css"
 
 import { AppShell, useMantineColorScheme } from '@mantine/core';
 import { createContext, memo, useEffect, useMemo, useState } from 'react';

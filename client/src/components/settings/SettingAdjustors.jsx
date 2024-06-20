@@ -367,7 +367,7 @@ export const HomeworkTrackerSettings = memo(function HomeworkTrackerSettings({ho
           </Text>
         </div>
         <div className="d-flex gap-3 align-items-center">
-          { homeworkTrackerSettings.priorityVerbosity !== HomeworkPriorityVerbosity.COLORS ? <Badge color="red">{getPriorityVerbosityExampleText()}</Badge> : <Indicator color="red" processing /> }
+          { homeworkTrackerSettings.priorityVerbosity !== HomeworkPriorityVerbosity.COLORS ? <Badge color="red">{getPriorityVerbosityExampleText()}</Badge> : <Indicator color="red" zIndex={1} processing /> }
           <Select data={[HomeworkPriorityVerbosity.COLORS, HomeworkPriorityVerbosity.MINIMAL, HomeworkPriorityVerbosity.DEFAULT, HomeworkPriorityVerbosity.VERBOSE]} defaultValue={homeworkTrackerSettings.priorityVerbosity} onChange={handleVerbosityChange}/>
         </div>
       </Group>
@@ -379,7 +379,7 @@ export const HomeworkTrackerSettings = memo(function HomeworkTrackerSettings({ho
           </Text>
         </div>
         <div className="d-flex gap-3 align-items-center">
-          <Indicator color="red" processing />
+          <Indicator color="red" processing zIndex={1} />
           <Select disabled={homeworkTrackerSettings.priorityVerbosity !== HomeworkPriorityVerbosity.COLORS} data={[HomeworkPriority.HIGH, HomeworkPriority.MEDIUM, HomeworkPriority.LOW]} defaultValue={homeworkTrackerSettings.priorityPulseThreshold} onChange={handlePulseThresholdChange}/>
         </div>
       </Group>
