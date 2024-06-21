@@ -1,13 +1,12 @@
 // Library Imports
 import React, { useState } from 'react'
-import { Avatar, Button, Modal, NumberInput, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core'
+import { Avatar, Button, NumberInput, Paper, TextInput, } from '@mantine/core'
 import { DateInput } from "@mantine/dates"
-import { IconCheck, IconSearch, IconX } from '@tabler/icons-react'
+import { IconSearch } from '@tabler/icons-react'
 
 // API Imports
-import { Invoice, LimboInvoice } from '../api/db/dbInvoice.ts'
+import { Invoice, LimboInvoice, UnpaidInvoice, PaidInvoice } from '../api/db/dbInvoice.ts'
 import { User } from '../api/db/dbUser.ts'
-import { getSlashDateString, getTimeString } from '../api/strings.js'
 
 // Component Imports
 import { navigationItems } from '../components/Navigation.jsx'
@@ -15,18 +14,21 @@ import { notifSuccess } from '../components/Notifications.jsx'
 
 // Style Imports
 import '@mantine/dates/styles.css';
-import IconButton from '../components/IconButton.jsx'
-import { CRMBreadcrumbs } from '../components/Breadcrumbs.jsx'
-import { CRMScrollContainer, TableEmptyNotif } from '../components/Tables.jsx'
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx'
 import { UserSearchResults } from '../components/Users.jsx'
 import { LimboTable, PaidTable, UnpaidTable } from '../components/invoiceManagement/InvoiceManagementTables.jsx'
 
 export default function InvoiceManagement() {
   
-  function fetchInvoices() { LimboInvoice.getAll().then((invoices) => { setInvoices(invoices); }) }
+  const [limboInvoices, setLimboInvoices] = React.useState([])
+  const [unpaidInvoices, setUnpaidInvoices] = React.useState([])
+  const [paidInvoices, setPaidInvoices] = React.useState([])
+  function fetchInvoices() { 
+    LimboInvoice.getAll().then((invoices) => { setLimboInvoices(invoices); })
+    UnpaidInvoice.getAll().then((invoices) => { setUnpaidInvoices(invoices); })
+    PaidInvoice.getAll().then((invoices) => { setPaidInvoices(invoices); })
+  }
 
-  const [invoices, setInvoices] = React.useState([])
   const [allUsers, setAllUsers] = React.useState({});
   const [userQuery, setUserQuery] = React.useState("");
   const [dueDate, setDueDate] = React.useState(null)
@@ -90,9 +92,9 @@ export default function InvoiceManagement() {
         <div className="col-xl-9 col-12 p-1">
           <div className="container-fluid p-0 px-2">
             <div className="row w-100">
-              <UnpaidTable invoices={invoices} fetchInvoices={fetchInvoices} />
-              <PaidTable invoices={invoices} fetchInvoices={fetchInvoices} />
-              <LimboTable invoices={invoices} fetchInvoices={fetchInvoices} />
+              <UnpaidTable invoices={unpaidInvoices} fetchInvoices={fetchInvoices} />
+              <PaidTable invoices={paidInvoices} fetchInvoices={fetchInvoices} />
+              <LimboTable invoices={limboInvoices} fetchInvoices={fetchInvoices} />
             </div>
           </div>
         </div>

@@ -109,6 +109,23 @@ router.post("/update", (req, res) => {
   });
 })
 
+router.post("/delete", (req, res) => {
+  const invoice = req.body.invoice;
+  const user = getUser(invoice.assignedTo);
+  user.numUnpaidInvoices--;
+  setUser(user).then(() => {
+    db.collection("invoices").doc(invoice.id).delete().then(() => {
+      res.json({ success: true });
+    }).catch((error) => {
+      console.error(error);
+      res.json({ success: false });
+    });
+  }).catch((error) => {
+    console.error(error);
+    res.json({ success: false });
+  });
+})
+
 function getAllInvoices() { return allInvoices }
 async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then((ref) => { resolve(ref); }).catch((error) => { reject(error); }); }) }
 

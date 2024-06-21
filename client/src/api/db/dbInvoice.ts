@@ -171,6 +171,28 @@ export class UnpaidInvoice extends Invoice {
   }
 }
 
+export class PaidInvoice extends Invoice {
+  
+  userDisplayName: string;
+
+  static getAll(): Promise<PaidInvoice[]> {
+    return new Promise<PaidInvoice[]>((resolve, reject) => {
+      fetch(hostname + "/invoices/paid").then((response) => {
+        response.json().then((data) => {
+          resolve(data.map((d: any) => {
+            const invoice = new PaidInvoice(d.id, d.invoiceNumber, d.paid, d.amount, d.createdAt, d.paidAt, d.dueAt, d.href, d.assignedTo);
+            invoice.userDisplayName = d.userDisplayName;
+            return invoice;
+          }));
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+}
+
+
 export class LimboInvoice extends Invoice {
   
   userDisplayName: string;
