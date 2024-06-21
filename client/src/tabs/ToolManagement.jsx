@@ -1,7 +1,7 @@
 // Library Imports
 import React, { useState } from 'react';
 import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, ScrollArea, Table, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
-import { IconSearch, IconTrash, IconUserCancel, IconUserShare, IconUsers } from '@tabler/icons-react';
+import { IconFilter, IconSearch, IconTrash, IconUserCancel, IconUserShare, IconUsers } from '@tabler/icons-react';
 
 // API Imports
 import { Tool } from '../api/db/dbTool.ts';
@@ -189,8 +189,10 @@ export default function ToolManagement() {
 
   const [sort, setSort] = useState("title");
   const [sortReversed, setSortReversed] = useState(false);
+  const [filterQuery, setFilterQuery] = useState("");
 
   const sortedTools = Tool.sortBy(Object.values(allTools), sort, sortReversed);
+  const filteredSortedTools = sortedTools.filter((tool) => tool.title.toLowerCase().includes(filterQuery.toLowerCase()));
 
   return (
     <div className='d-flex flex-column gap-2 p-0 align-items-center justify-content-center py-2 px-1 container-fluid'>
@@ -198,11 +200,12 @@ export default function ToolManagement() {
         <ToolCreation onSubmit={addTool}/>
         <div className="col-xl-9 col-12 px-1">
           <Paper withBorder className="w-100">
+            <TextInput value={filterQuery} type="text" onChange={(e) => setFilterQuery(e.target.value)} placeholder="Filter by tool name..." style={{marginTop: "0.5rem", marginBottom: "0.5rem"}} className="px-2" rightSection={<IconFilter />} />
             <CRMScrollContainer setScrolled={setScrolled}>
               <Table striped>
                 <ToolTableHead scrolled={scrolled} sort={sort} setSort={setSort} sortReversed={sortReversed} setSortReversed={setSortReversed}/>
                 <Table.Tbody>
-                  {sortedTools.map((tool, index) => <ToolRow key={index} tool={tool} />)}
+                  {filteredSortedTools.map((tool, index) => <ToolRow key={index} tool={tool} />)}
                 </Table.Tbody>
               </Table>
             </CRMScrollContainer>
