@@ -49,18 +49,7 @@ router.get("/search-tools", (req, res) => {
 })
 
 router.get("/search-users", (req, res) => {
-  const resUsers = {}
-  for (const userId of Object.keys(allUsers)) {
-    const u = allUsers[userId];
-    resUsers[userId] = {
-      personalData: {
-        displayName: u.personalData.displayName,
-        email: u.personalData.email
-      },
-      id: u.id
-    }
-  }
-  res.json(resUsers);
+  res.json(allUsers);
 })
 
 function getAllUsers() { return allUsers }
