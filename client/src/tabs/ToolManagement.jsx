@@ -1,7 +1,7 @@
 // Library Imports
 import React, { useState } from 'react';
-import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, ScrollArea, Table, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
-import { IconFilter, IconSearch, IconTrash, IconUserCancel, IconUserShare, IconUsers } from '@tabler/icons-react';
+import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
+import { IconFilter, IconSearch, IconTrash, IconUsers } from '@tabler/icons-react';
 
 // API Imports
 import { Tool } from '../api/db/dbTool.ts';

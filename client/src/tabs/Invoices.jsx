@@ -1,5 +1,5 @@
 // Library Imports
-import { Badge, Button, Modal, NumberFormatter, Paper, Table } from '@mantine/core';
+import { Badge, Modal, NumberFormatter, Paper, Table } from '@mantine/core';
 import React, { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { IconCreditCardPay, IconCreditCardRefund, IconEye } from '@tabler/icons-react';
 
@@ -9,16 +9,14 @@ import { Invoice } from '../api/db/dbInvoice.ts';
 import { LinkMaster } from '../api/links.ts';
 
 // Component Imports
-import { CurrentUserContext, SettingsContext } from '../App.jsx';
-import { notifSuccess } from '../components/Notifications.jsx';
+import { CurrentUserContext } from '../App.jsx';
 
 // Style Imports
 import IconButton from '../components/IconButton.jsx';
 import { FirstPageV2, SecondPage } from '../components/invoices/PaymentProcess.jsx';
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
-import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
-import { CRMScrollContainer, SortControl, TableSortButton } from '../components/Tables.jsx';
+import { CRMScrollContainer, TableSortButton } from '../components/Tables.jsx';
 
 export const lateColor = "red"
 export const unpaidColor = "orange"
@@ -35,6 +33,7 @@ export default function Invoices() {
   
   function fetchInvoices() {  Invoice.getForUser(currentUser.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); }) }
   
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => fetchInvoices, [currentUser.id])
 
   /** Invoice payment modal that appears when {@link currentInvoice} is not null. */

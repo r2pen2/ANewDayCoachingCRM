@@ -1,6 +1,6 @@
 // Library Imports
 import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
-import { IconAlertCircle, IconEye, IconGoGame, IconLighter, IconRocket, IconSearch, IconUserCancel, IconUserShare, IconUsers } from '@tabler/icons-react';
+import { IconEye, IconSearch, IconUsers } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
 // API Imports
