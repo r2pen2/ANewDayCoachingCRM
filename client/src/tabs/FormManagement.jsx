@@ -1,6 +1,6 @@
 // Library Imports
-import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Text, TextInput, Tooltip } from '@mantine/core';
-import { IconAlertCircle, IconSearch, IconUserCancel, IconUserShare } from '@tabler/icons-react';
+import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, Table, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
+import { IconAlertCircle, IconEye, IconGoGame, IconLighter, IconRocket, IconSearch, IconUserCancel, IconUserShare, IconUsers } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
 // API Imports
@@ -16,6 +16,7 @@ import "../assets/style/formsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
 import { CRMScrollContainer } from '../components/Tables.jsx';
 import { FormTableHead } from '../components/formManagement/formsTable.jsx';
+import { LinkMaster } from '../api/links.ts';
 // import { FormStats } from '../components/formManagement/formStats.jsx';
 
 export default function FormManagement() {
@@ -148,18 +149,12 @@ export default function FormManagement() {
     )
   }
 
-  function getModalHelpText() {
-    if (assignMode === "Assign")      { return "Select users to assign the form to." }
-    if (assignMode === "Unassign")    { return "Select users to unassign the form from." }
-    if (assignMode === "Incomplete")  { return "Select users to mark the form as incomplete for." }
-  }
-
-  function getModalTitle() {
-    if (assignMode === "Incomplete")  { return `Mark "${currentForm?.formTitle}" as Incomplete For Users:` }
-    return `${assignMode} "${currentForm?.formTitle}" to Users:`
-  }
-
   const [scrolled, setScrolled] = useState(false)
+
+  function handleAssignModeChange(value) {
+    if (value !== assignMode) { setAssignees([]) }
+    setAssignMode(value);
+  }
 
   return (
     <div className='d-flex flex-column gap-2 py-2 px-1 align-items-center justify-content-center container-fluid'>
@@ -206,9 +201,8 @@ export default function FormManagement() {
                         {form.formDescription}
                       </Table.Td>
                       <Table.Td className='d-flex gap-2'>
-                        <IconButton label={`Assign "${form.formTitle}"`} icon={<IconUserShare />} onClick={handleAssign} />
-                        <IconButton label={`Unassign "${form.formTitle}"`} icon={<IconUserCancel />} color="red" onClick={handleUnassign} />
-                        <IconButton label={`Mark "${form.formTitle}" as Incomplete`} icon={<IconAlertCircle />} color="orange" onClick={handleIncomplete} />
+                        <IconButton label={`Manage "${form.formTitle}" Users`} icon={<IconUsers />} onClick={() => setUserSearchMenuOpen(true)} />
+                        <IconButton label={`Open "${form.formTitle}"`} icon={<IconEye />} color="gray" onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(form.href), "_blank")} />
                       </Table.Td>
                     </Table.Tr>
                   )})}
@@ -218,9 +212,15 @@ export default function FormManagement() {
           </Paper>
         </div>
       </div>
-      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={getModalTitle()}>
-        <Text style={{marginBottom: "1rem"}}>{getModalHelpText()}</Text>
-        <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
+      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`Actions for "${currentForm?.formTitle}"`}>
+        <Tabs defaultValue="Assign" onChange={(value) => handleAssignModeChange(value)}>
+          <Tabs.List grow>
+            <Tabs.Tab value="Assign">Assign</Tabs.Tab>
+            <Tabs.Tab value="Unassign">Unassign</Tabs.Tab>
+            <Tabs.Tab value="Incomplete">Mark Incomplete</Tabs.Tab>
+          </Tabs.List>
+        </Tabs>
+        <TextInput style={{marginBottom: "0.5rem", marginTop: "0.5rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
         <UserSearchResults />
         <Assignees />
       </Modal>
