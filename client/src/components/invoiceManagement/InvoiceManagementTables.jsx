@@ -1,22 +1,38 @@
-import { NumberFormatter, Paper, Table } from "@mantine/core";
-import { CRMScrollContainer } from "../Tables";
+import { Center, Group, NumberFormatter, Paper, Table, Text, UnstyledButton } from "@mantine/core";
+import { CRMScrollContainer, SortControl, SortIcon, TableSortButton } from "../Tables";
 import IconButton from "../IconButton";
-import { IconCheck, IconTrash, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEye, IconTrash, IconX } from "@tabler/icons-react";
 import { getSlashDateString, getTimeString } from "../../api/strings";
 import { useState } from "react";
 import ModuleHeader from "../dashboard/ModuleHeader";
+import { LinkMaster } from "../../api/links.ts";
+import { notifSuccess } from "../Notifications.jsx";
 
 export const LimboTable = ({invoices, fetchInvoices}) => {
+  
+  const [sort, setSort] = useState("paidAt")
+  const [sortReversed, setSortReversed] = useState(false)
 
-  const limboInvoices = Object.values(invoices).sort((a, b) => a.paidAt - b.paidAt);
+  const limboInvoices = sortInvoiceArray(Object.values(invoices), sort, sortReversed);
   
   const [scrolled, setScrolled] = useState(false);
+
+  function handleSortChange(newSort) {
+    return () => {
+      if (sort === newSort) {
+        setSortReversed(!sortReversed)
+      } else {
+        setSort(newSort)
+        setSortReversed(false)
+      }
+    }
+  }
 
   const LimboTableHead = () => (
     <Table.Thead className={"scroll-table-header " + (scrolled ? "scrolled" : "")}>
       <Table.Tr>
-        <Table.Th>Timestamp</Table.Th>
-        <Table.Th>Submitted By</Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "paidAt"} reversed={sortReversed} onClick={handleSortChange("paidAt")}>Timestamp</TableSortButton></Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "user"}   reversed={sortReversed} onClick={handleSortChange("user")}  >Submitted By</TableSortButton></Table.Th>
         <Table.Th>Platform</Table.Th>
         <Table.Th>Memo</Table.Th>
         <Table.Th>Actions</Table.Th>
@@ -60,17 +76,31 @@ export const LimboTable = ({invoices, fetchInvoices}) => {
 }
 
 export const UnpaidTable = ({invoices, fetchInvoices}) => {
+  
+  const [sort, setSort] = useState("dueAt")
+  const [sortReversed, setSortReversed] = useState(false)
 
-  const unpaidInvoices = Object.values(invoices).sort((a, b) => a.dueAt - b.dueAt);
+  const unpaidInvoices = sortInvoiceArray(Object.values(invoices), sort, sortReversed);
   
   const [scrolled, setScrolled] = useState(false);
+  
+  function handleSortChange(newSort) {
+    return () => {
+      if (sort === newSort) {
+        setSortReversed(!sortReversed)
+      } else {
+        setSort(newSort)
+        setSortReversed(false)
+      }
+    }
+  }
 
   const UnpaidTableHead = () => (
     <Table.Thead className={"scroll-table-header " + (scrolled ? "scrolled" : "")}>
       <Table.Tr>
-        <Table.Th>User</Table.Th>
-        <Table.Th>Created</Table.Th>
-        <Table.Th>Due</Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "user"}       reversed={sortReversed} onClick={handleSortChange("user")}      >User</TableSortButton></Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "createdAt"}  reversed={sortReversed} onClick={handleSortChange("createdAt")} >Created</TableSortButton></Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "dueAt"}      reversed={sortReversed} onClick={handleSortChange("dueAt")}     >Due</TableSortButton></Table.Th>
         <Table.Th>Amount</Table.Th>
         <Table.Th>Actions</Table.Th>
       </Table.Tr>
@@ -80,10 +110,13 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
   const UnpaidRow = ({invoice}) => {           
     function handleDelete() { 
       if (window.confirm(`Delete invoice from ${invoice.userDisplayName}?`)) {
-        invoice.delete().then(() => fetchInvoices())
+        invoice.delete().then(() => {
+          fetchInvoices();
+          notifSuccess("Invoice Deleted", `Invoice for ${invoice.userDisplayName} deleted.`)
+        })
       }
     }
-    function handleReject() { invoice.reject().then(() => fetchInvoices()) }
+    function handleView() { window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank") }
   
     return (
       <Table.Tr>
@@ -92,8 +125,8 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
         <Table.Td>{getSlashDateString(invoice.dueAt)}</Table.Td>
         <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
         <Table.Td className='d-flex gap-2'>
+          <IconButton icon={<IconEye />} color="cyan.5" onClick={handleView} label="View" />
           <IconButton icon={<IconTrash />} color="red.5" onClick={handleDelete} label="Delete" />
-          <IconButton icon={<IconX />} color="red" onClick={handleReject} label="Reject" />
         </Table.Td>
       </Table.Tr>
     )
@@ -103,7 +136,7 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
     <div className="col-12 col-xl-6 px-1 mb-1">
       <Paper withBorder>
         <ModuleHeader min>Unpaid Invoices</ModuleHeader>
-        <CRMScrollContainer setScrolled={setScrolled}>
+        <CRMScrollContainer height={300} setScrolled={setScrolled}>
           <Table striped>
             <UnpaidTableHead scrolled={scrolled}/>
               <Table.Tbody>
@@ -117,36 +150,59 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
 }
 
 export const PaidTable = ({invoices, fetchInvoices}) => {
+  
+  const [sort, setSort] = useState("paidAt")
+  const [sortReversed, setSortReversed] = useState(false)
 
-  const limboInvoices = Object.values(invoices).sort((a, b) => a.paidAt - b.paidAt);
+  const paidInvoices = sortInvoiceArray(Object.values(invoices), sort, sortReversed);
   
   const [scrolled, setScrolled] = useState(false);
 
-  const LimboTableHead = () => (
+  function handleSortChange(newSort) {
+    return () => {
+      if (sort === newSort) {
+        setSortReversed(!sortReversed)
+      } else {
+        setSort(newSort)
+        setSortReversed(false)
+      }
+    }
+  }
+
+  const PaidTableHead = () => (
     <Table.Thead className={"scroll-table-header " + (scrolled ? "scrolled" : "")}>
       <Table.Tr>
-        <Table.Th>Timestamp</Table.Th>
-        <Table.Th>Submitted By</Table.Th>
-        <Table.Th>Platform</Table.Th>
-        <Table.Th>Memo</Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "user"}       reversed={sortReversed} onClick={handleSortChange("user")}      >User</TableSortButton></Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "createdAt"}  reversed={sortReversed} onClick={handleSortChange("createdAt")} >Created</TableSortButton></Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "dueAt"}      reversed={sortReversed} onClick={handleSortChange("dueAt")}     >Due</TableSortButton></Table.Th>
+        <Table.Th><TableSortButton sorted={sort === "paidAt"}     reversed={sortReversed} onClick={handleSortChange("paidAt")}    >Paid</TableSortButton></Table.Th>
+        <Table.Th>Amount</Table.Th>
         <Table.Th>Actions</Table.Th>
       </Table.Tr>
     </Table.Thead>
   )
 
-  const LimboRow = ({invoice}) => {           
-    function handleAccept() { invoice.accept().then(() => fetchInvoices()) }
-    function handleReject() { invoice.reject().then(() => fetchInvoices()) }
+  const PaidRow = ({invoice}) => {           
+    function handleDelete() { 
+      if (window.confirm(`Delete invoice from ${invoice.userDisplayName}?`)) {
+        invoice.delete().then(() => {
+          fetchInvoices();
+          notifSuccess("Invoice Deleted", `Invoice for ${invoice.userDisplayName} deleted.`)
+        })
+      }
+    }
+    function handleView() { window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank") }
   
     return (
       <Table.Tr>
-        <Table.Td>{getSlashDateString(invoice.paidAt)} {getTimeString(invoice.paidAt)}</Table.Td>
         <Table.Td>{invoice.userDisplayName}</Table.Td>
-        <Table.Td><strong style={{color: invoice.getPlatformColor()}}>{invoice.limbo}</strong></Table.Td>
-        <Table.Td>{invoice.generateMemo()}</Table.Td>
+        <Table.Td>{getSlashDateString(invoice.createdAt)}</Table.Td>
+        <Table.Td>{getSlashDateString(invoice.dueAt)}</Table.Td>
+        <Table.Td>{getSlashDateString(invoice.paidAt)}</Table.Td>
+        <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
         <Table.Td className='d-flex gap-2'>
-          <IconButton icon={<IconCheck />} color="green" onClick={handleAccept} label="Accept" />
-          <IconButton icon={<IconX />} color="red" onClick={handleReject} label="Reject" />
+          <IconButton icon={<IconEye />} color="cyan.5" onClick={handleView} label="View" />
+          <IconButton icon={<IconTrash />} color="red.5" onClick={handleDelete} label="Delete" />
         </Table.Td>
       </Table.Tr>
     )
@@ -156,15 +212,34 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
     <div className="col-12 col-xl-6 mb-1 px-1">
       <Paper withBorder>
         <ModuleHeader min>Paid Invoices</ModuleHeader>
-        <CRMScrollContainer setScrolled={setScrolled}>
+        <CRMScrollContainer height={300} setScrolled={setScrolled}>
           <Table striped>
-            <LimboTableHead scrolled={scrolled}/>
-              {/* <Table.Tbody>
-                {limboInvoices.map((invoice, index) => <LimboRow invoice={invoice} key={index} />)}
-              </Table.Tbody> */}
+            <PaidTableHead scrolled={scrolled}/>
+              <Table.Tbody>
+                {paidInvoices.map((invoice, index) => <PaidRow invoice={invoice} key={index} />)}
+              </Table.Tbody>
           </Table>
         </CRMScrollContainer>
       </Paper>
     </div>
   )
+}
+
+function sortInvoiceArray(invoices, sortType, reversed) {
+  function getArray() {
+    if (sortType === "dueAt") {
+      return invoices.sort((a, b) => new Date(a.dueAt) - new Date(b.dueAt)).reverse()
+    }
+    if (sortType === "paidAt") {
+      return invoices.sort((a, b) => new Date(a.paidAt) - new Date(b.paidAt)).reverse()
+    }
+    if (sortType === "createdAt") {
+      return invoices.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).reverse()
+    }
+    if (sortType === "user") {
+      return invoices.sort((a, b) => a.userDisplayName.localeCompare(b.userDisplayName))
+    }
+  }
+
+  return reversed ? getArray().reverse() : getArray();
 }

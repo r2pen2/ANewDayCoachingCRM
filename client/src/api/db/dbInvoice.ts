@@ -148,6 +148,27 @@ export class Invoice {
       })
     })
   }
+
+  async delete(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      fetch(hostname + "/invoices/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoice: this.toJson()
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve();
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  
+  }
 }
 
 export class UnpaidInvoice extends Invoice {

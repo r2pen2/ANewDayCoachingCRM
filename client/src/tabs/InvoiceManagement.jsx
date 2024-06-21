@@ -92,9 +92,9 @@ export default function InvoiceManagement() {
         <div className="col-xl-9 col-12 p-1">
           <div className="container-fluid p-0 px-2">
             <div className="row w-100">
-              <UnpaidTable invoices={unpaidInvoices} fetchInvoices={fetchInvoices} />
-              <PaidTable invoices={paidInvoices} fetchInvoices={fetchInvoices} />
-              <LimboTable invoices={limboInvoices} fetchInvoices={fetchInvoices} />
+              <UnpaidTable  invoices={unpaidInvoices} fetchInvoices={() => UnpaidInvoice.getAll().then( (invoices) => { setUnpaidInvoices(invoices);  })} />
+              <PaidTable    invoices={paidInvoices}   fetchInvoices={() => PaidInvoice.getAll().then(   (invoices) => { setPaidInvoices(invoices);    })} />
+              <LimboTable   invoices={limboInvoices}  fetchInvoices={() => LimboInvoice.getAll().then(  (invoices) => { setLimboInvoices(invoices);   })} />
             </div>
           </div>
         </div>
