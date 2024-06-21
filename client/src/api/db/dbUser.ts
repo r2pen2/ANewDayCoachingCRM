@@ -41,6 +41,7 @@ export class User {
   pfpUrl: string;
   tools: any[] = [];
   numUnpaidInvoices: number = 0;
+  syncCode: string | null = null;
 
   homework: Homework[] = [];
 
@@ -127,6 +128,7 @@ export class User {
         settings: this.settings,
         metadata: this.metadata,
         schoolInfo: this.schoolInfo,
+        syncCode: this.syncCode,
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -201,13 +203,18 @@ export class User {
     this.settings = data.settings;
     this.schoolInfo = data.schoolInfo;
     this.metadata = data.metadata;
+    this.syncCode = data.syncCode;
     return this;
   }
 
   async createDocument(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       getDoc(this.docRef).then((doc) => {
-        if (doc.exists()) { resolve(); } else { this.setData().then(() => { resolve(); }).catch((error) => { reject(error); }); }
+        if (doc.exists()) { resolve(); } else { 
+          this.generateSyncCode().then(() => {
+            this.setData().then(() => { resolve(); }).catch((error) => { reject(error); });
+          })
+        }
       }).catch((error) => {
         reject(error);
       })
@@ -387,6 +394,25 @@ export class User {
       }).catch((error) => {
         reject(error);
       });
+    })
+  }
+
+  async generateSyncCode(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      fetch(hostname + "/users/sync").then((response) => {
+        response.json().then((data) => {
+          this.syncCode = data.code;
+          this.setData().then(() => {
+            resolve();
+          }).catch((error) => {
+            reject(error);
+          });
+        })
+      }).then(() => {
+        resolve()
+      }).catch((error) => {
+        reject(error)
+      })
     })
   }
 

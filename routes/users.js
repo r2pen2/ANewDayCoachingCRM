@@ -67,6 +67,22 @@ router.get("/user", (req, res) => {
   res.json(allUsers[req.query.id]);
 })
 
+router.get("/sync", (req, res) => {
+  if (req.query.code) {
+    return allUsers.filter((u) => u.syncCode === req.query.code)[0];
+  } else {
+    // Generate a random 6 character string consisting of capital letters and numbers
+    let foundNewCode = false;
+    while(!foundNewCode) {
+      var randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
+      if (allUsers.filter((u) => u.syncCode === randomString).length <= 0) {
+        foundNewCode = true;
+      }
+    }
+    res.json({ code: randomString });
+  }
+})
+
 function getAllUsers() { return allUsers }
 function getUser(id) { return allUsers[id]; }
 async function setUser(user) { return new Promise((resolve, reject) => { db.collection("users").doc(user.id).set(user).then(() => { resolve(); }).catch((error) => { reject(error); }); }) }
