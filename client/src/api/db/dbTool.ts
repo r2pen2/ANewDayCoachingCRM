@@ -119,4 +119,13 @@ export class Tool {
       })
     })
   }
+
+  static sortBy(tools: any[], sortType: string, reversed: boolean): Tool[] {
+    function getArray() {
+      if (sortType === "title") { return tools.sort((a,b) => a.title.localeCompare(b.title)) }
+      if (sortType === "users") { return tools.sort((a, b) => a.assignedTo.length - b.assignedTo.length).reverse() }
+      return [];
+    }
+    return reversed ? getArray().reverse() : getArray();
+  }
 }

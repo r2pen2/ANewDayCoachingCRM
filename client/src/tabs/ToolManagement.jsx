@@ -1,7 +1,7 @@
 // Library Imports
 import React, { useState } from 'react';
-import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, ScrollArea, Table, Text, TextInput, Tooltip } from '@mantine/core';
-import { IconSearch, IconTrash, IconUserCancel, IconUserShare } from '@tabler/icons-react';
+import { Avatar, AvatarGroup, Button, Checkbox, Modal, Paper, ScrollArea, Table, Tabs, Text, TextInput, Tooltip } from '@mantine/core';
+import { IconSearch, IconTrash, IconUserCancel, IconUserShare, IconUsers } from '@tabler/icons-react';
 
 // API Imports
 import { Tool } from '../api/db/dbTool.ts';
@@ -14,7 +14,6 @@ import { notifSuccess } from '../components/Notifications.jsx';
 // Style Imports
 import "../assets/style/toolsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
-import classes from "../assets/style/toolsAdmin.css";
 import { CRMScrollContainer } from '../components/Tables.jsx';
 import { ToolCreation } from '../components/toolManagement/ToolCreation.jsx';
 import { ToolTableHead } from '../components/toolManagement/ToolsTable.jsx';
@@ -22,8 +21,6 @@ import { ToolTableHead } from '../components/toolManagement/ToolsTable.jsx';
 
 export default function ToolManagement() {
 
-  /** Whether search menu is open */
-  const [userSearchMenuOpen, setUserSearchMenuOpen] = React.useState(false);
   /** Current tool to assign */
   const [currentTool, setCurrentTool] = React.useState(null);
   /** All tools from database */
@@ -35,7 +32,7 @@ export default function ToolManagement() {
   /** All users currently selected for tool assignment */
   const [assignees, setAssignees] = React.useState([]);
   /** Whether we are in assign or unassign mode */
-  const [assignMode, setAssignMode] = React.useState(null);
+  const [assignMode, setAssignMode] = React.useState("Assign");
   /** Whether the table has been scrolled */
   const [scrolled, setScrolled] = useState(false);
 
@@ -59,21 +56,21 @@ export default function ToolManagement() {
       await fetchTools();
       notifSuccess("Tool Created", `Created "${name}"`);
       setCurrentTool({title: name, description: description, id: toolId})
-      setUserSearchMenuOpen(true);
       setAssignMode("Assign");
     })
   }
 
   const UserSearchResults = () => {
 
-    let users = Object.values(allUsers);
+    // If there's no currentTool, we shouldn't render this component 
+    if (!currentTool) { return; }
+
+    let users = User.filterByDisplayNameAndEmail(Object.values(allUsers), userQuery)
+
     if (users.length === 0) { return <Text>No users found.</Text> } // There are no users that match this search, so don't bother with the rest of the logic here
 
-    // If the userQuery is not empty: filter users by their displayName or email
-    if (userQuery.length > 0) { users = users.filter((user) => { return user.personalData.displayName.includes(userQuery) || user.personalData.email.includes(userQuery) }) }
-
     // Let's sort alphabetically by displayName, too
-    users.sort((a, b) => a.personalData.displayName.localeCompare(b.personalData.displayName))
+    User.sortByDisplayName(users)
 
     return (
       users.map((user, index) => {
@@ -123,7 +120,7 @@ export default function ToolManagement() {
       if (assignMode === "Assign") {
         Tool.assignToMultiple(currentTool.title, currentTool.description, currentTool.id, assignees).then((data) => {
           if (data) {
-            setUserSearchMenuOpen(false);
+            setCurrentTool(null);
             setAssignees([]);
             notifSuccess("Tool Assigned", `Assigned "${currentTool.title}" to ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
             setAllTools(data);
@@ -133,7 +130,7 @@ export default function ToolManagement() {
       }
       Tool.unassignMultiple(currentTool.id, assignees).then((data) => {
         if (data) {
-          setUserSearchMenuOpen(false);
+          setCurrentTool(null);
           setAssignees([]);
           notifSuccess("Tool Unassigned", `Unassigned "${currentTool.title}" from ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           setAllTools(data);
@@ -166,22 +163,6 @@ export default function ToolManagement() {
       })
     }
   
-    /** Assign this tool to users on DB */
-    function handleAssign() {
-      if (currentTool?.title !== tool.title) { setAssignees([]) }
-      setCurrentTool(tool)
-      setUserSearchMenuOpen(true);
-      setAssignMode("Assign");
-    }
-  
-    /** Unssign this tool to users on DB */
-    function handleUnassign() {
-      if (currentTool?.title !== tool.title) { setAssignees([]) }
-      setCurrentTool(tool)
-      setUserSearchMenuOpen(true);
-      setAssignMode("Unassign");
-    }
-  
     /** Confirm deletion of tool */
     function confirmDelete() { 
       const numAssigned = tool.assignedTo.length;
@@ -194,21 +175,22 @@ export default function ToolManagement() {
         <Table.Td>{tool.description}</Table.Td>
         <Table.Td>{tool.assignedTo.length}</Table.Td>
         <Table.Td className='d-flex gap-2'>
-          <IconButton icon={<IconTrash />} color="red" onClick={confirmDelete} label={`Delete "${tool.title}"`} />
-          <IconButton icon={<IconUserShare />} onClick={handleAssign} label={`Assign "${tool.title}"`} />
-          <IconButton icon={<IconUserCancel />} color="orange" onClick={handleUnassign} label={`Unassign "${tool.title}"`} />
+          <IconButton icon={<IconUsers />} onClick={() => setCurrentTool(tool)} label={`Manage "${tool.title}" Users`} />
+          <IconButton icon={<IconTrash />} color="red.5" onClick={confirmDelete} label={`Delete "${tool.title}"`} />
         </Table.Td>
       </Table.Tr>
     )
   }
 
-  const AssignModal = () => (
-    <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`${assignMode} "${currentTool?.title}" ${assignMode === "Assign" ? "to" : "from"} Users:`}>
-      <TextInput style={{marginBottom: "1rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
-      <UserSearchResults />
-      <Assignees />
-    </Modal>
-  )
+  function handleAssignModeChange(value) {
+    if (value !== assignMode) { setAssignees([]) }
+    setAssignMode(value);
+  }
+
+  const [sort, setSort] = useState("title");
+  const [sortReversed, setSortReversed] = useState(false);
+
+  const sortedTools = Tool.sortBy(Object.values(allTools), sort, sortReversed);
 
   return (
     <div className='d-flex flex-column gap-2 p-0 align-items-center justify-content-center py-2 px-1 container-fluid'>
@@ -218,16 +200,26 @@ export default function ToolManagement() {
           <Paper withBorder className="w-100">
             <CRMScrollContainer setScrolled={setScrolled}>
               <Table striped>
-                <ToolTableHead scrolled={scrolled}/>
+                <ToolTableHead scrolled={scrolled} sort={sort} setSort={setSort} sortReversed={sortReversed} setSortReversed={setSortReversed}/>
                 <Table.Tbody>
-                  {Object.values(allTools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => <ToolRow key={index} tool={tool} />)}
+                  {sortedTools.map((tool, index) => <ToolRow key={index} tool={tool} />)}
                 </Table.Tbody>
               </Table>
             </CRMScrollContainer>
           </Paper>
         </div>
       </div>
-      <AssignModal />
+      <Modal opened={currentTool} onClose={() => setCurrentTool(null)} title={`Actions for "${currentTool?.title}"`}>
+        <Tabs defaultValue="Assign" onChange={(value) => handleAssignModeChange(value)}>
+          <Tabs.List grow>
+            <Tabs.Tab value="Assign">Assign</Tabs.Tab>
+            <Tabs.Tab value="Unassign">Unassign</Tabs.Tab>
+          </Tabs.List>
+        </Tabs>
+        <TextInput style={{marginBottom: "0.5rem", marginTop: "0.5rem"}} value={userQuery} onChange={(e) => setUserQuery(e.target.value)} placeholder="Search for a user by display name or email..." rightSection={<IconSearch size="1rem" />}/>
+        <UserSearchResults />
+        <Assignees />
+      </Modal>
     </div>
   )
 }
