@@ -121,15 +121,9 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
             <Table.Th><TableSortButton sorted={sort === "number"} reversed={sortReversed} onClick={handleSortChange("number")}>No.</TableSortButton></Table.Th>
             <Table.Th><TableSortButton sorted={sort === "createdAt"} reversed={sortReversed} onClick={handleSortChange("createdAt")}>Assigned</TableSortButton></Table.Th>
             <Table.Th><TableSortButton sorted={sort === "dueAt"} reversed={sortReversed} onClick={handleSortChange("dueAt")}>Due</TableSortButton></Table.Th>
-            <Table.Th>
-              Amount
-            </Table.Th>
-            <Table.Th>
-              Status
-            </Table.Th>
-            <Table.Th>
-              Actions
-            </Table.Th>
+            <Table.Th>Amount</Table.Th>
+            <Table.Th>Status</Table.Th>
+            <Table.Th>Actions</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>

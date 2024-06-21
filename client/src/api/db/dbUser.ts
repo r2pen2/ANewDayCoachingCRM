@@ -364,4 +364,24 @@ export class User {
       });
     })
   }
+
+  /**
+   * Filter users by display name and email. Return all users if the query is empty.
+   * @param users list of users to filter
+   * @param query query string from TextInput
+   * @returns a filtered list of users
+   */
+  static filterByDisplayNameAndEmail(users: User[], query: string): User[] {
+    if ( query.length <= 0 ) { return users; }
+    query = query.toLowerCase();
+    return users.filter((user) => { return user.personalData.displayName.toLowerCase().includes(query) || user.personalData.email.toLowerCase().includes(query) })
+  }
+
+  /**
+   * Sort users by display name.
+   * @param users list of users to sort
+   */
+  static sortByDisplayName(users: User[]) {
+    users.sort((a, b) => a.personalData.displayName.localeCompare(b.personalData.displayName))
+  }
 }

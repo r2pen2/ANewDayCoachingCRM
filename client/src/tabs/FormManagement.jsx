@@ -16,7 +16,7 @@ import "../assets/style/formsAdmin.css";
 import IconButton from '../components/IconButton.jsx';
 import { CRMScrollContainer } from '../components/Tables.jsx';
 import { FormTableHead } from '../components/formManagement/formsTable.jsx';
-import { FormStats } from '../components/formManagement/formStats.jsx';
+// import { FormStats } from '../components/formManagement/formStats.jsx';
 
 export default function FormManagement() {
 
