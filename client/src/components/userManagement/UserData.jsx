@@ -2,11 +2,11 @@ import { Avatar, Badge, Center, Divider, Group, Loader, Paper, Text, TextInput, 
 import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconStar, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { User } from "../../api/db/dbUser.ts";
-import { notifSuccess } from "../Notifications.jsx";
+import { notifFail, notifSuccess } from "../Notifications.jsx";
 
 export const PersonalData = ({user}) => {
 
-  const dbUser = new User();
+  const dbUser = User.getInstanceById(user?.id)
   dbUser.fillData(user);
   
   const handleEmailEditClick = () => {
@@ -103,58 +103,37 @@ export const PersonalData = ({user}) => {
 
 export const SyncCodeAndSessionNotes = ({user}) => {
 
-  const dbUser = new User();
+  const dbUser = User.getInstanceById(user?.id)
   dbUser.fillData(user);
-  
-  const handleEmailEditClick = () => {
-    setEditEmail(!editEmail)
-  }
-  
-  const handlePhoneEditClick = () => {
-    setEditPhone(!editPhone)
-  }
 
-  const [tempEmail, setTempEmail] = useState("")
-  const [tempPhone, setTempPhone] = useState("")
+  const [tempSyncCode, setTempSyncCode] = useState(user?.syncCode)
 
   useEffect(() => {
-    setTempEmail(user?.personalData.email)
-    setTempPhone(user?.personalData.phoneNumber)
+    setTempSyncCode(user?.syncCode)
   }, [user])
-  
-  const [editEmail, setEditEmail] = useState(false)
-  const [editPhone, setEditPhone] = useState(false)
 
-  const handleEmailEditKeyDown = (e) => { if (e.key === "Enter") { updateEmail() } }
-  const handlePhoneEditKeyDown = (e) => { if (e.key === "Enter") { updatePhoneNumber() } }
-
-  const updateEmail = () => {
-    if (tempEmail.length <= 0) { return; }
-    if (tempEmail === user.personalData.email) { return; }
-    setEditEmail(false)
-    dbUser.personalData.email = tempEmail;
-    dbUser.setData().then(() => {
-      notifSuccess("Email Updated", `Email for ${user.personalData.displayName} updated to ${tempEmail}.`)
-    });
-  }
-  
-  const updatePhoneNumber = () => {
-    if (tempPhone.length <= 0) { return; }
-    if (tempPhone === user.personalData.phoneNumber) { return; }
-    setEditPhone(false)
-    dbUser.personalData.phoneNumber = tempPhone;
-    dbUser.setData().then(() => { 
-      notifSuccess("Phone Number Updated", `Phone number for ${user.personalData.displayName} updated to ${tempPhone}.`)
-    });
-  }
-
-  const [regeneratingSyncCode, setRegeneratingSyncCode] = useState(false)
+  const [editSyncCode, setEditSyncCode] = useState(false)
 
   const regenSync = () => {
-    setRegeneratingSyncCode(true)
-    dbUser.generateSyncCode().then(() => {
-      setRegeneratingSyncCode(false)
-      notifSuccess("Sync Code Regenerated", `Sync code for ${user.personalData.displayName} has been regenerated.`)
+    dbUser.generateSyncCode().then((c) => {
+      setTempSyncCode(c)
+      dbUser.setData().then(() => {
+        notifSuccess("Sync Code Regenerated", `Sync code for ${user.personalData.displayName} has been regenerated.`)
+      })
+    })
+  }
+
+  const handleSyncCodeKeyDown = (e) => { if (e.key === "Enter") { updateSyncCode() } }
+  const updateSyncCode = () => {
+    User.checkSyncCodeUsed(tempSyncCode).then((used) => {
+      if (!used) {
+        dbUser.syncCode = tempSyncCode;
+        dbUser.setData().then(() => {
+          notifSuccess("Sync Code Updated", `Sync code for ${user.personalData.displayName} updated to ${tempSyncCode}.`)
+        })
+      } else {
+        notifFail("Sync Code Already Used", `Sync code ${tempSyncCode} is already in use by another user. Please choose a different code.`)
+      }
     })
   }
 
@@ -165,14 +144,28 @@ export const SyncCodeAndSessionNotes = ({user}) => {
         <div className="w-100 d-flex align-items-center gap-2 justify-content-center flex-column">
           <div className="d-flex flex-row gap-2">
             <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>Sync Code</Text>
-            <Tooltip label="Regenerate Sync Code">
+            {!editSyncCode && <Tooltip label="Regenerate Sync Code">
               <Center>
-                {!regeneratingSyncCode && <IconRefresh onClick={regenSync} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>}
-                {regeneratingSyncCode && <Loader size="1rem" />}
+                <IconRefresh onClick={regenSync} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>
               </Center>
-            </Tooltip>
+            </Tooltip>}
+            {!editSyncCode && <Tooltip label="Set Sync Code">
+              <Center>
+                <IconPencil onClick={() => setEditSyncCode(true)} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>
+              </Center>
+            </Tooltip>}
           </div>
-          <Text fz="lg" fw={500}>{user.syncCode}</Text>
+          {!editSyncCode && <Text fz="lg" fw={500}>{tempSyncCode}</Text>}
+          <div className="d-flex gap-2">
+            {editSyncCode && <TextInput size="xs" c="dimmed" value={tempSyncCode} onKeyDown={handleSyncCodeKeyDown} onBlur={updateSyncCode} onChange={e => setTempSyncCode(e.target.value)}/>}
+            {editSyncCode && 
+                <Tooltip label="Cancel">
+                <Center>
+                  <IconX onClick={() => setEditSyncCode(false)} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>
+                </Center>
+              </Tooltip>
+            }
+          </div>
         </div>
         <Divider orientation="vertical" className="mx-2" />
         <div className="w-100 d-flex align-items-center justify-content-center">

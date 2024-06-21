@@ -100,6 +100,10 @@ export class User {
     this.personalData.pfpUrl = firebaseUser?.photoURL;
   }
 
+  static getInstanceById(id: string): User {
+    return new User({uid: id});
+  }
+
   async registerSignIn(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.metadata.lastSignIn = new Date();
@@ -397,21 +401,29 @@ export class User {
     })
   }
 
-  async generateSyncCode(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async generateSyncCode(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       fetch(hostname + "/users/sync").then((response) => {
         response.json().then((data) => {
           this.syncCode = data.code;
-          this.setData().then(() => {
-            resolve();
-          }).catch((error) => {
-            reject(error);
-          });
+        }).then(() => {
+          resolve(this.syncCode as string)
         })
-      }).then(() => {
-        resolve()
       }).catch((error) => {
         reject(error)
+      })
+    })
+  }
+
+  static async checkSyncCodeUsed(code: string): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      fetch(hostname + `/users/sync?code=${code}`).then((response) => {
+        console.log(response)
+        response.json().then((data) => {
+          resolve(data !== null);
+        })
+      }).catch((error) => {
+        reject(error);
       })
     })
   }

@@ -69,7 +69,7 @@ router.get("/user", (req, res) => {
 
 router.get("/sync", (req, res) => {
   if (req.query.code) {
-    return Object.values(allUsers).filter((u) => u.syncCode === req.query.code)[0];
+    res.json(Object.values(allUsers).filter((u) => u.syncCode === req.query.code)[0]);
   } else {
     // Generate a random 6 character string consisting of capital letters and numbers
     let foundNewCode = false;
