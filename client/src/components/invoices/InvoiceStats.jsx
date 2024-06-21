@@ -10,7 +10,7 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
   const paidUp = getBalance() === 0 && getPendingBalance() === 0;
 
   const data = [
-    { label: paidUp ? 'All paid up!' : "", count: paidUp ? `100%` : "", part: paidUp ? 100 : 0, color: '#74b496' },
+    { label: paidUp ? 'All paid up!' : "", count: paidUp ? `Thanks!` : "", part: paidUp ? 100 : 0, color: '#74b496' },
     { label: 'Late Unpaid', count: `${getLateBalance()}`, part: getLateBalance() * 100 / getUnpaidBalance(), color: lateColor },
     { label: 'Unpaid', count: `${getBalance() - getLateBalance()}`, part: (getBalance() - getLateBalance()) * 100 / getUnpaidBalance(), color: unpaidColor },
     { label: 'Pending', count: `${getPendingBalance()}`, part: getPendingBalance() * 100 / getUnpaidBalance(), color: pendingColor },
@@ -18,12 +18,14 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
 
   const segments = data.map((segment) => (
     <Progress.Section value={segment.part} color={segment.color} key={segment.color}>
-      {segment.part > 0 && <Progress.Label><NumberFormatter prefix='$' value={segment.count} /></Progress.Label>}
+      {segment.part > 0 && <Progress.Label>
+        {segment.count === "Thanks!" ? segment.count : <NumberFormatter prefix='$' value={segment.count} />}
+      </Progress.Label>}
     </Progress.Section>
   ));
 
   const descriptions = data.map((stat) => {
-    if (stat.part === 0) { return null; }
+    if (stat.part === 0 || isNaN(stat.part)) { return null; }
     return (
       <Box key={stat.label} style={{ borderBottomColor: stat.color }} className="invoice-stat-stat">
         <Text tt="uppercase" fz="xs" c="dimmed" fw={700}>
@@ -31,7 +33,9 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
         </Text>
   
         <Group className="gap-2" align="flex-end" gap={0}>
-          <Text c={stat.color} fw={700}><NumberFormatter prefix='$' value={stat.count} /></Text>
+          <Text c={stat.color} fw={700}>
+            {stat.count !== "Thanks!" && <NumberFormatter prefix='$' value={stat.count} />}
+          </Text>
         </Group>
       </Box>
     )
@@ -61,8 +65,13 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
   }
 
   function getPendingMessage() {
-    if (hasPendingInvoices() || !invoicesPulled) { return; }
+    if (!hasPendingInvoices() || !invoicesPulled) { return; }
     return "Pending invoices do not count towards your balance."
+  }
+
+  function getPaidMessage() {
+    if (hasPendingInvoices() || hasPendingInvoices() || !invoicesPulled) { return; }
+    return "There's nothing that you need to do here."
   }
 
   function getLateMessage() {
@@ -81,7 +90,7 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
             <NumberFormatter value={getBalance()} prefix='$' />
           </Text>
           <Text c="dimmed">
-            Is your current balance. { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
+            Is your current balance. { getPaidMessage() } { getUnpaidMessage() } { getPendingMessage() } { getLateMessage()  }
           </Text>
         </div>
       </Group>

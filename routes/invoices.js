@@ -35,6 +35,22 @@ router.get("/limbo", (req, res) => {
   res.json(limboInvoices);
 })
 
+router.get("/unpaid", (req, res) => {
+  const unpaidInvoices = Object.values(allInvoices).filter(invoice => !invoice.paid && !invoice.paidAt);
+  for (const invoice of unpaidInvoices) {
+    invoice.userDisplayName = getUser(invoice.assignedTo).personalData.displayName;
+  }
+  res.json(unpaidInvoices);
+})
+
+router.get("/paid", (req, res) => {
+  const paidInvoices = Object.values(allInvoices).filter(invoice => invoice.paid);
+  for (const invoice of paidInvoices) {
+    invoice.userDisplayName = getUser(invoice.assignedTo).personalData.displayName;
+  }
+  res.json(paidInvoices);
+})
+
 router.post("/limbo", (req, res) => {
   const action = req.body.action;
   const invoiceId = req.body.id;
