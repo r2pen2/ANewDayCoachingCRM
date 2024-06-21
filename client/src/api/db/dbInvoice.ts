@@ -169,6 +169,19 @@ export class Invoice {
     })
   
   }
+
+  static sortBy(invoices: PaidInvoice[] | LimboInvoice[] | UnpaidInvoice[], sortType: string, reversed: boolean): PaidInvoice[] | LimboInvoice[] | UnpaidInvoice[] {
+    console.log(invoices);
+    function getArray() {
+      if (sortType === "dueAt") { return invoices.sort((a, b) => Number(new Date(a.dueAt)) - Number(new Date(b.dueAt))).reverse() }
+      if (sortType === "paidAt") { return invoices.sort((a, b) => Number(new Date(a.paidAt?a.paidAt:"")) - Number(new Date(b.paidAt?b.paidAt:""))).reverse() }
+      if (sortType === "createdAt") { return invoices.sort((a, b) => Number(new Date(a.createdAt)) - Number(new Date(b.createdAt))).reverse() }
+      if (sortType === "user") { return invoices.sort((a, b) => a.userDisplayName.localeCompare(b.userDisplayName)) }
+      if (sortType === "number") { return invoices.sort((a, b) => a.invoiceNumber - b.invoiceNumber) }
+      return [];
+    }
+    return reversed ? getArray().reverse() : getArray();
+  }
 }
 
 export class UnpaidInvoice extends Invoice {

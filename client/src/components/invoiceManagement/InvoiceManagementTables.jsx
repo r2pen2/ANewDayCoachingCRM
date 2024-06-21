@@ -7,13 +7,14 @@ import { useState } from "react";
 import ModuleHeader from "../dashboard/ModuleHeader";
 import { LinkMaster } from "../../api/links.ts";
 import { notifSuccess } from "../Notifications.jsx";
+import { Invoice } from "../../api/db/dbInvoice.ts";
 
 export const LimboTable = ({invoices, fetchInvoices}) => {
   
   const [sort, setSort] = useState("paidAt")
   const [sortReversed, setSortReversed] = useState(false)
 
-  const limboInvoices = sortInvoiceArray(Object.values(invoices), sort, sortReversed);
+  const limboInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
   
   const [scrolled, setScrolled] = useState(false);
 
@@ -80,7 +81,7 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
   const [sort, setSort] = useState("dueAt")
   const [sortReversed, setSortReversed] = useState(false)
 
-  const unpaidInvoices = sortInvoiceArray(Object.values(invoices), sort, sortReversed);
+  const unpaidInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
   
   const [scrolled, setScrolled] = useState(false);
   
@@ -154,7 +155,7 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
   const [sort, setSort] = useState("paidAt")
   const [sortReversed, setSortReversed] = useState(false)
 
-  const paidInvoices = sortInvoiceArray(Object.values(invoices), sort, sortReversed);
+  const paidInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
   
   const [scrolled, setScrolled] = useState(false);
 
@@ -223,23 +224,4 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
       </Paper>
     </div>
   )
-}
-
-function sortInvoiceArray(invoices, sortType, reversed) {
-  function getArray() {
-    if (sortType === "dueAt") {
-      return invoices.sort((a, b) => new Date(a.dueAt) - new Date(b.dueAt)).reverse()
-    }
-    if (sortType === "paidAt") {
-      return invoices.sort((a, b) => new Date(a.paidAt) - new Date(b.paidAt)).reverse()
-    }
-    if (sortType === "createdAt") {
-      return invoices.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).reverse()
-    }
-    if (sortType === "user") {
-      return invoices.sort((a, b) => a.userDisplayName.localeCompare(b.userDisplayName))
-    }
-  }
-
-  return reversed ? getArray().reverse() : getArray();
 }

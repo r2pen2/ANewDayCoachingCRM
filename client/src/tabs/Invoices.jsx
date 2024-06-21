@@ -18,7 +18,7 @@ import { FirstPageV2, SecondPage } from '../components/invoices/PaymentProcess.j
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
-import { CRMScrollContainer } from '../components/Tables.jsx';
+import { CRMScrollContainer, SortControl, TableSortButton } from '../components/Tables.jsx';
 
 export const lateColor = "red"
 export const unpaidColor = "orange"
@@ -79,8 +79,6 @@ export default function Invoices() {
 
 const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending}) {
 
-  const sortedInvoices = invoices.sort((a, b) => b.invoiceNumber - a.invoiceNumber);
-
   function getBadgeColor(invoice) {
     if (invoice.paid) { return "green"; }             // This is paid
     if (invoice.paidAt) { return pendingColor; }          // This is pending approval
@@ -97,21 +95,32 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
 
   const [scrolled, setScrolled] = useState(false)
 
+  const [sort, setSort] = useState("number")
+  const [sortReversed, setSortReversed] = useState(false)
+
+  const sortedInvoices = Invoice.sortBy(invoices, sort, sortReversed);
+
+  
+  function handleSortChange(newSort) {
+    return () => {
+      if (sort === newSort) {
+        setSortReversed(!sortReversed)
+      } else {
+        setSort(newSort)
+        setSortReversed(false)
+      }
+    }
+  }
+
   return (
     <Paper withBorder className="w-100">
     <CRMScrollContainer setScrolled={setScrolled}>
       <Table striped>
         <Table.Thead className={"scroll-table-header " + (scrolled ? "scrolled" : "")}>
           <Table.Tr>
-            <Table.Th>
-              No.
-            </Table.Th>
-            <Table.Th>
-              Assigned
-            </Table.Th>
-            <Table.Th>
-              Due
-            </Table.Th>
+            <Table.Th><TableSortButton sorted={sort === "number"} reversed={sortReversed} onClick={handleSortChange("number")}>No.</TableSortButton></Table.Th>
+            <Table.Th><TableSortButton sorted={sort === "createdAt"} reversed={sortReversed} onClick={handleSortChange("createdAt")}>Assigned</TableSortButton></Table.Th>
+            <Table.Th><TableSortButton sorted={sort === "dueAt"} reversed={sortReversed} onClick={handleSortChange("dueAt")}>Due</TableSortButton></Table.Th>
             <Table.Th>
               Amount
             </Table.Th>
