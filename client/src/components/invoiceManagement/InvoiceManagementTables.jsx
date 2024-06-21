@@ -1,7 +1,7 @@
-import { Center, Group, NumberFormatter, Paper, Table, Text, UnstyledButton } from "@mantine/core";
+import { Center, Group, NumberFormatter, Paper, Table, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { CRMScrollContainer, SortControl, SortIcon, TableSortButton } from "../Tables";
 import IconButton from "../IconButton";
-import { IconCheck, IconEye, IconTrash, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEye, IconFilter, IconSearch, IconTrash, IconX } from "@tabler/icons-react";
 import { getSlashDateString, getTimeString } from "../../api/strings";
 import { useState } from "react";
 import ModuleHeader from "../dashboard/ModuleHeader";
@@ -13,10 +13,13 @@ export const LimboTable = ({invoices, fetchInvoices}) => {
   
   const [sort, setSort] = useState("paidAt")
   const [sortReversed, setSortReversed] = useState(false)
+  const [userQuery, setUserQuery] = useState("")
 
-  const limboInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
+  const limboInvoices = Invoice.sortBy(Object.values(invoices));
+  const filteredLimboInvoices = Invoice.filterByUserQuery(limboInvoices, userQuery);
   
   const [scrolled, setScrolled] = useState(false);
+  
 
   function handleSortChange(newSort) {
     return () => {
@@ -63,11 +66,12 @@ export const LimboTable = ({invoices, fetchInvoices}) => {
     <div className="col-12 p-1">
       <Paper withBorder>
         <ModuleHeader min>Pending Invoices</ModuleHeader>
+        <TextInput value={userQuery} type="text" onChange={(e) => setUserQuery(e.target.value)} placeholder="Filter by user display name..." style={{marginTop: "0.5rem", marginBottom: "0.5rem"}} className="px-2" rightSection={<IconFilter />} />
         <CRMScrollContainer setScrolled={setScrolled}>
           <Table striped>
             <LimboTableHead scrolled={scrolled}/>
               <Table.Tbody>
-                {limboInvoices.map((invoice, index) => <LimboRow invoice={invoice} key={index} />)}
+                {filteredLimboInvoices.map((invoice, index) => <LimboRow invoice={invoice} key={index} />)}
               </Table.Tbody>
           </Table>
         </CRMScrollContainer>
@@ -80,10 +84,13 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
   
   const [sort, setSort] = useState("dueAt")
   const [sortReversed, setSortReversed] = useState(false)
+  const [userQuery, setUserQuery] = useState("")
 
   const unpaidInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
+  const filteredUnpaidInvoices = Invoice.filterByUserQuery(unpaidInvoices, userQuery);
   
   const [scrolled, setScrolled] = useState(false);
+
   
   function handleSortChange(newSort) {
     return () => {
@@ -137,11 +144,12 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
     <div className="col-12 col-xl-6 px-1 mb-1">
       <Paper withBorder>
         <ModuleHeader min>Unpaid Invoices</ModuleHeader>
+        <TextInput value={userQuery} type="text" onChange={(e) => setUserQuery(e.target.value)} placeholder="Filter by user display name..." style={{marginTop: "0.5rem", marginBottom: "0.5rem"}} className="px-2" rightSection={<IconFilter />} />
         <CRMScrollContainer height={300} setScrolled={setScrolled}>
           <Table striped>
             <UnpaidTableHead scrolled={scrolled}/>
               <Table.Tbody>
-                {unpaidInvoices.map((invoice, index) => <UnpaidRow invoice={invoice} key={index} />)}
+                {filteredUnpaidInvoices.map((invoice, index) => <UnpaidRow invoice={invoice} key={index} />)}
               </Table.Tbody>
           </Table>
         </CRMScrollContainer>
@@ -154,10 +162,13 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
   
   const [sort, setSort] = useState("paidAt")
   const [sortReversed, setSortReversed] = useState(false)
+  const [userQuery, setUserQuery] = useState("")
 
   const paidInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
+  const filteredPaidInvoices = Invoice.filterByUserQuery(paidInvoices, userQuery);
   
   const [scrolled, setScrolled] = useState(false);
+
 
   function handleSortChange(newSort) {
     return () => {
@@ -213,11 +224,12 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
     <div className="col-12 col-xl-6 mb-1 px-1">
       <Paper withBorder>
         <ModuleHeader min>Paid Invoices</ModuleHeader>
+        <TextInput value={userQuery} type="text" onChange={(e) => setUserQuery(e.target.value)} placeholder="Filter by user display name..." style={{marginTop: "0.5rem", marginBottom: "0.5rem"}} className="px-2" rightSection={<IconFilter />} />
         <CRMScrollContainer height={300} setScrolled={setScrolled}>
           <Table striped>
             <PaidTableHead scrolled={scrolled}/>
               <Table.Tbody>
-                {paidInvoices.map((invoice, index) => <PaidRow invoice={invoice} key={index} />)}
+                {filteredPaidInvoices.map((invoice, index) => <PaidRow invoice={invoice} key={index} />)}
               </Table.Tbody>
           </Table>
         </CRMScrollContainer>

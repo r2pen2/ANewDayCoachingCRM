@@ -12,7 +12,7 @@
 
 /* Coloring for Light / Dark */
 
-button span:not(.mantine-Tabs-tabLabel):not(:has(.tabler-icon)) {
+button:not(:disabled) span:not(.mantine-Tabs-tabLabel):not(:has(.tabler-icon)) {
   color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
 }
 button:disabled {

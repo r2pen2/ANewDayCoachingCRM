@@ -181,6 +181,10 @@ export class Invoice {
     }
     return reversed ? getArray().reverse() : getArray();
   }
+
+  static filterByUserQuery(invoices: PaidInvoice[] | LimboInvoice[] | UnpaidInvoice[], userQuery: string): PaidInvoice[] | LimboInvoice[] | UnpaidInvoice[] {
+    return invoices.filter((invoice) => { return invoice.userDisplayName.toLowerCase().includes(userQuery) })
+  }
 }
 
 export class UnpaidInvoice extends Invoice {
