@@ -70,7 +70,7 @@ export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled
   }
 
   function getPaidMessage() {
-    if (hasPendingInvoices() || hasPendingInvoices() || !invoicesPulled) { return; }
+    if (hasUnpaidInvoices() || hasPendingInvoices() || !invoicesPulled) { return; }
     return "There's nothing that you need to do here."
   }
 
