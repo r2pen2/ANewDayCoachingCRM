@@ -166,32 +166,7 @@ export default function FormManagement() {
               <Table striped>
                 <FormTableHead scrolled={scrolled} />
                 <Table.Tbody>
-                  {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {
-                  
-                    function handleAssign() {
-                      if (assignMode !== null && assignMode !== "Assign") { setAssignees([]) }
-                      if (currentForm?.formId !== form.formId) { setAssignees([]) }
-                      setCurrentForm(form);
-                      setUserSearchMenuOpen(true);
-                      setAssignMode("Assign");
-                    }
-                  
-                    function handleUnassign() {
-                      if (assignMode !== null && assignMode !== "Unssign") { setAssignees([]) }
-                      if (currentForm?.formId !== form.formId) { setAssignees([]) }
-                      setCurrentForm(form);
-                      setUserSearchMenuOpen(true);
-                      setAssignMode("Unassign");
-                    }
-                  
-                    function handleIncomplete() {
-                      if (assignMode !== null && assignMode !== "Incomplete") { setAssignees([]) }
-                      if (currentForm?.formId !== form.formId) { setAssignees([]) }
-                      setCurrentForm(form);
-                      setUserSearchMenuOpen(true);
-                      setAssignMode("Incomplete");
-                    }
-                  
+                  {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {  
                     return (
                     <Table.Tr key={index}>
                       <Table.Td>
