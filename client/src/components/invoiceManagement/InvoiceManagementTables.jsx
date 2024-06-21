@@ -1,7 +1,7 @@
-import { Center, Group, NumberFormatter, Paper, Table, Text, TextInput, UnstyledButton } from "@mantine/core";
-import { CRMScrollContainer, SortControl, SortIcon, TableSortButton } from "../Tables";
+import { NumberFormatter, Paper, Table, TextInput } from "@mantine/core";
+import { CRMScrollContainer, TableSortButton } from "../Tables";
 import IconButton from "../IconButton";
-import { IconCheck, IconEye, IconFilter, IconSearch, IconTrash, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEye, IconFilter, IconTrash, IconX } from "@tabler/icons-react";
 import { getSlashDateString, getTimeString } from "../../api/strings";
 import { useState } from "react";
 import ModuleHeader from "../dashboard/ModuleHeader";

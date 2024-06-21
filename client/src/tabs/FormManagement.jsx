@@ -21,8 +21,6 @@ import { LinkMaster } from '../api/links.ts';
 
 export default function FormManagement() {
 
-  const [userSearchMenuOpen, setUserSearchMenuOpen] = React.useState(false);
-
   const [currentForm, setCurrentForm] = React.useState(null);
 
   const [allUsers, setAllUsers] = React.useState({});
@@ -36,6 +34,7 @@ export default function FormManagement() {
 
   const UserSearchResults = () => {
 
+    if (!currentForm) { return; } // Don't render if there's no form selected
     let users = Object.values(allUsers);
 
     if (userQuery.length > 0) {
@@ -52,7 +51,6 @@ export default function FormManagement() {
     return (
       users.map((user, index) => {
 
-        if (!currentForm) { return; } // Don't render if there's no form selected
 
         const userHasForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId).length > 0;
         const userCompletedForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId)[0]?.completed;
@@ -109,7 +107,7 @@ export default function FormManagement() {
       if (assignMode === "Assign") {
         currentForm.assignToMultiple(assignees).then((success) => {
           if (success) {
-            setUserSearchMenuOpen(false);
+            setCurrentForm(null);
             notifSuccess("Form Assigned", `Assigned "${currentForm.formTitle}" to ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           }
         })
@@ -119,7 +117,7 @@ export default function FormManagement() {
       if (assignMode === "Unassign") {
         currentForm.unassignToMultiple(assignees).then((success) => {
           if (success) {
-            setUserSearchMenuOpen(false);
+            setCurrentForm(null);
             notifSuccess("Form Unassigned", `Unssigned "${currentForm.formTitle}" from ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           }
         })
@@ -129,7 +127,7 @@ export default function FormManagement() {
       if (assignMode === "Incomplete") {
         currentForm.incompleteToMultiple(assignees).then((success) => {
           if (success) {
-            setUserSearchMenuOpen(false);
+            setCurrentForm(null);
             notifSuccess("Form Marked Incomplete", `Marked "${currentForm.formTitle}" as incomplete for ${assignees.length} user${assignees.length !== 1 ? "s" : ""}.`)
           }
         })

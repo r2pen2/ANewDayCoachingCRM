@@ -1,6 +1,6 @@
 // Library Imports
-import {AppShell, Badge, NavLink, Tooltip } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconBrandGoogleDrive, IconUser, IconUserCog } from '@tabler/icons-react';
+import {AppShell, Badge, NavLink } from "@mantine/core"
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconBrandGoogleDrive, IconUserCog } from '@tabler/icons-react';
 import { useContext, useState } from "react";
 // Component Imports
 import { CurrentUserContext } from "../App";
