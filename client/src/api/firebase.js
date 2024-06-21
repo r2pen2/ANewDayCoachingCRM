@@ -36,7 +36,7 @@ export async function getCurrentUser(setter, colorSchemeSetter) {
       await userObject.createDocument();
       userObject.subscribe(setter, colorSchemeSetter)
     } else {
-      setter(null)
+      setter({id: null})
     }
   });
 }

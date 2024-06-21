@@ -43,6 +43,8 @@ export class User {
   numUnpaidInvoices: number = 0;
   syncCode: string | null = null;
 
+  linkedAccounts: string[] = [];
+
   homework: Homework[] = [];
 
   subjects: { [key: string]: any } = {
@@ -208,6 +210,7 @@ export class User {
     this.schoolInfo = data.schoolInfo;
     this.metadata = data.metadata;
     this.syncCode = data.syncCode;
+    this.linkedAccounts = data.linkedAccounts;
     return this;
   }
 
@@ -237,6 +240,17 @@ export class User {
         setter(cloneUser); 
         setColorScheme(cloneUser?.settings.darkMode ? "dark" : "light");
       }
+    })
+  }
+
+  async linkAccount(id: string, role: UserRole): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.linkedAccounts.push(id);
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
     })
   }
 
@@ -415,12 +429,11 @@ export class User {
     })
   }
 
-  static async checkSyncCodeUsed(code: string): Promise<boolean> {
+  static async getSyncCodeOwner(code: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       fetch(hostname + `/users/sync?code=${code}`).then((response) => {
-        console.log(response)
         response.json().then((data) => {
-          resolve(data !== null);
+          resolve(data.user);
         })
       }).catch((error) => {
         reject(error);

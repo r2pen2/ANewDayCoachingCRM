@@ -4,7 +4,7 @@ import { User } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 import { UserSelect } from '../components/userManagement/UserManagementSelectPaper.jsx';
-import { PersonalData, SyncCodeAndSessionNotes } from '../components/userManagement/UserData.jsx';
+import { PersonalData, SyncData } from '../components/userManagement/UserData.jsx';
 
 
 export default function UserManagement() {
@@ -26,6 +26,10 @@ export default function UserManagement() {
     }
   }, [selectedUser])
 
+  function changeSelectedUser(id) {
+    setSelectedUser(allUsers[id])
+  }
+
   return (
     <div className='d-flex flex-column gap-2 p-0 align-items-center justify-content-center py-2 px-1 container-fluid'>
       <div className="row w-100">
@@ -35,7 +39,7 @@ export default function UserManagement() {
             <ModuleHeader>{selectedUser ? selectedUser.personalData.displayName : "No User Selected"}</ModuleHeader>
             <div className="row m-0">
               <PersonalData user={fullUserData} />
-              <SyncCodeAndSessionNotes user={fullUserData} />
+              <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} />
             </div>
           </Paper>
         </div>

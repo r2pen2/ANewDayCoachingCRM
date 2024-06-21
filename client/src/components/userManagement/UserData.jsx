@@ -1,4 +1,4 @@
-import { Avatar, Badge, Center, Divider, Group, Loader, Paper, Text, TextInput, Tooltip } from "@mantine/core";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Group, Loader, Paper, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconStar, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { User } from "../../api/db/dbUser.ts";
@@ -101,7 +101,7 @@ export const PersonalData = ({user}) => {
   )
 }
 
-export const SyncCodeAndSessionNotes = ({user}) => {
+export const SyncData = ({user, changeSelectedUser}) => {
 
   const dbUser = User.getInstanceById(user?.id)
   dbUser.fillData(user);
@@ -125,16 +125,34 @@ export const SyncCodeAndSessionNotes = ({user}) => {
 
   const handleSyncCodeKeyDown = (e) => { if (e.key === "Enter") { updateSyncCode() } }
   const updateSyncCode = () => {
-    User.checkSyncCodeUsed(tempSyncCode).then((used) => {
-      if (!used) {
+    if (tempSyncCode.length <= 0) { 
+      notifFail("Invalid Sync Code", "Sync code cannot be empty.")
+      return;
+    }
+    if (!checkThatCodeStringIsValid(tempSyncCode)) {
+      notifFail("Invalid Sync Code", "Sync code can only contain capital letters and numbers.")
+      return;
+    }
+    if (tempSyncCode === user.syncCode) { return; }
+    User.getSyncCodeOwner(tempSyncCode).then((codeUsed) => {
+      if (!codeUsed) {
         dbUser.syncCode = tempSyncCode;
         dbUser.setData().then(() => {
           notifSuccess("Sync Code Updated", `Sync code for ${user.personalData.displayName} updated to ${tempSyncCode}.`)
+          setEditSyncCode(false)
         })
       } else {
         notifFail("Sync Code Already Used", `Sync code ${tempSyncCode} is already in use by another user. Please choose a different code.`)
       }
     })
+  }
+
+  function getCodeString(string) {
+    return string.replace(/[^A-Z0-9]/ig, "").toUpperCase()
+  }
+  
+  function checkThatCodeStringIsValid(string) {
+    return string.match(/[^A-Z0-9]/ig) === null
   }
 
   if (!user) { return; }
@@ -157,7 +175,7 @@ export const SyncCodeAndSessionNotes = ({user}) => {
           </div>
           {!editSyncCode && <Text fz="lg" fw={500}>{tempSyncCode}</Text>}
           <div className="d-flex gap-2">
-            {editSyncCode && <TextInput size="xs" c="dimmed" value={tempSyncCode} onKeyDown={handleSyncCodeKeyDown} onBlur={updateSyncCode} onChange={e => setTempSyncCode(e.target.value)}/>}
+            {editSyncCode && <TextInput size="xs" c="dimmed" value={tempSyncCode} onKeyDown={handleSyncCodeKeyDown} onBlur={updateSyncCode} onChange={e => setTempSyncCode(getCodeString(e.target.value))}/>}
             {editSyncCode && 
                 <Tooltip label="Cancel">
                 <Center>
@@ -168,10 +186,28 @@ export const SyncCodeAndSessionNotes = ({user}) => {
           </div>
         </div>
         <Divider orientation="vertical" className="mx-2" />
-        <div className="w-100 d-flex align-items-center justify-content-center">
-          <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>Sync Code</Text>
+        <div className="w-100 d-flex flex-column align-items-center justify-content-start h-100 pt-2">
+          <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>Linked Accounts</Text>
+          {user?.linkedAccounts.map((id, index) => <LinkedAccount changeSelectedUser={changeSelectedUser} key={index} id={id} />)}
         </div>
       </Paper>
     </div>
+  )
+}
+
+const LinkedAccount = ({id, changeSelectedUser}) => {
+  const [userData, setUserData] = useState(null)
+  useEffect(() => {
+    User.getById(id).then((data) => { setUserData(data) })
+  }, [id])
+  const handleLinkedUserClick = (e) => {
+    e.preventDefault();
+    changeSelectedUser(id)
+  }
+  if (!userData) { return <Skeleton /> }
+  return (
+    <Anchor onClick={handleLinkedUserClick} className="gap-2 d-flex flex-row">
+      <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
+    </Anchor>
   )
 }
