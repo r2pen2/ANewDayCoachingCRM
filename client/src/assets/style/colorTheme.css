@@ -12,6 +12,10 @@
 
 /* Coloring for Light / Dark */
 
+.text-dimmed {
+  color: light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3));
+}
+
 button:not(:disabled) span:not(.mantine-Tabs-tabLabel):not(:has(.tabler-icon)) {
   color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
 }

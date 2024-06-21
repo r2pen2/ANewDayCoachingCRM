@@ -4,7 +4,7 @@ import { User } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 import { UserSelect } from '../components/userManagement/UserManagementSelectPaper.jsx';
-import { PersonalData } from '../components/userManagement/UserData.jsx';
+import { PersonalData, SyncCodeAndSessionNotes } from '../components/userManagement/UserData.jsx';
 
 
 export default function UserManagement() {
@@ -14,15 +14,28 @@ export default function UserManagement() {
 
   React.useEffect(() => { User.fetchSearch(navigationItems.ADMINUSERS).then((users) => { setAllUsers(users); }) }, [])
 
+  const [fullUserData, setFullUserData] = React.useState(null)
+  
+  React.useEffect(() => {
+    if (selectedUser) {
+      User.getById(selectedUser.id).then((userData) => {
+        setFullUserData(userData)
+      })
+    } else {
+      setFullUserData(null)
+    }
+  }, [selectedUser])
+
   return (
     <div className='d-flex flex-column gap-2 p-0 align-items-center justify-content-center py-2 px-1 container-fluid'>
       <div className="row w-100">
         <UserSelect selectedUser={selectedUser} setSelectedUser={setSelectedUser} allUsers={allUsers} />
         <div className="col-xl-9 col-12 px-1">
-          <Paper withBorder className="w-100 container-fluid p-0">
+          <Paper withBorder className="w-100 container-fluid px-0">
             <ModuleHeader>{selectedUser ? selectedUser.personalData.displayName : "No User Selected"}</ModuleHeader>
-            <div className="row w-100">
-              <PersonalData user={selectedUser} />
+            <div className="row m-0">
+              <PersonalData user={fullUserData} />
+              <SyncCodeAndSessionNotes user={fullUserData} />
             </div>
           </Paper>
         </div>

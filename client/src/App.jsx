@@ -30,6 +30,13 @@ function App() {
   
   const [currentUser, setCurrentUser] = useState({id: null});   // State for the current user
   const currentUserId = useMemo(() => currentUser.id, [currentUser.id]) // We only want to re-render the entire App state when the current userId changes
+  
+  // useEffect(() => {
+  //   if (currentUser.id) {
+  //     currentUser.registerSignIn()
+  //   }
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [currentUser.id])
 
   const {setColorScheme, clearColorScheme} = useMantineColorScheme(); // State for the color scheme
 

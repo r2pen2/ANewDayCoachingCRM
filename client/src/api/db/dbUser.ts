@@ -28,7 +28,7 @@ export class User {
   firebaseUser: UserCredential;
 
   metadata: any = {
-    lastUpdated: null
+    lastSignIn: null
   };
   
   invoices: string[] = [];
@@ -90,13 +90,24 @@ export class User {
     }
   }
 
-  constructor(firebaseUser: any) {
+  constructor(firebaseUser?: any) {
     this.firebaseUser = firebaseUser;
-    this.id = firebaseUser.uid;
+    this.id = firebaseUser?.uid;
     this.docRef = doc(db, `users/${this.id}`);
-    this.personalData.email = firebaseUser.email;
-    this.personalData.displayName = firebaseUser.displayName
-    this.personalData.pfpUrl = firebaseUser.photoURL;
+    this.personalData.email = firebaseUser?.email;
+    this.personalData.displayName = firebaseUser?.displayName
+    this.personalData.pfpUrl = firebaseUser?.photoURL;
+  }
+
+  async registerSignIn(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.metadata.lastSignIn = new Date();
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      })
+    })
   }
   
   async setData(): Promise<void> {
@@ -137,6 +148,18 @@ export class User {
     })
   }
 
+  static async getById(id: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      fetch(hostname + `/users/user?id=${id}`).then((response) => {
+        response.json().then((data) => {
+          resolve(data);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
   static async fetchSearch(navPage: string): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
       
@@ -159,7 +182,8 @@ export class User {
     })
   }
 
-  fillData(data: any): User {
+  fillData(data: any): User | void {
+    if (data === null) { return; }
     this.invoices = data.invoices;
     this.admin = data.admin;
     this.formAssignments = data.formAssignments;
@@ -176,6 +200,7 @@ export class User {
     this.intents = data.intents;
     this.settings = data.settings;
     this.schoolInfo = data.schoolInfo;
+    this.metadata = data.metadata;
     return this;
   }
 
@@ -190,7 +215,7 @@ export class User {
   }
 
   /** Need to be able to create a shallow clione so that state can update */
-  clone(): User { return new User(this.firebaseUser).fillData(this); }
+  clone(): User | void { return new User(this.firebaseUser).fillData(this); }
 
   subscribe(setter: Function, setColorScheme: Function) {
     onSnapshot(this.docRef, (doc) => {
@@ -199,7 +224,7 @@ export class User {
         // We need to create a clone of this User object so that the state actually updates
         const cloneUser = this.clone()
         setter(cloneUser); 
-        setColorScheme(cloneUser.settings.darkMode ? "dark" : "light");
+        setColorScheme(cloneUser?.settings.darkMode ? "dark" : "light");
       }
     })
   }
