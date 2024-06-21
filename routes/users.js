@@ -23,7 +23,8 @@ router.get("/search-forms", (req, res) => {
     resUsers[userId] = {
       personalData: {
         displayName: u.personalData.displayName,
-        email: u.personalData.email
+        email: u.personalData.email,
+        role: u.personalData.role
       },
       id: u.id,
       formAssignments: u.formAssignments
@@ -39,7 +40,8 @@ router.get("/search-tools", (req, res) => {
     resUsers[userId] = {
       personalData: {
         displayName: u.personalData.displayName,
-        email: u.personalData.email
+        email: u.personalData.email,
+        role: u.personalData.role
       },
       id: u.id,
       tools: u.tools
@@ -55,7 +57,8 @@ router.get("/search-users", (req, res) => {
     resUsers[userId] = {
       personalData: {
         displayName: u.personalData.displayName,
-        email: u.personalData.email
+        email: u.personalData.email,
+        role: u.personalData.role
       },
       id: u.id
     }

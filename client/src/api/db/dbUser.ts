@@ -135,6 +135,7 @@ export class User {
         metadata: this.metadata,
         schoolInfo: this.schoolInfo,
         syncCode: this.syncCode,
+        linkedAccounts: this.linkedAccounts
       }
       setDoc(this.docRef, data).then(() => {
         resolve();

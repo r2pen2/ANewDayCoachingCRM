@@ -1,7 +1,7 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Group, Loader, Paper, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconStar, IconX } from "@tabler/icons-react";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Group, Loader, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconSchool, IconStar, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { User } from "../../api/db/dbUser.ts";
+import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess } from "../Notifications.jsx";
 
 export const PersonalData = ({user}) => {
@@ -23,6 +23,7 @@ export const PersonalData = ({user}) => {
   useEffect(() => {
     setTempEmail(user?.personalData.email)
     setTempPhone(user?.personalData.phoneNumber)
+    setTempRole(user?.personalData.role)
   }, [user])
   
   const [editEmail, setEditEmail] = useState(false)
@@ -51,6 +52,20 @@ export const PersonalData = ({user}) => {
     });
   }
 
+  const [tempRole, setTempRole] = useState(user?.personalData.role)
+  
+  function setRole(newRole) {
+    setRolePopoverOpen(false)
+    if (newRole === tempRole) { return; }
+    setTempRole(newRole)
+    dbUser.personalData.role = newRole;
+    dbUser.setData().then(() => {
+      notifSuccess("Role Updated", `Role for ${user.personalData.displayName} updated to ${newRole}.`)
+    })
+  }
+
+  const [rolePopoverOpen, setRolePopoverOpen] = useState(false)
+
   if (!user) { return; }
   return (
     <div className="col-12 col-lg-6 p-1 py-2">
@@ -58,7 +73,19 @@ export const PersonalData = ({user}) => {
         <Avatar src={user.pfpUrl} alt={user.displayName} className="m-0" size={100} style={{marginBottom: "1rem"}} />
         <div className="d-flex flex-column justify-content-center">      
           <div className="d-flex gap-2 align-items-center">
-            <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>{user.personalData.role}</Text>
+            <Popover position="right" opened={rolePopoverOpen} onClose={() => setRolePopoverOpen(false)}>
+              <Popover.Target style={{cursor: "pointer"}} onClick={() => setRolePopoverOpen(true)} >
+                <Text fz="sm" c="dimmed"  tt="uppercase" fw={700}>{tempRole ? tempRole : "no role"}</Text>
+              </Popover.Target>
+              <Popover.Dropdown className="p-0">
+                <Paper withBorder className="p-2 d-flex flex-column align-items-center justify-content-center">
+                  <Anchor onClick={() => setRole(UserRole.STUDENT)} >Student</Anchor>
+                  <Anchor onClick={() => setRole(UserRole.PARENT)}>Parent</Anchor>
+                  <Anchor onClick={() => setRole(UserRole.COACH)} >Coach</Anchor>
+                  <Anchor onClick={() => setRole(UserRole.DEVELOPER)} >Developer</Anchor>
+                </Paper>
+              </Popover.Dropdown>
+            </Popover>
             {user.admin && <Tooltip label="This account can manage tools, forms, invoices, and users."><Center><Badge>Admin</Badge></Center></Tooltip>}
           </div>
           <Text fz="lg" fw={500}>{user.personalData.displayName}</Text>
