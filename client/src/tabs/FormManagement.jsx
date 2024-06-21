@@ -52,6 +52,8 @@ export default function FormManagement() {
     return (
       users.map((user, index) => {
 
+        if (!currentForm) { return; } // Don't render if there's no form selected
+
         const userHasForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId).length > 0;
         const userCompletedForm = allUsers[user.id].formAssignments.filter(fa => fa.formId === currentForm.formId)[0]?.completed;
 
@@ -176,7 +178,7 @@ export default function FormManagement() {
                         {form.formDescription}
                       </Table.Td>
                       <Table.Td className='d-flex gap-2'>
-                        <IconButton label={`Manage "${form.formTitle}" Users`} icon={<IconUsers />} onClick={() => setUserSearchMenuOpen(true)} />
+                        <IconButton label={`Manage "${form.formTitle}" Users`} icon={<IconUsers />} onClick={() => {setCurrentForm(form); setAssignMode("Assign")}} />
                         <IconButton label={`Open "${form.formTitle}"`} icon={<IconEye />} color="gray" onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(form.href), "_blank")} />
                       </Table.Td>
                     </Table.Tr>
@@ -187,7 +189,7 @@ export default function FormManagement() {
           </Paper>
         </div>
       </div>
-      <Modal opened={userSearchMenuOpen} onClose={() => setUserSearchMenuOpen(false)} title={`Actions for "${currentForm?.formTitle}"`}>
+      <Modal opened={currentForm} onClose={() => setCurrentForm(null)} title={`Actions for "${currentForm?.formTitle}"`}>
         <Tabs defaultValue="Assign" onChange={(value) => handleAssignModeChange(value)}>
           <Tabs.List grow>
             <Tabs.Tab value="Assign">Assign</Tabs.Tab>
