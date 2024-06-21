@@ -69,13 +69,13 @@ router.get("/user", (req, res) => {
 
 router.get("/sync", (req, res) => {
   if (req.query.code) {
-    return allUsers.filter((u) => u.syncCode === req.query.code)[0];
+    return Object.values(allUsers).filter((u) => u.syncCode === req.query.code)[0];
   } else {
     // Generate a random 6 character string consisting of capital letters and numbers
     let foundNewCode = false;
     while(!foundNewCode) {
       var randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
-      if (allUsers.filter((u) => u.syncCode === randomString).length <= 0) {
+      if (Object.values(allUsers).filter((u) => u.syncCode === randomString).length <= 0) {
         foundNewCode = true;
       }
     }
