@@ -61,7 +61,7 @@ function getSections(currentUser, unitType, selectedSubjects) {
   return sections;
 }
 
-export default function TrackerRing({selectedSubjects, unitType}) {
+export default function TrackerRing({selectedSubjects, unitType, onGnatt, setOnGnatt}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
 
@@ -75,8 +75,8 @@ export default function TrackerRing({selectedSubjects, unitType}) {
       thickness={16}
       label={
         <Center>
-          <Tooltip position='bottom' label="Switch to Timeline View">
-            <ActionIcon className="line-icon" variant="light" size={innerCircleRadius - 80}>
+          <Tooltip position='bottom' label={onGnatt ? "Switch to Table" : "Switch to Gnatt Chart"}>
+            <ActionIcon className="line-icon" onClick={() => setOnGnatt(!onGnatt)} variant="light" size={innerCircleRadius - 80}>
               <IconTimeline size={80}/>
             </ActionIcon>
           </Tooltip>

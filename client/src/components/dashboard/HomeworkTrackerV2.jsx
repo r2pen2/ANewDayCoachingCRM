@@ -446,6 +446,8 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   
   const [unitType, setUnitType] = React.useState("Subject");
 
+  const [onGnatt, setOnGnatt] = React.useState(false);
+
   const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
 
   const SubjectChip = ({subject, index}) => {
@@ -605,7 +607,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
         <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} />
         <div className="d-flex flex-row w-100" >
           <div className="ring-container d-none d-md-flex" >
-            <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} />
+            <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} onGnatt={onGnatt} setOnGnatt={setOnGnatt}/>
           </div>
           <div className="d-flex w-100 flex-column align-items-start">
             <TrackerControls />
