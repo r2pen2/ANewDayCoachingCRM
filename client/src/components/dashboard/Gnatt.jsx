@@ -1,40 +1,66 @@
 import "@bitnoi.se/react-scheduler/dist/style.css";
 import { Scheduler } from "@bitnoi.se/react-scheduler";
-import { useState } from "react";
+import { Spoiler } from "@mantine/core";
+import { getOrthodoxDate } from "../../api/dates.ts";
 
-export const CRMGnatt = ({isLoading}) => {
-  const [filterButtonState, setFilterButtonState] = useState(0);
+export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
 
   return (
-    <section>
+    <Spoiler maxHeight={400} style={{minHeight: 400}} showLabel="Expand Gnatt Chart" hideLabel="Collapse Gnatt Chart">
       <Scheduler
-        data={mockedSchedulerData}
+        data={formatAssignmentDataForGnatt(assignments, userSubjects)}
         isLoading={isLoading}
         onRangeChange={(newRange) => console.log(newRange)}
         onTileClick={(clickedResource) => console.log(clickedResource)}
         onItemClick={(item) => console.log(item)}
-        onFilterData={() => {
-          // Some filtering logic...
-          setFilterButtonState(1);
-        }}
-        onClearFilterData={() => {
-          // Some clearing filters logic...
-          setFilterButtonState(0)
-        }}
         config={{
           zoom: 0,
-          filterButtonState,
         }}
       />
-    </section>
+    </Spoiler>
   );
+}
+
+function formatAssignmentDataForGnatt(assignments, userSubjects) {
+
+  assignments = assignments.filter(assignment => !assignment.completed)
+
+  const data = [];
+
+  function addSubject(subject) {
+    data.push({
+      id: subject,
+      label: { title: "Joe Doe", },
+      data: []
+    })
+  }
+
+  function getSubject(subject) {
+    return data.find((d) => d.id === subject);
+  }
+
+  for (const assignment of assignments) {
+    const s = getSubject(assignment.subject);
+    if (!s) {
+      addSubject(assignment.subject);
+      s.data.push({
+        startDate: getOrthodoxDate(assignment.startDate),
+        endDate: getOrthodoxDate(assignment.dueDate),
+        occupancy: 3600,
+        title: assignment.description,
+        bgColor: userSubjects[assignment.subject].color
+      })
+    }
+  }
+
+  console.log(assignments)
+  return data;
 }
 
 const mockedSchedulerData = [
   {
     id: "070ac5b5-8369-4cd2-8ba2-0a209130cc60",
     label: {
-      icon: "https://picsum.photos/24",
       title: "Joe Doe",
       subtitle: "Frontend Developer"
     },

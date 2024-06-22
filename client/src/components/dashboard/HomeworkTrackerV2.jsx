@@ -14,6 +14,7 @@ import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
 import TrackerRing, { TrackerBar, trackerOffset } from "./TrackerRing.jsx";
 import { SortOrderSelector, StatusSelector, RingContextSelector} from "./HomeworkTrackerControl.jsx";
+import { CRMGnatt } from "./Gnatt.jsx";
 
 import "../../assets/style/homeworkTracker.css";
 import useWindowDimensions from "../Window.jsx";
@@ -580,7 +581,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     <div className='tracker-controls gap-2'>
       <RingContextSelector unitType={unitType} setUnitType={setUnitType} />
       <StatusSelector showCompleted={showCompleted} setShowCompleted={setShowCompleted} />
-      <SortOrderSelector sortType={sortType} setSortType={setSortType} />
+      {!onGnatt && <SortOrderSelector sortType={sortType} setSortType={setSortType} />}
     </div>
   )
 
@@ -596,9 +597,11 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   )}
   
   const { height, width } = useWindowDimensions();
+
+  const AssignmentTable = () => validHomeworks.map((homework, index) => !onGnatt && <Assignment key={index} homeworkJson={homework} />)
   
   return (
-    <div className="d-flex flex-column">
+    <div className="d-flex flex-column" >
       <Paper withBorder className="tracker-header">
         <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center">
           My Assignments
@@ -624,12 +627,11 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
           </div>
         </div>
       </Paper>
-      <div className="coaching-line "></div>
+      <div className="coaching-line"></div>
       <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-1">
         <Paper withBorder className="w-100">
-          {validHomeworks.map((homework, index) => {
-            return <Assignment key={index} homeworkJson={homework} />
-          })}
+          <AssignmentTable />
+          {onGnatt && <CRMGnatt assignments={validHomeworks} subjects={currentUser.subjects} />}
         </Paper>
       </Spoiler>
     </div>
