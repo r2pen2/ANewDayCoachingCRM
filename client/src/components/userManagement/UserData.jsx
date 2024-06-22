@@ -1,8 +1,9 @@
 import { Anchor, Avatar, Badge, Button, Center, Divider, Group, Loader, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconSchool, IconStar, IconX } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconSchool, IconStar, IconUserCog, IconUserUp, IconX } from "@tabler/icons-react";
+import { useContext, useEffect, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
-import { notifFail, notifSuccess } from "../Notifications.jsx";
+import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
+import { CurrentUserContext } from "../../App.jsx";
 
 export const PersonalData = ({user}) => {
 
@@ -19,11 +20,13 @@ export const PersonalData = ({user}) => {
 
   const [tempEmail, setTempEmail] = useState("")
   const [tempPhone, setTempPhone] = useState("")
+  const [tempAdmin, setTempAdmin] = useState(false)
 
   useEffect(() => {
     setTempEmail(user?.personalData.email)
     setTempPhone(user?.personalData.phoneNumber)
     setTempRole(user?.personalData.role)
+    setTempAdmin(user?.admin)
   }, [user])
   
   const [editEmail, setEditEmail] = useState(false)
@@ -66,6 +69,37 @@ export const PersonalData = ({user}) => {
 
   const [rolePopoverOpen, setRolePopoverOpen] = useState(false)
 
+  const {currentUser} = useContext(CurrentUserContext)
+  const isMe = currentUser.id === user.id;
+
+  const revokeAdmin = () => {
+    if (isMe) {
+      notifWarn("Cannot Revoke Admin", "You cannot revoke your own admin status.")
+      return;
+    }
+    if (!window.confirm(`Are you sure you want to revoke admin status from ${user.personalData.displayName}?`)) { return;}
+    dbUser.admin = false;
+    setTempAdmin(false)
+    dbUser.setData().then(() => {
+      notifSuccess("Admin Status Revoked", `${user.personalData.displayName} is no longer an admin.`)
+    })
+  }
+  
+  const canBeAdmin = tempRole === UserRole.DEVELOPER || tempRole === UserRole.COACH
+  
+  const makeAdmin = () => {
+    if (!canBeAdmin) {
+      notifWarn("Cannot Make Admin", "Only coaches and developers can be made admins.")
+      return;
+    }
+    if (!window.confirm(`Are you sure you want to make ${user.personalData.displayName} an admin?`)) { return;}
+    setTempAdmin(true)
+    dbUser.admin = true;
+    dbUser.setData().then(() => {
+      notifSuccess("Admin Status Granted", `${user.personalData.displayName} is now an admin.`)
+    })
+  }
+
   if (!user) { return; }
   return (
     <div className="col-12 col-lg-6 p-1 py-2">
@@ -86,7 +120,8 @@ export const PersonalData = ({user}) => {
                 </Paper>
               </Popover.Dropdown>
             </Popover>
-            {user.admin && <Tooltip label="This account can manage tools, forms, invoices, and users."><Center><Badge>Admin</Badge></Center></Tooltip>}
+            {tempAdmin && <Tooltip label="This account can manage tools, forms, invoices, and users."><Center><Badge rightSection={<IconX size="1rem" style={{cursor:!isMe ? 'pointer' : "not-allowed"}} onClick={revokeAdmin} />}>Admin</Badge></Center></Tooltip>}
+            {!tempAdmin && <Tooltip label={canBeAdmin ? "Promote to Admin" : "Only COACH and DEVELOPER can promoted to admin"}><Center><IconUserUp size="1rem" style={{cursor:canBeAdmin ? 'pointer' : "not-allowed"}} className="text-dimmed" onClick={makeAdmin} /></Center></Tooltip>}
           </div>
           <Text fz="lg" fw={500}>{user.personalData.displayName}</Text>
           <Group wrap="nowrap" gap={10} mt={3}>

@@ -18,7 +18,7 @@ export const UserSelect = ({selectedUser, setSelectedUser, allUsers}) => {
       <Paper withBorder className="p-0 mb-2">
         <ModuleHeader>User Select</ModuleHeader>
         <div className="px-2 pb-2">
-          <TextInput style={{marginBottom: "0.5rem", marginTop: "0.5rem"}} value={selectedUser ? selectedUser.personalData.displayName : userQuery} onChange={handleTextChange} placeholder="Search for a user by display name or email..." rightSection={selectedUser ? <IconX size="1rem" style={{cursor:"pointer"}} onClick={()=>setSelectedUser(null)} />  : <IconSearch size="1rem" />}/>
+          <TextInput style={{marginBottom: "0.5rem", marginTop: "0.5rem"}} value={selectedUser ? `${selectedUser.personalData.displayName} (${selectedUser.personalData.role})` : userQuery} onChange={handleTextChange} placeholder="Search for a user by display name or email..." rightSection={selectedUser ? <IconX size="1rem" style={{cursor:"pointer"}} onClick={()=>setSelectedUser(null)} />  : <IconSearch size="1rem" />}/>
           <UserSearchResults showRole selectedUser={selectedUser} setSelectedUser={setSelectedUser} allUsers={allUsers} userQuery={userQuery} />
         </div>
       </Paper>
