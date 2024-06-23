@@ -605,7 +605,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
       <Paper withBorder className="tracker-header">
         <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center">
           My Assignments
-          <IconButton label="TimelineView" className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={handleAddAssignmentPress} />
+          <IconButton label={onGnatt ? "Switch to Table" : "Switch to Gnatt Chart"} className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={() => setOnGnatt(!onGnatt)} />
         </h3>
         <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} />
         <div className="d-flex flex-row w-100" >
@@ -631,7 +631,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
       <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-1">
         <Paper withBorder className="w-100">
           <AssignmentTable />
-          {onGnatt && <CRMGnatt assignments={validHomeworks} subjects={currentUser.subjects} />}
+          {onGnatt && <CRMGnatt assignments={validHomeworks} userSubjects={currentUser.subjects} />}
         </Paper>
       </Spoiler>
     </div>

@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@bitnoi.se/react-scheduler": "^0.2.0",
     "@mantine/carousel": "^7.8.1",
     "@mantine/charts": "^7.8.0",
     "@mantine/code-highlight": "^7.8.0",
@@ -26,6 +25,7 @@
     "@tiptap/starter-kit": "^2.3.0",
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.10",
+    "deps": "^1.0.0",
     "embla-carousel-react": "^8.0.2",
     "firebase": "^10.11.0",
     "googleapis": "^135.0.0",
