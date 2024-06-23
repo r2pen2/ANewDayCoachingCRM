@@ -447,7 +447,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   
   const [unitType, setUnitType] = React.useState("Subject");
 
-  const [onGnatt, setOnGnatt] = React.useState(false);
+  const [onGnatt, setOnGnatt] = React.useState(true);
 
   const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
 

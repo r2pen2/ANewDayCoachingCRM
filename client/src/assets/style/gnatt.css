@@ -17,3 +17,11 @@ button.sc-ktwOSD {
 .sc-eTNep  {
   opacity: 0;
 }
+
+.gnatt-grid-box {
+  border: 1px solid light-dark(var(--mantine-color-dark-0), var(--mantine-color-dark-6));
+}
+
+.gnatt-row {
+  overflow-x: scroll;
+}

@@ -25,6 +25,19 @@ export function getTimeString(date) {
   return `${date.getHours() % 12}:${mins < 10 ? "0" : ""}${mins}${date.getHours() >= 13 ? "PM" : "AM"}`
 }
 
+export function getGnattDayString(date) {
+  // Make sure we have a valid date object
+  const d = new Date(date);
+  
+  // Break it down into its' parts
+  const day = d.getUTCDate();
+  const month = d.getMonth();
+  // const year = d.getFullYear();
+
+  // Format and return string
+  return `${month + 1}/${day}`
+}
+
 /**
  * Formats a UTC date string so that it's easier to read
  * @param {Date} date string representing a UTC date

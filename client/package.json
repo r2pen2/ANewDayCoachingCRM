@@ -16,6 +16,7 @@
     "@mantine/nprogress": "^7.8.0",
     "@mantine/spotlight": "^7.8.0",
     "@mantine/tiptap": "^7.8.0",
+    "@r2pen2/crm-gnatt": "^0.1.7",
     "@tabler/icons-react": "^3.2.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
