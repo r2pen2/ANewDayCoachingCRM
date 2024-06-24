@@ -77,7 +77,7 @@ export default function Intent({height}) {
       </div>
       <div className="d-flex gap-2 align-items-center">
         <Tooltip label="See Intent History" position='bottom'>
-          <ActionIcon variant="light" color="#658a54" onClick={() => {}}>
+          <ActionIcon onClick={() => {}}>
             <IconHistory />
           </ActionIcon>
         </Tooltip>

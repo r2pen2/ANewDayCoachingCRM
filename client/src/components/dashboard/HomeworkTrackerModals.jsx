@@ -1,4 +1,4 @@
-import { Button, Modal, Select, Text, TextInput, Tooltip } from "@mantine/core";
+import { Button, Center, Modal, Select, Text, TextInput, Tooltip } from "@mantine/core";
 import { Homework, HomeworkPriority, HomeworkSubject } from "../../api/db/dbHomework.ts";
 import { notifSuccess } from "../Notifications.jsx";
 import { DateInput } from "@mantine/dates";
@@ -7,6 +7,7 @@ import { PickerMenu, SubjectCard } from "./HomeworkTrackerV2.jsx";
 import { IconSend } from "@tabler/icons-react";
 import IconButton from "../IconButton.jsx";
 import { CurrentUserContext } from "../../App.jsx";
+import { assignButtonColor } from "../../api/color.ts";
 
 export const AddHomeworkModal = ({open, close}) => {
 
@@ -111,7 +112,9 @@ export const AddSubjectModal = ({open, close}) => {
       <form className="d-flex gap-2 mt-1 mb-2" onSubmit={handleFormSubmit}>
         <TextInput className="w-100" required id="title" placeholder="Subject Title" onChange={(e) => { setNewTitle(e.target.value); setError(null) }} error={error}/>
         <PickerMenu c={newColor} setC={setNewColor} popoverOpenOverride={popoverOpen} setPopoverOpenOverride={setPopoverOpen} />
-        <IconButton label="Add Subject" icon={<IconSend />} buttonProps={{size: 36}} type="submit" />
+        <Center> 
+          <IconButton label="Add Subject" icon={<IconSend />} buttonProps={{size: 36}} type="submit" />
+        </Center>
       </form>
       <SubjectList />
     </Modal>

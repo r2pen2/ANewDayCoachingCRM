@@ -1,7 +1,8 @@
-import { Card, Text, Group, Badge, Center, Button, Progress, Loader } from '@mantine/core';
-import { IconBackpack, IconCode, IconHeartHandshake, IconShieldCheckered, IconUsersGroup } from '@tabler/icons-react';
-import { pendingColor, unpaidColor } from '../../tabs/Invoices';
+import { Card, Text, Group, Badge, Button, Progress } from '@mantine/core';
+import { IconBackpack, IconCode, IconHeartHandshake, IconShieldCheckered } from '@tabler/icons-react';
+import { pendingColor } from '../../tabs/Invoices';
 import { hostname } from '../../api/db/dbManager.ts';
+import { unpaidColor } from '../../api/color.ts';
 
 const startedColor = pendingColor
 const completedColor = null

@@ -1,8 +1,9 @@
 
 import { Progress, Box, Text, Group, Paper, SimpleGrid, NumberFormatter } from '@mantine/core';
 import { IconCreditCardPay } from '@tabler/icons-react';
-import { lateColor, pendingColor, unpaidColor } from '../../tabs/Invoices';
+import { lateColor, pendingColor } from '../../tabs/Invoices';
 import { memo } from 'react';
+import { unpaidColor } from '../../api/color.ts';
 import ModuleHeader from '../dashboard/ModuleHeader';
 
 export const InvoiceStats = memo(function InvoiceStats({invoices, invoicesPulled}) {

@@ -17,6 +17,7 @@ import IconButton from '../components/IconButton.jsx';
 import { CRMScrollContainer } from '../components/Tables.jsx';
 import { FormTableHead } from '../components/formManagement/formsTable.jsx';
 import { LinkMaster } from '../api/links.ts';
+import { acceptButtonColor, assignButtonColor, viewButtonColor } from '../api/color.ts';
 // import { FormStats } from '../components/formManagement/formStats.jsx';
 
 export default function FormManagement() {
@@ -176,8 +177,8 @@ export default function FormManagement() {
                         {form.formDescription}
                       </Table.Td>
                       <Table.Td className='d-flex gap-2'>
-                        <IconButton label={`Manage "${form.formTitle}" Users`} icon={<IconUsers />} onClick={() => {setCurrentForm(form); setAssignMode("Assign")}} />
-                        <IconButton label={`Open "${form.formTitle}"`} icon={<IconEye />} color="gray" onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(form.href), "_blank")} />
+                        <IconButton label={`Manage "${form.formTitle}" Users`} icon={<IconUsers />} color={assignButtonColor} onClick={() => {setCurrentForm(form); setAssignMode("Assign")}} />
+                        <IconButton label={`Open "${form.formTitle}"`} icon={<IconEye />} color={viewButtonColor} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(form.href), "_blank")} />
                       </Table.Td>
                     </Table.Tr>
                   )})}

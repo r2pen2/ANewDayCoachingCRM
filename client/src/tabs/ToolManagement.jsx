@@ -17,6 +17,7 @@ import IconButton from '../components/IconButton.jsx';
 import { CRMScrollContainer } from '../components/Tables.jsx';
 import { ToolCreation } from '../components/toolManagement/ToolCreation.jsx';
 import { ToolTableHead } from '../components/toolManagement/ToolsTable.jsx';
+import { assignButtonColor, deleteButtonColor } from '../api/color.ts';
 
 
 export default function ToolManagement() {
@@ -175,8 +176,8 @@ export default function ToolManagement() {
         <Table.Td>{tool.description}</Table.Td>
         <Table.Td>{tool.assignedTo.length}</Table.Td>
         <Table.Td className='d-flex gap-2'>
-          <IconButton icon={<IconUsers />} onClick={() => setCurrentTool(tool)} label={`Manage "${tool.title}" Users`} />
-          <IconButton icon={<IconTrash />} color="red.5" onClick={confirmDelete} label={`Delete "${tool.title}"`} />
+          <IconButton icon={<IconUsers />} onClick={() => setCurrentTool(tool)} color={assignButtonColor} label={`Manage "${tool.title}" Users`} />
+          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={confirmDelete} label={`Delete "${tool.title}"`} />
         </Table.Td>
       </Table.Tr>
     )

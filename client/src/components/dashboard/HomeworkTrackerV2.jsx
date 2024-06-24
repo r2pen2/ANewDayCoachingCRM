@@ -1,6 +1,6 @@
 // Library Imports
 import React from "react";
-import { Badge, Button, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Select, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
+import { Badge, Button, Center, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Select, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconHourglassEmpty, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
@@ -9,7 +9,7 @@ import { notifSuccess } from "../Notifications";
 import { CurrentUserContext } from "../../App";
 import IconButton from "../IconButton.jsx";
 import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
-import { shouldUseBlackText } from "../../api/color.ts";
+import { acceptButtonColor, deleteButtonColor, shouldUseBlackText, unpaidColor } from "../../api/color.ts";
 import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
 import TrackerRing, { TrackerBar, trackerOffset } from "./TrackerRing.jsx";
@@ -114,7 +114,7 @@ export const QuickEntryResults = ({quickExtract}) => {
 
   return (
     <div className="align-items-center d-flex gap-2 mt-2">
-      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: shouldUseBlackText(subjectColor) ? "1px solid #00000022" : null, color: shouldUseBlackText(subjectColor) ? "#000000" : "#ffffff"}}>Subject: {quickExtract.subject}</Badge> }
+      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: shouldUseBlackText(subjectColor) ? "1px solid #00000022" : null}} className={shouldUseBlackText(subjectColor) ? "text-black" : ""}>Subject: {quickExtract.subject}</Badge> }
       { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
       { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
@@ -391,11 +391,11 @@ export function Assignment({homeworkJson}) {
   const AssignmentActions = () => {
     return (
       <div className="d-flex gap-2">
-         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} className="start-button" buttonProps={{color: "gray", variant: "light"}} label="Start Assignment" /> }
-         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} />} buttonProps={{color: "blue", variant: "light"}} label="Click to Pause Assignment" /> }
-        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} className="complete-button" buttonProps={{color: "green", variant: "light"}} label="Complete Assignment" />
-        <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconArrowBackUp />} className="incomplete-button" buttonProps={{color: "orange", variant: "light"}} label="Mark Incomplete"  />
-        <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} buttonProps={{color: "red", variant: "light"}} label="Delete Assignment" />
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} className="start-button" color="gray.5" label="Start Assignment" /> }
+         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} />} color="blue.5" label="Click to Pause Assignment" /> }
+        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
+        <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconArrowBackUp />} className="incomplete-button" color={unpaidColor} label="Mark Incomplete"  />
+        <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
       </div>
     )
   }
@@ -447,7 +447,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   
   const [unitType, setUnitType] = React.useState("Subject");
 
-  const [onGnatt, setOnGnatt] = React.useState(true);
+  const [onGnatt, setOnGnatt] = React.useState(false);
 
   const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
 
@@ -590,7 +590,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     
     return (
       <Paper withBorder className='p-2 gap-2 chip-container' >
-        <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36, variant: "light"}} onClick={setSubjectAddMenuOpen} />
+        <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36}} onClick={setSubjectAddMenuOpen} />
         <Divider orientation="vertical" />
         {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
       </Paper>
@@ -612,12 +612,12 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
           <div className="ring-container d-none d-md-flex" >
             <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} onGnatt={onGnatt} setOnGnatt={setOnGnatt}/>
           </div>
-          <div className="d-flex w-100 flex-column align-items-start">
+          <div className="d-flex w-100 flex-column px-2 align-items-start">
             <TrackerControls />
             <div className="tracker-inputs gap-1" >
-              <div className='mt-1 d-flex gap-2 flex-row w-100 justify-content-start' >
+              <div className='gap-2 mt-1 d-flex flex-row w-100 justify-content-start' >
                 <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />        
-                <IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 36, variant: "light"}} onClick={handleAddAssignmentPress} />
+                <Center><IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 32}} onClick={handleAddAssignmentPress} /></Center>
               </div>
               <Spoiler maxHeight={width >= 1000 ? 60 : 130} showLabel="Expand Subjects" hideLabel="Collapse Subjects">
                 <SubjectFilter />

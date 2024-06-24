@@ -8,6 +8,8 @@ import ModuleHeader from "../dashboard/ModuleHeader";
 import { LinkMaster } from "../../api/links.ts";
 import { notifSuccess } from "../Notifications.jsx";
 import { Invoice } from "../../api/db/dbInvoice.ts";
+import { deleteButtonColor, viewButtonColor, acceptButtonColor } from "../../api/color.ts";
+import { pendingColor } from "../../tabs/Invoices.jsx";
 
 export const LimboTable = ({invoices, fetchInvoices}) => {
   
@@ -55,8 +57,8 @@ export const LimboTable = ({invoices, fetchInvoices}) => {
         <Table.Td><strong style={{color: invoice.getPlatformColor()}}>{invoice.limbo}</strong></Table.Td>
         <Table.Td>{invoice.generateMemo()}</Table.Td>
         <Table.Td className='d-flex gap-2'>
-          <IconButton icon={<IconCheck />} color="green" onClick={handleAccept} label="Accept" />
-          <IconButton icon={<IconX />} color="red" onClick={handleReject} label="Reject" />
+          <IconButton icon={<IconCheck />} color={acceptButtonColor} onClick={handleAccept} label="Accept" />
+          <IconButton icon={<IconX />} color={pendingColor} onClick={handleReject} label="Reject" />
         </Table.Td>
       </Table.Tr>
     )
@@ -133,8 +135,8 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
         <Table.Td>{getSlashDateString(invoice.dueAt)}</Table.Td>
         <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
         <Table.Td className='d-flex gap-2'>
-          <IconButton icon={<IconEye />} color="cyan.5" onClick={handleView} label="View" />
-          <IconButton icon={<IconTrash />} color="red.5" onClick={handleDelete} label="Delete" />
+          <IconButton icon={<IconEye />} color={viewButtonColor} onClick={handleView} label="View" />
+          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={handleDelete} label="Delete" />
         </Table.Td>
       </Table.Tr>
     )
@@ -213,8 +215,8 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
         <Table.Td>{getSlashDateString(invoice.paidAt)}</Table.Td>
         <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
         <Table.Td className='d-flex gap-2'>
-          <IconButton icon={<IconEye />} color="cyan.5" onClick={handleView} label="View" />
-          <IconButton icon={<IconTrash />} color="red.5" onClick={handleDelete} label="Delete" />
+          <IconButton icon={<IconEye />} color={viewButtonColor} onClick={handleView} label="View" />
+          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={handleDelete} label="Delete" />
         </Table.Td>
       </Table.Tr>
     )

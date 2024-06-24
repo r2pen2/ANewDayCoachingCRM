@@ -14,3 +14,10 @@ export function shouldUseBlackText(hexColor: string) {
   // Return true if the luminance is greater than the threshold (light background)
   return luminance > threshold;
 }
+
+
+export const viewButtonColor    = "light-dark(var(--mantine-color-cyan-7),    var(--mantine-color-cyan-5))"
+export const deleteButtonColor  = "light-dark(var(--mantine-color-red-7),     var(--mantine-color-red-5))"
+export const acceptButtonColor  = "light-dark(var(--mantine-color-green-8),   var(--mantine-color-green-5))"
+export const assignButtonColor  = "light-dark(var(--mantine-color-green-8),   var(--mantine-color-green-5))"
+export const unpaidColor        = "light-dark(var(--mantine-color-orange-6),  var(--mantine-color-orange-5))"
