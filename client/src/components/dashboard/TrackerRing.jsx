@@ -1,5 +1,5 @@
 import { ActionIcon, Center, Paper, Progress, RingProgress, Tooltip } from '@mantine/core'
-import { IconTimeline } from '@tabler/icons-react'
+import { IconColumns, IconTimeline } from '@tabler/icons-react'
 import React from 'react'
 import { CurrentUserContext } from '../../App'
 import { HomeworkStatus } from '../../api/db/dbHomework.ts'
@@ -61,6 +61,15 @@ function getSections(currentUser, unitType, selectedSubjects) {
   return sections;
 }
 
+const GnattIcon = ({size}) => (
+  <svg style={{height: size, width: size}} viewBox='0 0 100 100'>
+    <rect style={{rx: 10, ry: 10, fill: "light-dark(var(--mantine-color-cool-green-6), white)"}} x="0" y="0" width="65" height="45" fill="#000000" />
+    <rect style={{rx: 10, ry: 10, fill: "light-dark(var(--mantine-color-cool-green-6), white)"}} x="70" y="0" width="30" height="45" fill="#000000" />
+    <rect style={{rx: 10, ry: 10, fill: "light-dark(var(--mantine-color-cool-green-6), white)"}} x="0" y="50" width="30" height="45" fill="#000000" />
+    <rect style={{rx: 10, ry: 10, fill: "light-dark(var(--mantine-color-cool-green-6), white)"}} x="35" y="50" width="65" height="45" fill="#000000" />
+  </svg>
+)
+
 export default function TrackerRing({selectedSubjects, unitType, onGnatt, setOnGnatt}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
@@ -77,7 +86,7 @@ export default function TrackerRing({selectedSubjects, unitType, onGnatt, setOnG
         <Center>
           <Tooltip position='bottom' label={onGnatt ? "Switch to Table" : "Switch to Gnatt Chart"}>
             <ActionIcon className="line-icon" onClick={() => setOnGnatt(!onGnatt)} variant="light" size={innerCircleRadius - 80}>
-              <IconTimeline size={80}/>
+              { onGnatt ? <IconColumns size={80}/> : <GnattIcon size={60} />}
             </ActionIcon>
           </Tooltip>
         </Center>
