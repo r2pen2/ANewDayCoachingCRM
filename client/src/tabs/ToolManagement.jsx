@@ -165,9 +165,9 @@ export default function ToolManagement() {
     }
   
     /** Confirm deletion of tool */
-    function confirmDelete() { 
+    function confirmDelete(skipConfirmation = false) { 
       const numAssigned = tool.assignedTo.length;
-      if (window.confirm(`Are you sure you want to delete "${tool.title}"? It's assigned to ${numAssigned} user${numAssigned !== 1 ? "s" : '' }.`)) { handleDelete(); }
+      if (skipConfirmation || window.confirm(`Are you sure you want to delete "${tool.title}"? It's assigned to ${numAssigned} user${numAssigned !== 1 ? "s" : '' }.`)) { handleDelete(); }
     }
   
     return (
@@ -177,7 +177,7 @@ export default function ToolManagement() {
         <Table.Td>{tool.assignedTo.length}</Table.Td>
         <Table.Td className='d-flex gap-2'>
           <IconButton icon={<IconUsers />} onClick={() => setCurrentTool(tool)} color={assignButtonColor} label={`Manage "${tool.title}" Users`} />
-          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={confirmDelete} label={`Delete "${tool.title}"`} />
+          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={confirmDelete} onShiftClick={() => confirmDelete(true)} label={`Delete "${tool.title}"`} />
         </Table.Td>
       </Table.Tr>
     )

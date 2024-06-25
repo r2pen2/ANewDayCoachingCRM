@@ -118,8 +118,8 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
   )
 
   const UnpaidRow = ({invoice}) => {           
-    function handleDelete() { 
-      if (window.confirm(`Delete invoice from ${invoice.userDisplayName}?`)) {
+    function handleDelete(skipConfirmation = false) { 
+      if (skipConfirmation || window.confirm(`Delete invoice from ${invoice.userDisplayName}?`)) {
         invoice.delete().then(() => {
           fetchInvoices();
           notifSuccess("Invoice Deleted", `Invoice for ${invoice.userDisplayName} deleted.`)
@@ -136,7 +136,7 @@ export const UnpaidTable = ({invoices, fetchInvoices}) => {
         <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
         <Table.Td className='d-flex gap-2'>
           <IconButton icon={<IconEye />} color={viewButtonColor} onClick={handleView} label="View" />
-          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={handleDelete} label="Delete" />
+          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={handleDelete} onShiftClick={() => handleDelete(true)} label="Delete" />
         </Table.Td>
       </Table.Tr>
     )
@@ -197,8 +197,8 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
   )
 
   const PaidRow = ({invoice}) => {           
-    function handleDelete() { 
-      if (window.confirm(`Delete invoice from ${invoice.userDisplayName}?`)) {
+    function handleDelete(skipConfirmation = false) { 
+      if (skipConfirmation || window.confirm(`Delete invoice from ${invoice.userDisplayName}?`)) {
         invoice.delete().then(() => {
           fetchInvoices();
           notifSuccess("Invoice Deleted", `Invoice for ${invoice.userDisplayName} deleted.`)
@@ -216,7 +216,7 @@ export const PaidTable = ({invoices, fetchInvoices}) => {
         <Table.Td><NumberFormatter prefix="$" value={invoice.amount} /></Table.Td>
         <Table.Td className='d-flex gap-2'>
           <IconButton icon={<IconEye />} color={viewButtonColor} onClick={handleView} label="View" />
-          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={handleDelete} label="Delete" />
+          <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={handleDelete} onShiftClick={() => handleDelete(true)} label="Delete" />
         </Table.Td>
       </Table.Tr>
     )

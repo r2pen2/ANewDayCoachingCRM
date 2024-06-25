@@ -397,7 +397,7 @@ export function Assignment({homeworkJson}) {
          { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} />} color="blue.5" label="Click to Pause Assignment" /> }
         <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
         <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconArrowBackUp />} className="incomplete-button" color={unpaidColor} label="Mark Incomplete"  />
-        <IconButton onClick={() => homework.handleRemove(currentUser)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
+        <IconButton onClick={() => homework.handleRemove(currentUser)} onShiftClick={() => homework.handleRemove(currentUser, true)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
       </div>
     )
   }
