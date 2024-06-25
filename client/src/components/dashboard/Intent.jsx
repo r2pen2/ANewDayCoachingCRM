@@ -36,7 +36,7 @@ export default function Intent({height}) {
 
   const IntentSubmit = () => ( 
     <Tooltip label="Submit">
-      <ActionIcon variant="light" color="#658a54" onClick={() => updateIntent()}>
+      <ActionIcon onClick={() => updateIntent()}>
         <IconCheck />
       </ActionIcon>
     </Tooltip>  
@@ -44,10 +44,18 @@ export default function Intent({height}) {
 
   const IntentCancel = () => ( 
     <Tooltip label="Cancel">
-      <ActionIcon variant="light" color="#658a54" onClick={() => setNewIntentText(null)}>
+      <ActionIcon onClick={() => setNewIntentText(null)}>
         <IconX />
       </ActionIcon>
     </Tooltip>  
+  )
+
+  const IntentHistoryButton = () => (
+    <Tooltip label="See Intent History" position='bottom'>
+      <ActionIcon onClick={() => {}}>
+        <IconHistory />
+      </ActionIcon>
+    </Tooltip>
   )
 
   const meetingText = "Your next meeting is on 6/25 at 5pm."
@@ -69,18 +77,14 @@ export default function Intent({height}) {
         <div className="col-10 p-2 gap-2 d-flex flex-column intent-edit-container align-items-center justify-content-center">
           <IntentTextDisplay />
           { newIntentText !== null && <TextInput placeholder="What's your intent?" className="w-100" value={newIntentText} onKeyDown={handleEnter} onChange={(e) => setNewIntentText(e.target.value)} /> }
-          { newIntentText !== null && <div className="d-flex gap-2"><IntentSubmit /><IntentCancel /></div> }
+          { newIntentText !== null && <div className="d-flex gap-2"><IntentSubmit /><IntentCancel /><IntentHistoryButton /></div> }
         </div>
         <div className="col-1 gap-2 d-flex flex-column align-items-center justify-content-start py-2">
           {quoteRightSvg}
         </div>
       </div>
       <div className="d-flex gap-2 align-items-center">
-        <Tooltip label="See Intent History" position='bottom'>
-          <ActionIcon onClick={() => {}}>
-            <IconHistory />
-          </ActionIcon>
-        </Tooltip>
+        {/* We're going to put the LMS here */}
       </div>
     </Paper>
   )

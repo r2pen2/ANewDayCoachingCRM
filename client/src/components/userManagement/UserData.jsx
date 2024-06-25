@@ -77,7 +77,7 @@ export const PersonalData = ({user}) => {
       notifWarn("Cannot Revoke Admin", "You cannot revoke your own admin status.")
       return;
     }
-    if (!window.confirm(`Are you sure you want to revoke admin status from ${user.personalData.displayName}?`)) { return;}
+    if (!window.confirm(`Are you sure you want to revoke admin status from ${user.personalData.displayName}?`)) { return; }
     dbUser.admin = false;
     setTempAdmin(false)
     dbUser.setData().then(() => {
