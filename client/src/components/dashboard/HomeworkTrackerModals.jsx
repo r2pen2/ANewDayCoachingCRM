@@ -87,11 +87,14 @@ export const AddSubjectModal = ({open, close}) => {
   const [error, setError] = React.useState(null);
 
   function handleFormSubmit(e) {
-    e.preventDefault();
+    if (e?.preventDefault) {
+      e.preventDefault();
+    }
     if (Object.keys(currentUser.subjects).includes(newTitle)) { 
       setError("Subject already exists.");
       return;
     }
+    close();
     const newSubject = new HomeworkSubject(newTitle, newColor);
     currentUser.addSubject(newSubject).then(() => {
       notifSuccess("Subject Added", `Added subject "${newTitle}"`)
@@ -107,10 +110,16 @@ export const AddSubjectModal = ({open, close}) => {
 
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   
+  function handleEnter(e) {
+    if (e.key === "Enter") {
+      handleFormSubmit(e);
+    }
+  }
+
   return (
     <Modal opened={open} onClose={handleClose} title="Manage Subjects">
       <form className="d-flex gap-2 mt-1 mb-2" >
-        <TextInput className="w-100" required id="title" placeholder="Subject Title" onChange={(e) => { setNewTitle(e.target.value); setError(null) }} error={error}/>
+        <TextInput className="w-100" required id="title" placeholder="Subject Title" onChange={(e) => { setNewTitle(e.target.value); setError(null) }} onKeyDown={handleEnter} error={error}/>
         <PickerMenu c={newColor} setC={setNewColor} popoverOpenOverride={popoverOpen} setPopoverOpenOverride={setPopoverOpen} />
         <Center> 
           <IconButton label="Add Subject" icon={<IconSend />} onClick={handleFormSubmit} buttonProps={{size: 36}} />

@@ -10,7 +10,7 @@ export default function IconButton(props) {
   const [shiftDown, setShiftDown] = React.useState(false);
 
   function checkShift(e) {
-    if (e.shiftKey) { setShiftDown(true); }
+    if (e.shiftKey) { setShiftDown(true); } else { setShiftDown(false); }
   }
 
   function executeClick() {
@@ -24,7 +24,7 @@ export default function IconButton(props) {
   }
 
   return (
-    <Tooltip label={props.label} className={props.className} onMouseEnter={checkShift} onMouseLeave={() => setShiftDown(false)}>
+    <Tooltip label={props.label} className={props.className} onMouseMove={checkShift} onMouseLeave={() => setShiftDown(false)}>
       <ActionIcon {...props.buttonProps} color={color} disabled={props.disabled} onClick={executeClick}>
         {props.icon}
       </ActionIcon>

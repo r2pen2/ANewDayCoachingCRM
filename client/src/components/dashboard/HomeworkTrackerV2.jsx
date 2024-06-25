@@ -1,5 +1,5 @@
 // Library Imports
-import React from "react";
+import React, { useEffect } from "react";
 import { Badge, Button, Center, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Select, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconHourglassEmpty, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
 // API Imports
@@ -453,36 +453,6 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
 
   const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
 
-  const SubjectChip = ({subject, index}) => {
-
-    const selected = selectedSubjects.includes(subject)
-
-    function handleChipClick() {
-      if (selected) {
-        setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
-      } else {
-        setSelectedSubjects([...selectedSubjects, subject]);
-      }
-    }
-
-    const dark = shouldUseBlackText(currentUser.subjects[subject].color);
-    
-    const ChipDivider = () => {
-      const sKeys = Object.keys(currentUser.subjects)
-      if (subject === sKeys[sKeys.length - 1]) { return; }
-      return <Divider orientation="vertical" />
-    }
-
-    return (
-      <div className="d-flex gap-2">
-        <Chip variant={selected ? "filled" : "outline"} checked={selected} style={{border: dark && selected ? "1px solid #00000022" : ""}} color={currentUser.subjects[subject].color} readOnly onClick={handleChipClick} className={dark ? "subject-chip subject-chip-dark" : "subject-chip"}>
-          <Text size="sm" className="chip-text">{subject}</Text>
-        </Chip>
-        <ChipDivider />
-      </div>
-    )
-  }
-
   function handleAddAssignmentPress() {
     if (quickEntryString.length > 0) {
       sendQuickEntry();
@@ -594,7 +564,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
       <Paper withBorder className='p-2 gap-2 chip-container' >
         <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36}} onClick={() => setSubjectAddMenuOpen(true)} />
         <Divider orientation="vertical" />
-        {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
+        {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip selectedSubjects={selectedSubjects} setSelectedSubjects={setSelectedSubjects} subject={subject} key={index} />)}
       </Paper>
   )}
   
@@ -636,6 +606,44 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
           {onGnatt && <CRMGnatt assignments={validHomeworks} userSubjects={currentUser.subjects} />}
         </Paper>
       </Spoiler>
+    </div>
+  )
+}
+
+const SubjectChip = ({subject, selectedSubjects, setSelectedSubjects}) => {
+
+  const {currentUser} = React.useContext(CurrentUserContext);
+
+  const selected = selectedSubjects.includes(subject)
+
+  function handleChipClick() {
+    if (selected) {
+      setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
+    } else {
+      setSelectedSubjects([...selectedSubjects, subject]);
+    }
+  }
+
+  const dark = shouldUseBlackText(currentUser.subjects[subject].color);
+
+  const [color, setColor] = React.useState(currentUser.subjects[subject].color)
+
+  useEffect(() => {
+    setColor(currentUser.subjects[subject].color)
+  }, [currentUser.subjects, subject])
+  
+  const ChipDivider = () => {
+    const sKeys = Object.keys(currentUser.subjects)
+    if (subject === sKeys[sKeys.length - 1]) { return; }
+    return <Divider orientation="vertical" />
+  }
+
+  return (
+    <div className="d-flex gap-2">
+      <Chip variant={selected ? "filled" : "outline"} checked={selected} style={{border: dark && selected ? "1px solid #00000022" : ""}} color={color} readOnly onClick={handleChipClick} className={dark ? "subject-chip subject-chip-dark" : "subject-chip"}>
+        <Text size="sm" className="chip-text">{subject}</Text>
+      </Chip>
+      <ChipDivider />
     </div>
   )
 }
