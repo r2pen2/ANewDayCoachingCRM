@@ -106,7 +106,12 @@ router.post("/incomplete", (req, res) => {
       formAssignment.completedDate = null;
     }
   }
-  setUser(user);
+  setUser(user).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error(error);
+    res.json({ success: false });
+  });;
 })
 
 module.exports = router;
