@@ -32,8 +32,8 @@ export const SubjectCard = ({subject}) => {
   const [c, setC] = React.useState(subject.color);
 
   /** When the delete button is pressed, remove the subject on the user's document */
-  function handleDelete() {
-    if (window.confirm(`Are you sure you want to delete "${subject.title}"?`)) {
+  function handleDelete(skipConfirmation = false) {
+    if (skipConfirmation || window.confirm(`Are you sure you want to delete "${subject.title}"?`)) {
       currentUser.removeSubject(subject.title).then(() => {
         notifSuccess("Subject Removed", `Removed subject "${subject.title}"`)
       });
@@ -53,7 +53,7 @@ export const SubjectCard = ({subject}) => {
       <Text>{subject.title}</Text>
       <div className="d-flex gap-2">
         <PickerMenu c={c} setC={setC} onDone={updateColor} />
-        <IconButton onClick={handleDelete} icon={<IconTrash />} buttonProps={{size: 36, color: "red"}} label="Delete Subject" />
+        <IconButton onClick={handleDelete} onShiftClick={() => handleDelete(true)} icon={<IconTrash />} buttonProps={{size: 36, color: "red"}} label="Delete Subject" />
       </div>
     </Paper>
   )
@@ -592,7 +592,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     
     return (
       <Paper withBorder className='p-2 gap-2 chip-container' >
-        <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36}} onClick={setSubjectAddMenuOpen} />
+        <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36}} onClick={() => setSubjectAddMenuOpen(true)} />
         <Divider orientation="vertical" />
         {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip subject={subject} key={index} />)}
       </Paper>

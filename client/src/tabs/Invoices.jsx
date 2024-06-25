@@ -137,7 +137,7 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
               </Table.Td>
               <Table.Td className='d-flex gap-2'>
                 <IconButton label="View Invoice" color={viewButtonColor} icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
-                <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? pendingColor : acceptButtonColor} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
+                <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? unpaidColor : acceptButtonColor} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
               </Table.Td>
             </Table.Tr>
           ))}

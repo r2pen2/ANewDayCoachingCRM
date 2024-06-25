@@ -7,9 +7,25 @@ export default function IconButton(props) {
   /** Color could come from two places in the props */
   const color = props.color ? props.color : props.buttonProps?.color;
 
+  const [shiftDown, setShiftDown] = React.useState(false);
+
+  function checkShift(e) {
+    if (e.shiftKey) { setShiftDown(true); }
+  }
+
+  function executeClick() {
+    if (props.onShiftClick) {
+      if (shiftDown) {
+        props.onShiftClick();
+        return;
+      }
+    }
+    props.onClick();
+  }
+
   return (
-    <Tooltip label={props.label} className={props.className}>
-      <ActionIcon {...props.buttonProps} color={color} disabled={props.disabled} onClick={props.onClick}>
+    <Tooltip label={props.label} className={props.className} onMouseEnter={checkShift} onMouseLeave={() => setShiftDown(false)}>
+      <ActionIcon {...props.buttonProps} color={color} disabled={props.disabled} onClick={executeClick}>
         {props.icon}
       </ActionIcon>
     </Tooltip>

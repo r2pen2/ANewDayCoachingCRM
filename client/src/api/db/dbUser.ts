@@ -269,6 +269,7 @@ export class User {
   async removeSubject(title: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       delete this.subjects[title];
+      this.homework = this.homework.filter((hw) => hw.subject !== title);
       this.setData().then(() => {
         resolve();
       }).catch((error) => {
