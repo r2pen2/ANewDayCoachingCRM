@@ -104,6 +104,7 @@ router.post("/incomplete", (req, res) => {
 
       formAssignment.completed = false;
       formAssignment.completedDate = null;
+      formAssignment.started = false;
     }
   }
   setUser(user).then(() => {
