@@ -109,11 +109,11 @@ export const AddSubjectModal = ({open, close}) => {
   
   return (
     <Modal opened={open} onClose={handleClose} title="Manage Subjects">
-      <form className="d-flex gap-2 mt-1 mb-2" onSubmit={handleFormSubmit}>
+      <form className="d-flex gap-2 mt-1 mb-2" >
         <TextInput className="w-100" required id="title" placeholder="Subject Title" onChange={(e) => { setNewTitle(e.target.value); setError(null) }} error={error}/>
         <PickerMenu c={newColor} setC={setNewColor} popoverOpenOverride={popoverOpen} setPopoverOpenOverride={setPopoverOpen} />
         <Center> 
-          <IconButton label="Add Subject" icon={<IconSend />} buttonProps={{size: 36}} type="submit" />
+          <IconButton label="Add Subject" icon={<IconSend />} onClick={handleFormSubmit} buttonProps={{size: 36}} />
         </Center>
       </form>
       <SubjectList />
