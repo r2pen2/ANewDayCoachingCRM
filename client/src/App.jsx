@@ -69,8 +69,6 @@ const AppContent = memo(function AppContent({currentUserId}) {
         return <FormManagement />
       case navigationItems.ADMININVOICES:
         return <InvoiceManagement />
-      case navigationItems.ADMINDRIVE:
-        return <DriveManagement />
       case navigationItems.ADMINUSERS:
         return <UserManagement />
       default:

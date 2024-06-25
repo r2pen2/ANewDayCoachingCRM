@@ -1,11 +1,14 @@
 // Library Imports
 import {AppShell, Badge, NavLink } from "@mantine/core"
-import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconBrandGoogleDrive, IconUserCog } from '@tabler/icons-react';
+import { IconHome2, IconCreditCard, IconCalendarEvent, IconSettings, IconFiles, IconTools, IconBrandGoogleDrive, IconUserCog, IconBrandGithub } from '@tabler/icons-react';
 import { useContext, useState } from "react";
 // Component Imports
 import { CurrentUserContext } from "../App";
 
 import "../assets/style/navigation.css"
+import { LinkMaster } from "../api/links.ts";
+
+const todoLink = "https://github.com/r2pen2/ANewDayCoachingCRM/issues";
 
 /**
  * Object containing names for navigation tabs.
@@ -25,8 +28,8 @@ export const navigationItems = {
   ADMINTOOLS: "tools-admin",
   ADMINFORMS: "forms-admin",
   ADMININVOICES: "invoices-admin",
-  ADMINDRIVE: "drive-admin",
   ADMINUSERS: "users-admin",
+  TODO: "todo",
 }
 
 /**
@@ -76,6 +79,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
     
     function handleClick() {
       setWiggling(true);
+      if (tabKey === navigationItems.TODO) { window.open(LinkMaster.ensureAbsoluteUrl(todoLink), "_blank"); return; }
       updateTab(tabKey);
       setTimeout(() => setWiggling(false), 500);
     } 
@@ -118,18 +122,18 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
         tabKey={navigationItems.ADMININVOICES}
       />,
       <WiggleClickNavLink
-        key="admin-drive-nav"
-        label="Manage Drive"
-        description="Upload shared Google Drive files to appear on users' dashboards."
-        leftSection={<IconBrandGoogleDrive {...iconProps} />}
-        tabKey={navigationItems.ADMINDRIVE}
-      />,
-      <WiggleClickNavLink
         key="admin-users-nav"
         label="Manage Users"
         description="Manage all users, including their roles and personal information."
         leftSection={<IconUserCog {...iconProps} />}
         tabKey={navigationItems.ADMINUSERS}
+      />,
+      <WiggleClickNavLink
+        key="todo-nav"
+        label="GitHub Todos"
+        description="Visit my Github page and check the status of todo items."
+        leftSection={<IconBrandGithub {...iconProps} />}
+        tabKey={navigationItems.TODO}
       />,
     ]
   }
