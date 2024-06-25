@@ -17,7 +17,7 @@ export const LimboTable = ({invoices, fetchInvoices}) => {
   const [sortReversed, setSortReversed] = useState(false)
   const [userQuery, setUserQuery] = useState("")
 
-  const limboInvoices = Invoice.sortBy(Object.values(invoices));
+  const limboInvoices = Invoice.sortBy(Object.values(invoices), sort, sortReversed);
   const filteredLimboInvoices = Invoice.filterByUserQuery(limboInvoices, userQuery);
   
   const [scrolled, setScrolled] = useState(false);
