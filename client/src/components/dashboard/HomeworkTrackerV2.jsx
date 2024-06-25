@@ -323,10 +323,12 @@ export function Assignment({homeworkJson}) {
         notifSuccess("Assignment Updated", `Changed ${dateType} date to: "${getSlashDateString(date)}"`)
       });
     }
+
     
     getDateString() {
-      if (!homework[this.targetField]) { return ""; }
-      return getSlashDateString(getOrthodoxDate(homework[this.targetField]));
+      const d = homework[this.targetField]
+      if (!d) { return ""; }
+      return getSlashDateString(getOrthodoxDate(d));
     }
 
     getDateInputLabel() {

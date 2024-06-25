@@ -70,7 +70,7 @@ export const PersonalData = ({user}) => {
   const [rolePopoverOpen, setRolePopoverOpen] = useState(false)
 
   const {currentUser} = useContext(CurrentUserContext)
-  const isMe = currentUser.id === user.id;
+  const isMe = currentUser?.id === user?.id;
 
   const revokeAdmin = () => {
     if (isMe) {
