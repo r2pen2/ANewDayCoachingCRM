@@ -4,6 +4,7 @@ import canvasLogo from "../assets/images/lms/canvas.svg"
 import blackboardLogo from "../assets/images/lms/blackboard.svg"
 import classroomLogo from "../assets/images/lms/classroom.svg"
 import schoologyLogo from "../assets/images/lms/schoology.webp"
+import { IconExternalLink } from "@tabler/icons-react"
 
 export const LMSIcon = ({name, size = "1.25rem"}) => {
   const lmsIconStyle = {height: size, width: size}
@@ -17,6 +18,6 @@ export const LMSIcon = ({name, size = "1.25rem"}) => {
     case LMS.SCHOOLOGY:
       return <img src={schoologyLogo} alt="Schoology" style={lmsIconStyle}/>
     default:
-      return null;
+      return <IconExternalLink style={lmsIconStyle}/>
   }
 }

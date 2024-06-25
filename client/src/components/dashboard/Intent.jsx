@@ -1,9 +1,10 @@
 import React from 'react'
 import { CurrentUserContext } from '../../App'
-import { ActionIcon, Avatar, Modal, Paper, Text, TextInput, Tooltip } from '@mantine/core'
-import { IconCheck, IconEdit, IconHistory, IconSend, IconTools, IconX } from '@tabler/icons-react'
-import IconButton from '../IconButton'
+import { ActionIcon, Avatar, Button, Paper, Text, TextInput, Tooltip } from '@mantine/core'
+import { IconCheck, IconExternalLink, IconHistory, IconX } from '@tabler/icons-react'
 import { notifSuccess, notifWarn } from '../Notifications'
+import { LMSIcon } from '../LMS'
+import { LinkMaster } from '../../api/links.ts'
 
 export default function Intent({height}) {
 
@@ -84,7 +85,9 @@ export default function Intent({height}) {
         </div>
       </div>
       <div className="d-flex gap-2 align-items-center">
-        {/* We're going to put the LMS here */}
+        <Button rightSection={<LMSIcon name={currentUser.schoolInfo.LMSName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.LMSHref, "_blank"))}>
+          Go to {currentUser.schoolInfo.LMSName !== "Other" ? currentUser.schoolInfo.LMSName : "Your LMS"}
+        </Button>
       </div>
     </Paper>
   )
