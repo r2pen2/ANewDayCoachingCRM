@@ -477,6 +477,10 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   });
 
   const [selectedSubjects, setSelectedSubjects] = React.useState(Object.keys(currentUser.subjects));
+
+  useEffect(() => {
+    setSelectedSubjects(Object.keys(currentUser.subjects));
+  }, [currentUser.subjects])
   
   React.useEffect(() => {
     extractQuickEntry();
