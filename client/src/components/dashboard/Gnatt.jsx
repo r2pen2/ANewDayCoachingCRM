@@ -1,5 +1,5 @@
 import { Scheduler } from "@r2pen2/crm-gnatt";
-import { Spoiler, useMantineColorScheme } from "@mantine/core";
+import { Spoiler, Text, useMantineColorScheme } from "@mantine/core";
 import { getOrthodoxDate } from "../../api/dates.ts";
 import "@r2pen2/crm-gnatt/dist/style.css"
 
@@ -12,9 +12,18 @@ export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
 
   const {colorScheme} = useMantineColorScheme()
 
+  const NoDataNotif = () => {
+    return (
+      <div className="d-flex flex-row align-items-center justify-content-center p-5 w-100">
+        <Text>You don't have any assignments that will show on the Gnatt cart: try adding something with both a <strong>start date</strong> and a <strong>due date</strong></Text>
+      </div>
+    )
+  }
+
   return (
     <Spoiler maxHeight={400} style={{minHeight: 400}} showLabel="Expand Gnatt Chart" hideLabel="Collapse Gnatt Chart">
-      <Scheduler data={gnattData} isLoading={isLoading} zoom={0} dark={colorScheme !== "light"} onTileClick={(t) => console.log(t)}/>
+      {gnattData.length > 0 && <Scheduler data={gnattData} isLoading={isLoading} zoom={0} dark={colorScheme !== "light"} onTileClick={(t) => console.log(t)}/>}
+      {gnattData.length <= 0 && <NoDataNotif />}
     </Spoiler>
   );
 }
