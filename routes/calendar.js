@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 
 router.use(bodyParser.json());
 
-const GOOGLE_CALENDAR_ID = "joedobbelaar@gmail.com"
+const GOOGLE_CALENDAR_ID = "rdayanim@gmail.com"
   
 const jwtClient = new google.auth.JWT(
   serviceAccountKey.client_email,
