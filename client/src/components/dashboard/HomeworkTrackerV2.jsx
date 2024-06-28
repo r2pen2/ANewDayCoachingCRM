@@ -458,7 +458,7 @@ export function Assignment({homeworkJson}) {
 
     return (
       <div className="d-flex flex-row align-items-center gap-2">      
-        <Tooltip onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(homework.href, "_blank"))} position="right" label={"Open Assignment"}>       
+        <Tooltip onClick={() => Homework.openLink(homework)} position="right" label={"Open Assignment"}>       
           <Center style={{cursor: "pointer"}}>
             <IconExternalLink size="1rem"/>
           </Center>
@@ -486,12 +486,12 @@ export function Assignment({homeworkJson}) {
             <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-start gap-sm-2 gap-1 w-100" style={{flexWrap: "wrap"}}>
               <div className="d-flex mt-sm-0 mt-1 justify-content-between justify-content-sm-start gap-2">
                 <AssignmentBadgeField field="subject" />
-                <ExternalLink />
                 <div className="d-sm-none d-flex gap-2">
                   <Divider orientation="vertical"/>
                   <AssignmentBadgeField field="priority" />
                 </div>
               </div>
+              <ExternalLink />
               <AssignmentTextField field="description" />
             </div>
           </div>

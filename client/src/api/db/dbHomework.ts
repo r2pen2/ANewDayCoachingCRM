@@ -1,4 +1,4 @@
-import { notifSuccess } from "../../components/Notifications";
+import { notifFail, notifSuccess } from "../../components/Notifications";
 import { LinkMaster } from "../links.ts";
 import { User } from "./dbUser";
 
@@ -166,6 +166,20 @@ export class Homework {
   handlePause(currentUser: User) {
     if (!currentUser) { console.error("No user found for homework assignment"); return; }
     currentUser.pauseHomework(this).then(() => notifSuccess("Assignment Paused", `Paused assignment: "${this.description}"`));
+  }
+
+  static openLink(homework: any): void {
+    if (!homework.href) { 
+      notifFail("No Link Found", "No link was found for this assignment");
+      return;
+    }
+    const absoluteUrl = LinkMaster.ensureAbsoluteUrl(homework.href);
+    const validUrlMatch = /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+    if (!absoluteUrl.match(validUrlMatch)) {
+      notifFail("Invalid Link", `The URL "${absoluteUrl}" invalid`);
+      return;
+    }
+    window.open(absoluteUrl, "_blank")
   }
 }
 

@@ -6,7 +6,7 @@ import "@r2pen2/crm-gnatt/dist/style.css"
 import "../../assets/style/gnatt.css"
 import { getSlashDateString } from "../../api/strings.js";
 import { notifWarn } from "../Notifications.jsx";
-import { LinkMaster } from "../../api/links.ts";
+import { Homework } from "../../api/db/dbHomework.ts";
 
 export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
 
@@ -27,7 +27,7 @@ export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
       notifWarn("Could not open assignment", "This assignment doesn't have a link attached to it!")
       return;
     }
-    window.open(LinkMaster.ensureAbsoluteUrl(homework.href), "_blank");
+    Homework.openLink(homework)
   }
 
   return (
