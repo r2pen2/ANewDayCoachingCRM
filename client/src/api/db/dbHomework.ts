@@ -167,11 +167,6 @@ export class Homework {
     if (!currentUser) { console.error("No user found for homework assignment"); return; }
     currentUser.pauseHomework(this).then(() => notifSuccess("Assignment Paused", `Paused assignment: "${this.description}"`));
   }
-
-  openLink() {
-    if (!this.href) { return; }
-    window.open(LinkMaster.ensureAbsoluteUrl(this.href), "_blank");
-  }
 }
 
 export class HomeworkSubject {
