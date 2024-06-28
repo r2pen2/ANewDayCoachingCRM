@@ -87,8 +87,6 @@ function CalendarFrame() {
 
   const {currentUser} = useContext(CurrentUserContext);
 
-  getCalendarEvents(currentUser.personalData.email).then(events => console.log(events));
-
   return (
     <div className="mt-2 p-1 mt-xl-0 col-12 col-xl-9">
       <Paper withBorder style={{height: "100vh", position: "relative", }} className="d-flex flex-column align-items-center justify-content-center">
