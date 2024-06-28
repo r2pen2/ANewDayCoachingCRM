@@ -109,9 +109,9 @@ export const QuickEntryResults = ({quickExtract}) => {
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
 
-  if (!currentUser.subjects[quickExtract.subject] && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate) { return null; } // There's nothing in the quickExtract to display
+  if (!currentUser.subjects[quickExtract.subject] && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate && !quickExtract.href) { return null; } // There's nothing in the quickExtract to display
 
-  const subjectColor = currentUser.subjects[quickExtract.subject].color;
+  const subjectColor = quickExtract.subject ? currentUser.subjects[quickExtract.subject].color : null;
 
   return (
     <div className="align-items-center d-flex gap-2 mt-2">
@@ -119,6 +119,7 @@ export const QuickEntryResults = ({quickExtract}) => {
       { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
       { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
+      { quickExtract.href && <Badge color="gray">Link: {quickExtract.href}</Badge> }
     </div>
   )
 }

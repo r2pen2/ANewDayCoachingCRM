@@ -1,4 +1,5 @@
 import { HomeworkPriority } from "./db/dbHomework.ts";
+import { LinkMaster } from "./links.ts";
 
 /**
  * Formats a UTC date string so that it's easier to read
@@ -87,6 +88,7 @@ export function getEventTime(date) {
 export const priorityPattern = /!low|!med(ium)?|!high/i;
 export const datePattern = /\b(s|start|d|due):(\d{1,2}\/\d{1,2}(\/(\d{4}|\d{2}))?|tod(ay)?|tom(orrow)?|yes(terday)?|((next )?|(last )?)mon(day)?|((next )?|(last )?)tue(sday)?|((next )?|(last )?)wed(nesday)?|((next )?|(last )?)thu(rsday)?|((next )?|(last )?)fri(day)?|((next )?|(last )?)sat(urday)?|((next )?|(last )?)sun(day)?)/gi;
 export const subjectPattern = /#(\w+)/;
+export const linkPattern = /(?:link:|>)(\S+)/;
 
 export function parseQuickEntry(string) {
   let priority = null;
@@ -94,6 +96,7 @@ export function parseQuickEntry(string) {
   let dueDate = null;
   let description = string.trim();
   let subject = null;
+  let href = null;
 
   // Extract and set priority
   const priorityMatch = description.match(priorityPattern);
@@ -212,11 +215,20 @@ export function parseQuickEntry(string) {
     description = description.replace(subjectPattern, '').trim();
   }
 
+  // Extract and set href
+  const hrefMatch = description.match(linkPattern);
+  if (hrefMatch) {
+    href = hrefMatch[1];
+    // Remove the href from the description
+    description = description.replace(linkPattern, '').trim();
+  }
+
   return {
     priority: priority,
     startDate: startDate,
     dueDate: dueDate,
     subject: subject,
-    description: description
+    description: description,
+    href: href ? LinkMaster.ensureAbsoluteUrl(href) : null
   };
 }
