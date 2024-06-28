@@ -22,6 +22,7 @@ export const AddHomeworkModal = ({open, close}) => {
     const dueDate = document.getElementById('due-date').value;
     let priority = document.getElementById('priority').value;
     const estTime = document.getElementById('est-time').value;
+    const href = document.getElementById('link').value;
     if (!priority) { priority = HomeworkPriority.LOW; }
     
     
@@ -32,6 +33,7 @@ export const AddHomeworkModal = ({open, close}) => {
     newHomework.dueDate = new Date(dueDate);
     newHomework.priority = priority;
     newHomework.estTime = estTime;
+    newHomework.href = href.length > 0 ? href : null;
 
     currentUser.addHomework(newHomework).then(() => {
       notifSuccess("Assignment Added", `Added assignment: "${description}"`)
@@ -55,6 +57,7 @@ export const AddHomeworkModal = ({open, close}) => {
           <TextInput label="Estimated Time" id="est-time" placeholder="How long will it take?"  w={"100%"}  />
           <Select label="Priority" id="priority" placeholder="Pick a priority" data={[HomeworkPriority.LOW, HomeworkPriority.MEDIUM, HomeworkPriority.HIGH]} searchable />
         </div>
+        <TextInput label="Link" id="link" placeholder="Do you have a link to the assignment?" />
 
         <div className="d-flex flex-row justify-content-end w-100">
           <Tooltip label="Add Assignment">

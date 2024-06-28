@@ -1,7 +1,7 @@
 // Library Imports
 import React, { useEffect } from "react";
 import { Badge, Button, Center, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Select, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconHourglassEmpty, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
+import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconExternalLink, IconHourglassEmpty, IconLink, IconLinkPlus, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -9,7 +9,7 @@ import { notifSuccess } from "../Notifications";
 import { CurrentUserContext } from "../../App";
 import IconButton from "../IconButton.jsx";
 import { getSlashDateString, parseQuickEntry } from "../../api/strings.js";
-import { acceptButtonColor, deleteButtonColor, shouldUseBlackText, unpaidColor } from "../../api/color.ts";
+import { acceptButtonColor, deleteButtonColor, shouldUseBlackText, unpaidColor, viewButtonColor } from "../../api/color.ts";
 import { DateInput } from "@mantine/dates";
 import { getOrthodoxDate } from "../../api/dates.ts";
 import TrackerRing, { TrackerBar, trackerOffset } from "./TrackerRing.jsx";
@@ -18,6 +18,7 @@ import { CRMGnatt } from "./Gnatt.jsx";
 
 import "../../assets/style/homeworkTracker.css";
 import useWindowDimensions from "../Window.jsx";
+import { LinkMaster } from "../../api/links.ts";
 
 /**
  * A card that displays a subject
@@ -402,6 +403,74 @@ export function Assignment({homeworkJson}) {
     )
   }
 
+  const [linkEdit, setLinkEdit] = React.useState(false);
+
+  const ExternalLink = () => {
+
+    const [tempLink, setTempLink] = React.useState(homework.href);
+
+    function updateLink() {
+      if (tempLink === homework.href) { setLinkEdit(false); return; } // No change
+      if (tempLink === "") { setLinkEdit(false); return; } // Empty string, don't update
+      homework.href = tempLink;
+      currentUser.updateHomework(homework).then(() => {
+        notifSuccess("Assignment Updated", `Changed link to: "${tempLink}"`)
+      });
+      setLinkEdit(false);
+    }
+
+    function deleteLink() {
+      if (!homework.href) { return; }
+      homework.href = null;
+      currentUser.updateHomework(homework).then(() => {
+        notifSuccess("Assignment Updated", `Removed link from assignment: "${homework.description}"`)
+      });
+    }
+
+    if (linkEdit) {
+      return (
+        <div className="d-flex flex-row align-items-center gap-2">        
+          <TextInput size="xs" placeholder="Enter assignment link..." c="dimmed" value={tempLink} onKeyDown={(e) => { if (e.key === "Enter") { updateLink() } }} onBlur={updateLink} onChange={(e) => setTempLink(e.target.value)} />
+          <Tooltip onClick={() => setLinkEdit(true)} position="right" label={"Done"}>       
+            <Center style={{cursor: "pointer"}}>
+              <IconCheck size="1rem"/>
+            </Center>
+          </Tooltip>
+          <Tooltip onClick={deleteLink} position="right" label={"Remove Link"}>       
+            <Center style={{cursor: "pointer"}}>
+              <IconTrash size="1rem"/>
+            </Center>
+          </Tooltip>
+        </div>
+      )
+    }
+
+    if (!homework.href) {
+      return (
+        <Tooltip onClick={() => setLinkEdit(true)} position="right" label={"Add Assignment Link"}>       
+          <Center style={{cursor: "pointer"}}>
+            <IconLinkPlus size="1rem"/>
+          </Center>
+        </Tooltip>
+      )
+    }
+
+    return (
+      <div className="d-flex flex-row align-items-center gap-2">      
+        <Tooltip onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(homework.href, "_blank"))} position="right" label={"Open Assignment"}>       
+          <Center style={{cursor: "pointer"}}>
+            <IconExternalLink size="1rem"/>
+          </Center>
+        </Tooltip>
+        <Tooltip onClick={() => setLinkEdit(true)} position="right" label={"Edit Assignment Link"}>       
+          <Center style={{cursor: "pointer"}}>
+            <IconLink size="1rem"/>
+          </Center>
+        </Tooltip>
+      </div>
+    )
+  }
+
   return (
     <div className={"container-fluid border-gray-bottom p-2 " + (homework.status === HomeworkStatus.COMPLETED ? "homework-completed pb-1" : "homework-incomplete pb-2")}>
       <div className="row d-flex flex-row align-items-center justify-content-between">
@@ -416,6 +485,7 @@ export function Assignment({homeworkJson}) {
             <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-start gap-sm-2 gap-1 w-100" style={{flexWrap: "wrap"}}>
               <div className="d-flex mt-sm-0 mt-1 justify-content-between justify-content-sm-start gap-2">
                 <AssignmentBadgeField field="subject" />
+                <ExternalLink />
                 <div className="d-sm-none d-flex gap-2">
                   <Divider orientation="vertical"/>
                   <AssignmentBadgeField field="priority" />

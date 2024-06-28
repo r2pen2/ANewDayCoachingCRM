@@ -1,5 +1,5 @@
 import { notifSuccess } from "../../components/Notifications";
-import { isOnMobile } from "../device";
+import { LinkMaster } from "../links.ts";
 import { User } from "./dbUser";
 
 /**
@@ -48,6 +48,7 @@ export class Homework {
   description: string | null = null;
   estTime: string | null = null;
   timestamp: number | null = null;
+  href: string | null = null;
 
   registerTimestamp(): void { this.timestamp = Date.now(); }
 
@@ -60,6 +61,7 @@ export class Homework {
     this.description = homework?.description;
     this.estTime = homework ? homework.estTime : null;
     this.timestamp = homework?.timestamp;
+    this.href = homework?.href;
   }
 
   static getPriorityColor(homework: Homework | string): string | undefined {
@@ -91,6 +93,7 @@ export class Homework {
     hw.subject = data.subject;
     hw.estTime = data.estTime;
     hw.timestamp = data.timestamp;
+    hw.href = data.href;
     return hw;
   }
 
@@ -103,7 +106,8 @@ export class Homework {
       priority: this.priority,
       description: this.description,
       estTime: this.estTime,
-      timestamp: this.timestamp
+      timestamp: this.timestamp,
+      href: this.href ? this.href : null
     }
   }
 
