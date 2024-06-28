@@ -17,7 +17,7 @@ export default function Settings() {
     role: currentUser.personalData.role
   }), [currentUser.personalData.pfpUrl, currentUser.personalData.displayName, currentUser.personalData.role])
   const personalDataMemo = useMemo(() => currentUser.personalData, [currentUser.personalData])
-  const generalMemo = useMemo(() => ({darkMode: currentUser.settings.darkMode}), [currentUser.settings.darkMode])
+  const generalMemo = useMemo(() => ({darkMode: currentUser.settings.darkMode, meetingLink: currentUser.settings.meetingLink}), [currentUser.settings.darkMode, currentUser.settings.meetingLink])
   const schoolInfoMemo = useMemo(() => currentUser.schoolInfo, [currentUser.schoolInfo])
   const homeworkTrackerMemo = useMemo(() => ({
     priorityVerbosity: currentUser.settings.priorityVerbosity,

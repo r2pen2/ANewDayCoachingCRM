@@ -174,8 +174,7 @@ export class Homework {
       return;
     }
     const absoluteUrl = LinkMaster.ensureAbsoluteUrl(homework.href);
-    const validUrlMatch = /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
-    if (!absoluteUrl.match(validUrlMatch)) {
+    if (!LinkMaster.checkValid(absoluteUrl)) {
       notifFail("Invalid Link", `The URL "${absoluteUrl}" invalid`);
       return;
     }

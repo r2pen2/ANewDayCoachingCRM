@@ -90,7 +90,8 @@ export class User {
       studentVisibility: false,
       newInvoiceEmailNotification: false,
       pendingStatusEmailNotification: false,
-    }
+    },
+    meetingLink: "",
   }
 
   constructor(firebaseUser?: any) {
@@ -135,7 +136,7 @@ export class User {
         metadata: this.metadata,
         schoolInfo: this.schoolInfo,
         syncCode: this.syncCode,
-        linkedAccounts: this.linkedAccounts
+        linkedAccounts: this.linkedAccounts,
       }
       setDoc(this.docRef, data).then(() => {
         resolve();

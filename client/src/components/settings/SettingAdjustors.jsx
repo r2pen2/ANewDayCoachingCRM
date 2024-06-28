@@ -1,11 +1,12 @@
 import { memo, useContext, useState } from "react";
 import { CurrentUserContext } from "../../App";
-import { notifSuccess } from "../Notifications";
+import { notifFail, notifSuccess } from "../Notifications";
 import { Badge, Group, Indicator, Select, Switch, Text, TextInput } from "@mantine/core";
 import { updateAfterSwitchFlip } from "../../api/settings.ts";
 import { LMSIcon } from "../LMS.jsx";
 import { LMS } from "../../api/db/dbUser.ts";
 import { HomeworkPriority, HomeworkPriorityVerbosity } from "../../api/db/dbHomework.ts";
+import { LinkMaster } from "../../api/links.ts";
 
 export const PersonalInformationSettings = memo(function PersonalInformationSettings({personalData}) {
   
@@ -148,6 +149,7 @@ export const GeneralSettings = memo(function GeneralSettings({general}) {
   
   const {currentUser} = useContext(CurrentUserContext);
   const [tempDarkmodeSetting, setTempDarkmodeSetting] = useState(general.darkMode)
+  const [tempMeetingLink, setTempMeetingLink] = useState(general.meetingLink)
   
   function changeDarkmode() {
     const newValue = !general.darkMode
@@ -155,6 +157,16 @@ export const GeneralSettings = memo(function GeneralSettings({general}) {
       currentUser.changeSetting('darkMode', newValue);
       notifSuccess("Color Theme Updated", `Darkmode has been turned ${newValue ? "on" : "off"}.`)
     })
+  }
+
+  function handleMeetingLinkKeyDown(e) { if (e.key === "Enter") { handleMeetingLinkSubmit() } }
+
+  function handleMeetingLinkSubmit() {
+    if (tempMeetingLink === "") { return; }
+    if (tempMeetingLink === general.meetingLink) { return; }
+    if (!LinkMaster.checkValid(tempMeetingLink)) { notifFail("Invalid Link", "The link you entered is not valid."); return; }
+    currentUser.changeSetting('meetingLink', tempMeetingLink);
+    notifSuccess("Meeting Link Updated", `Your meeting link has been set to ${tempMeetingLink}.`)
   }
 
   return (
@@ -169,6 +181,16 @@ export const GeneralSettings = memo(function GeneralSettings({general}) {
         </div>
         <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempDarkmodeSetting} onClick={changeDarkmode}/>
       </Group>
+      <TextInput
+          className="col-12" 
+          label="Meeting Link" 
+          placeholder='https://www.meet.google.com/meet-with-my-coach/'
+          type='url'
+          value={tempMeetingLink}
+          onChange={t => setTempMeetingLink(t.target.value)}
+          onBlur={handleMeetingLinkSubmit}
+          onKeyDown={handleMeetingLinkKeyDown}
+      />      
     </div>
   )
 })
