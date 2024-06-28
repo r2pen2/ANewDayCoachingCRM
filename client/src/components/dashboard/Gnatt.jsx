@@ -4,7 +4,9 @@ import { getOrthodoxDate } from "../../api/dates.ts";
 import "@r2pen2/crm-gnatt/dist/style.css"
 
 import "../../assets/style/gnatt.css"
-import { getGnattDayString, getSlashDateString } from "../../api/strings.js";
+import { getSlashDateString } from "../../api/strings.js";
+import { notifWarn } from "../Notifications.jsx";
+import { LinkMaster } from "../../api/links.ts";
 
 export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
 
@@ -20,9 +22,17 @@ export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
     )
   }
 
+  const openHomework = (homework) => {
+    if (!homework.href) { 
+      notifWarn("Could not open assignment", "This assignment doesn't have a link attached to it!")
+      return;
+    }
+    window.open(LinkMaster.ensureAbsoluteUrl(homework.href), "_blank");
+  }
+
   return (
     <Spoiler maxHeight={400} style={{minHeight: 400}} showLabel="Expand Gnatt Chart" hideLabel="Collapse Gnatt Chart">
-      {gnattData.length > 0 && <Scheduler data={gnattData} isLoading={isLoading} zoom={0} dark={colorScheme !== "light"} onTileClick={(t) => console.log(t)}/>}
+      {gnattData.length > 0 && <Scheduler data={gnattData} isLoading={isLoading} zoom={0} dark={colorScheme !== "light"} onTileClick={(hw) => openHomework(hw)}/>}
       {gnattData.length <= 0 && <NoDataNotif />}
     </Spoiler>
   );
@@ -57,7 +67,8 @@ function formatAssignmentDataForGnatt(assignments, userSubjects) {
         endDate: getOrthodoxDate(assignment.dueDate),
         title: assignment.description,
         bgColor: userSubjects[assignment.subject].color,
-        description: `${getSlashDateString(getOrthodoxDate(assignment.startDate))} - ${getSlashDateString(getOrthodoxDate(assignment.dueDate))}`
+        description: `${getSlashDateString(getOrthodoxDate(assignment.startDate))} - ${getSlashDateString(getOrthodoxDate(assignment.dueDate))}`,
+        href: assignment.href
       })
     }
   }
