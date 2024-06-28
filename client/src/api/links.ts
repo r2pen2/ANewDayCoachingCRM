@@ -20,7 +20,8 @@ export class LinkMaster {
    * @property {string} calendarEmbed - The link to the calendar embed.
    */
   static schedule: any = {
-    calendarEmbed: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ2J3ZABQTIlgx_Exw3x8rZU6w_jmcQOhL_S99FeVu1B4BXLWwMO-XX6c_73b8p_3fyLDKiYpVWU?gv=true"
+    // calendarEmbed: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ2J3ZABQTIlgx_Exw3x8rZU6w_jmcQOhL_S99FeVu1B4BXLWwMO-XX6c_73b8p_3fyLDKiYpVWU?gv=true"
+    calendarEmbed: "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ308pX7pxccuilKOklCZRf9CfOrj2OaxKEsLwGnAS4yGpxfNbbwB1H8N6-pH8ZyY4tzii_fhbkw"
   }
 
   static createVenmoLink(amount: number, invoiceNumber: number, displayName: string): string {

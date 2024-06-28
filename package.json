@@ -23,6 +23,6 @@
     "express": "^4.19.2",
     "firebase-admin": "^12.1.0",
     "googleapis": "^135.0.0",
-    "stripe": "^15.2.0"
+    "stripe": "^15.2.0" 
   }
 }
