@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   return (
     <div className="container-fluid px-2 w-100">
-      <div className="row w-100">     
+      <div className="row">
         <div className="d-xxl-none col-12 indicator-container">
           <Carousel height="auto" slideGap={10} withControls={false} withIndicators>
             <CarouselSlide>

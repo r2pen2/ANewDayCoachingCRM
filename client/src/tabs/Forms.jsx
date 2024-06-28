@@ -62,7 +62,7 @@ const FormsDisplay = memo(function FormsDisplay({forms}) {
     }
 
     return (
-      forms.map((form, index) => <div className="col-4 mb-2" key={index}><FormCard form={form} /></div>)
+      forms.map((form, index) => <div className="col-12 col-xl-3 mb-2" key={index}><FormCard form={form} /></div>)
     )
   }
 )
