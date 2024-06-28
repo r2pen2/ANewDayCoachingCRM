@@ -38,9 +38,9 @@ router.get("/events" , (req, res) => {
     } else { 
       if (result.data.items.length) {
         const events = result.data.items;
-        res.send(JSON.stringify({ events: events })); 
+        res.json({ events: events }); 
       } else { 
-        res.send(JSON.stringify({ message: 'No upcoming events found.' })); 
+        res.json(({ events: [] })); 
       } 
     } 
   }); 

@@ -1,15 +1,16 @@
 // Library Imports
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Loader, Paper, Spoiler, Text } from "@mantine/core";
 
 // API Imports
 import { getEventTime, getVerboseDateString } from "../api/strings.js";
 import { LinkMaster } from "../api/links.ts";
-import { mockEvents } from "../api/calendar.ts";
+import { getCalendarEvents, mockEvents } from "../api/calendar.ts";
 
 // Style Imports
 import "../assets/style/schedule.css";
 import ModuleHeader from "../components/dashboard/ModuleHeader.jsx";
+import { CurrentUserContext } from "../App.jsx";
 
 
 export default function Schedule() {
@@ -83,6 +84,10 @@ function CalendarFrame() {
       </div>
     )
   }
+
+  const {currentUser} = useContext(CurrentUserContext);
+
+  getCalendarEvents(currentUser.personalData.email).then(events => console.log(events));
 
   return (
     <div className="mt-2 p-1 mt-xl-0 col-12 col-xl-9">
