@@ -107,7 +107,7 @@ export class Homework {
       description: this.description,
       estTime: this.estTime,
       timestamp: this.timestamp,
-      href: this.href
+      href: this.href ? this.href : null
     }
   }
 
