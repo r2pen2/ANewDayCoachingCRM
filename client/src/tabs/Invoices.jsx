@@ -63,7 +63,7 @@ export default function Invoices() {
   const invoicesPulledMemo = useMemo(() => invoicesPulled, [invoicesPulled])
   
   return <div className='d-flex flex-column gap-2 py-2 px-1 align-items-center justify-content-center container-fluid'>
-    <PayModal />
+      <PayModal />
       <div className="row w-100">
         <div className="p-1 col-12 col-lg-3 gap-2 d-flex flex-column align-items-start justify-content-start">
           <InvoiceStats invoices={invoicesMemo} invoicesPulled={invoicesPulledMemo} />
