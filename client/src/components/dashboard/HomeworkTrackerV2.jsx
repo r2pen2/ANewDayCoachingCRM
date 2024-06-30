@@ -18,7 +18,6 @@ import { CRMGnatt } from "./Gnatt.jsx";
 
 import "../../assets/style/homeworkTracker.css";
 import useWindowDimensions from "../Window.jsx";
-import { LinkMaster } from "../../api/links.ts";
 
 /**
  * A card that displays a subject
@@ -394,7 +393,7 @@ export function Assignment({homeworkJson}) {
 
   const AssignmentActions = () => {
     return (
-      <div className="d-flex gap-2">
+      <div className="d-flex gap-2 mt-2 mt-sm-0">
          { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} className="start-button" color="gray.5" label="Start Assignment" /> }
          { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} color="white" />} color="blue.5" label="Click to Pause Assignment" /> }
         <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
@@ -489,9 +488,13 @@ export function Assignment({homeworkJson}) {
                 <div className="d-sm-none d-flex gap-2">
                   <Divider orientation="vertical"/>
                   <AssignmentBadgeField field="priority" />
+                  <Divider orientation="vertical" />
+                  <ExternalLink />
                 </div>
               </div>
-              <ExternalLink />
+              <div className="d-none d-sm-flex">
+                <ExternalLink />
+              </div>
               <AssignmentTextField field="description" />
             </div>
           </div>
@@ -656,7 +659,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   return (
     <div className="d-flex flex-column" >
       <Paper withBorder className="tracker-header">
-        <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center">
+        <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center tracker-header-text">
           My Assignments
           <IconButton label={onGnatt ? "Switch to Table" : "Switch to Gnatt Chart"} className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={() => setOnGnatt(!onGnatt)} />
         </h3>

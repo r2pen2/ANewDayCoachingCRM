@@ -30,6 +30,14 @@
   flex-direction: column;
 }
 
+h3.tracker-header-text {
+  font-size: 1rem !important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .chip-container {
   display: flex;
   flex-direction: row;

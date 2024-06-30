@@ -4,7 +4,9 @@ import { auth } from "../../api/firebase";
 
 export const UserCard = memo(function UserCard({user}) {
 
-  const SettingsAvatar = () => <Avatar mx="auto" src={user.pfpUrl} alt={user.displayName} size={120} style={{marginBottom: "1rem"}} />
+  const getInitials = (name) => name ? name.split(" ").map((n) => n[0]).join("") : "??"
+
+  const SettingsAvatar = () => user.pfpUrl ? <Avatar mx="auto" src={user.pfpUrl} alt={user.displayName} size={120} style={{marginBottom: "1rem"}} /> :  <Avatar mx="auto" alt={user.displayName} size={120} style={{marginBottom: "1rem"}}>{getInitials(user.displayName)}</Avatar>
 
   return (
     <div className="col-12 col-md-6 col-lg-4 col-xxl-2 px-0 px-md-2 mb-2 ">
