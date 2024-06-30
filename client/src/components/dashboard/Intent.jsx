@@ -84,13 +84,17 @@ export default function Intent({height}) {
           {quoteRightSvg}
         </div>
       </div>
-      <div className="d-flex gap-2 align-items-center">
-        <Button rightSection={<LMSIcon name={currentUser.schoolInfo.LMSName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.LMSHref, "_blank"))}>
-          Go to {currentUser.schoolInfo.LMSName !== "Other" ? currentUser.schoolInfo.LMSName : "Your LMS"}
-        </Button>
-        {currentUser?.settings?.meetingLink && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.settings.meetingLink, "_blank"))}>
-          Join Meeting
-        </Button>}
+      <div className="row w-100 gap-2">
+        <div className="col-12">
+          <Button rightSection={<LMSIcon name={currentUser.schoolInfo.LMSName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.LMSHref, "_blank"))}>
+            Go to {currentUser.schoolInfo.LMSName !== "Other" ? currentUser.schoolInfo.LMSName : "Your LMS"}
+          </Button>
+        </div>
+        <div className="col-12">
+          {currentUser?.settings?.meetingLink && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.settings.meetingLink, "_blank"))}>
+            Join Meeting
+          </Button>}
+        </div>
       </div>
     </Paper>
   )
