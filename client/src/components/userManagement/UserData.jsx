@@ -103,31 +103,33 @@ export const PersonalData = ({user}) => {
   if (!user) { return; }
   return (
     <div className="col-12 col-lg-6 p-1 py-2">
-      <Paper withBorder className="p-2 bg-gray-1 gap-2 d-flex flex-row align-items-center justify-content-lg-start justify-content-center">
-        <Avatar src={user.pfpUrl} alt={user.displayName} className="m-0" size={100} style={{marginBottom: "1rem"}} />
-        <div className="d-flex flex-column justify-content-center">      
-          <div className="d-flex gap-2 align-items-center">
-            <Popover position="right" opened={rolePopoverOpen} onClose={() => setRolePopoverOpen(false)}>
-              <Popover.Target style={{cursor: "pointer"}} onClick={() => setRolePopoverOpen(true)} >
-                <Text fz="sm" c="dimmed"  tt="uppercase" fw={700}>{tempRole ? tempRole : "no role"}</Text>
-              </Popover.Target>
-              <Popover.Dropdown className="p-0">
-                <Paper withBorder className="p-2 d-flex flex-column align-items-center justify-content-center">
-                  <Anchor onClick={() => setRole(UserRole.STUDENT)} >Student</Anchor>
-                  <Anchor onClick={() => setRole(UserRole.PARENT)}>Parent</Anchor>
-                  <Anchor onClick={() => setRole(UserRole.COACH)} >Coach</Anchor>
-                  <Anchor onClick={() => setRole(UserRole.DEVELOPER)} >Developer</Anchor>
-                </Paper>
-              </Popover.Dropdown>
-            </Popover>
-            {tempAdmin && <Tooltip label="This account can manage tools, forms, invoices, and users."><Center><Badge rightSection={<IconX size="1rem" style={{cursor:!isMe ? 'pointer' : "not-allowed"}} onClick={revokeAdmin} />}>Admin</Badge></Center></Tooltip>}
-            {!tempAdmin && <Tooltip label={canBeAdmin ? "Promote to Admin" : "Only COACH and DEVELOPER can promoted to admin"}><Center><IconUserUp size="1rem" style={{cursor:canBeAdmin ? 'pointer' : "not-allowed"}} className="text-dimmed" onClick={makeAdmin} /></Center></Tooltip>}
+      <Paper withBorder className="p-2 bg-gray-1 gap-2 d-flex flex-column align-items-center justify-content-lg-start justify-content-center">
+        <div className="d-flex gap-2">
+          <Avatar src={user.pfpUrl} alt={user.displayName} className="m-0" size={100} style={{marginBottom: "1rem"}} />
+          <div className="d-flex flex-column justify-content-center">      
+            <div className="d-flex gap-2 align-items-center">
+              <Popover position="right" opened={rolePopoverOpen} onClose={() => setRolePopoverOpen(false)}>
+                <Popover.Target style={{cursor: "pointer"}} onClick={() => setRolePopoverOpen(true)} >
+                  <Text fz="sm" c="dimmed"  tt="uppercase" fw={700}>{tempRole ? tempRole : "no role"}</Text>
+                </Popover.Target>
+                <Popover.Dropdown className="p-0">
+                  <Paper withBorder className="p-2 d-flex flex-column align-items-center justify-content-center">
+                    <Anchor onClick={() => setRole(UserRole.STUDENT)} >Student</Anchor>
+                    <Anchor onClick={() => setRole(UserRole.PARENT)}>Parent</Anchor>
+                    <Anchor onClick={() => setRole(UserRole.COACH)} >Coach</Anchor>
+                    <Anchor onClick={() => setRole(UserRole.DEVELOPER)} >Developer</Anchor>
+                  </Paper>
+                </Popover.Dropdown>
+              </Popover>
+              {tempAdmin && <Tooltip label="This account can manage tools, forms, invoices, and users."><Center><Badge rightSection={<IconX size="1rem" style={{cursor:!isMe ? 'pointer' : "not-allowed"}} onClick={revokeAdmin} />}>Admin</Badge></Center></Tooltip>}
+              {!tempAdmin && <Tooltip label={canBeAdmin ? "Promote to Admin" : "Only COACH and DEVELOPER can promoted to admin"}><Center><IconUserUp size="1rem" style={{cursor:canBeAdmin ? 'pointer' : "not-allowed"}} className="text-dimmed" onClick={makeAdmin} /></Center></Tooltip>}
+            </div>
+            <Text fz="lg" fw={500}>{user.personalData.displayName}</Text>
+            <Group wrap="nowrap" gap={10} mt={3}>
+              <IconStar stroke={1.5} size="1rem" className="text-dimmed"/>
+              <Text fz="xs" c="dimmed">"{user.intents[0]}"</Text>
+            </Group>
           </div>
-          <Text fz="lg" fw={500}>{user.personalData.displayName}</Text>
-          <Group wrap="nowrap" gap={10} mt={3}>
-            <IconStar stroke={1.5} size="1rem" className="text-dimmed"/>
-            <Text fz="xs" c="dimmed">"{user.intents[0]}"</Text>
-          </Group>
         </div>
         <Divider orientation="vertical" className="mx-2" />
         <div className="d-flex flex-column align-items-start justify-content-start">
@@ -261,8 +263,8 @@ export const SyncData = ({user, changeSelectedUser}) => {
   if (!user) { return; }
   return (
     <div className="col-12 col-lg-6 p-1 py-2">
-      <Paper withBorder className="h-100  p-2 bg-gray-1 gap-2 d-flex flex-row align-items-center justify-content-lg-start justify-content-center">
-        <div className="w-100 d-flex align-items-center gap-2 justify-content-center flex-column">
+      <Paper withBorder className="h-100 p-2 bg-gray-1 gap-2 d-flex flex-row align-items-center justify-content-lg-start justify-content-center">
+        <div className="w-100 d-flex flex-column align-items-center justify-content-start h-100 pt-2">
           <div className="d-flex flex-row gap-2">
             <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>Sync Code</Text>
             {!editSyncCode && <Tooltip label="Regenerate Sync Code">
