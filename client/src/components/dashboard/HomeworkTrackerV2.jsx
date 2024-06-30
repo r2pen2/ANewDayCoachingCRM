@@ -651,8 +651,8 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   const AssignmentTable = () => validHomeworks.map((homework, index) => !onGnatt && <Assignment key={index} homeworkJson={homework} />)
   
   const NoDataNotif = () => (
-    <div className="d-flex flex-row align-items-center justify-content-cneter p-5 w-100">
-      <Text>You don't have any assignments that match your current filters. Try adding an assignment or changing your filter settings.</Text>
+    <div className="d-flex flex-row align-items-center justify-content-cneter p-5 w-100 text-center">
+      <Text className="w-100">You don't have any assignments that match your current filters. Try adding an assignment or changing your filter settings.</Text>
     </div>
   )
   
@@ -687,7 +687,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
       <Spoiler key="expander" maxHeight={120 * 10} showLabel="Expand Assignment Tracker" hideLabel="Collapse Assignment Tracker" className="mt-1">
         <Paper withBorder className="w-100">
           <AssignmentTable />
-          {validHomeworks.length <= 0 && <NoDataNotif />}
+          {validHomeworks.length <= 0 &&  !onGnatt && <NoDataNotif />}
           {onGnatt && <CRMGnatt assignments={validHomeworks} userSubjects={currentUser.subjects} />}
         </Paper>
       </Spoiler>
