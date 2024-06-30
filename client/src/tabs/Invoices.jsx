@@ -1,7 +1,7 @@
 // Library Imports
 import { Badge, Modal, NumberFormatter, Paper, Table } from '@mantine/core';
 import React, { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { IconCreditCardPay, IconCreditCardRefund, IconEye } from '@tabler/icons-react';
+import { IconCreditCardPay, IconCreditCardRefund, IconEye, IconTrash } from '@tabler/icons-react';
 
 // API Imports
 import { getSlashDateString } from '../api/strings';
@@ -17,7 +17,8 @@ import { FirstPageV2, SecondPage } from '../components/invoices/PaymentProcess.j
 import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
 import { CRMScrollContainer, TableSortButton } from '../components/Tables.jsx';
-import { acceptButtonColor, unpaidColor, viewButtonColor } from '../api/color.ts';
+import { acceptButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from '../api/color.ts';
+import { notifSuccess } from '../components/Notifications.jsx';
 
 export const lateColor = "red"
 export const pendingColor = "cyan.5"
@@ -76,7 +77,7 @@ export default function Invoices() {
   </div>
 }
 
-export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending, hideActions = false}) {
+export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending, onlyDelete = false, removeInvoiceFromMemo = () => {}}) {
 
   function getBadgeColor(invoice) {
     if (invoice.paid) { return "green"; }             // This is paid
@@ -98,7 +99,6 @@ export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoic
   const [sortReversed, setSortReversed] = useState(false)
 
   const sortedInvoices = Invoice.sortBy(invoices, sort, sortReversed);
-
   
   function handleSortChange(newSort) {
     return () => {
@@ -108,6 +108,15 @@ export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoic
         setSort(newSort)
         setSortReversed(false)
       }
+    }
+  }
+
+  function deleteInvoice(invoice, skipConfirmation = false) {
+    if (skipConfirmation || window.confirm("Are you sure you want to delete this invoice?")) { 
+      invoice.delete().then(() => {
+        notifSuccess("Invoice Deleted", "The invoice has been deleted.")
+      })
+      removeInvoiceFromMemo(invoice.id)
     }
   }
 
@@ -122,7 +131,7 @@ export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoic
             <Table.Th><TableSortButton sorted={sort === "dueAt"} reversed={sortReversed} onClick={handleSortChange("dueAt")}>Due</TableSortButton></Table.Th>
             <Table.Th>Amount</Table.Th>
             <Table.Th>Status</Table.Th>
-            {!hideActions && <Table.Th>Actions</Table.Th>}
+            <Table.Th>Actions</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -135,10 +144,11 @@ export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoic
               <Table.Td>
                 <Badge color={getBadgeColor(invoice)}>{getPaidMessage(invoice)}</Badge>
               </Table.Td>
-              {!hideActions && <Table.Td className='d-flex gap-2'>
+              <Table.Td className='d-flex gap-2'>
                 <IconButton label="View Invoice" color={viewButtonColor} icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
-                <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? unpaidColor : acceptButtonColor} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
-              </Table.Td>}
+                {!onlyDelete && <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? unpaidColor : acceptButtonColor} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />}
+                {onlyDelete && <IconButton label="Delete Invoice" color={deleteButtonColor} onShiftClick={() => deleteInvoice(invoice, true)} icon={<IconTrash />} onClick={() => deleteInvoice(invoice)} />}
+              </Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>

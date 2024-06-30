@@ -1,4 +1,4 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconAt, IconCheck, IconHome, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconUserUp, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
@@ -338,10 +338,16 @@ export function InvoiceData({user}) {
   
   if (!user) { return; }
 
+  function removeInvoice(id) {
+    setInvoices(invoices.filter(i => i.id !== id))
+  }
+
   return <div className="col-md-9 col-12 p-1">
     <Paper withBorder className="bg-dark-1">
       <ModuleHeader>Invoices</ModuleHeader>
-      <InvoiceList hideActions invoices={invoicesPulled ? invoices : []} />
+      <Spoiler maxHeight={300} showLabel="Expand Invoices" hideLabel="Collapse Invoices">    
+        <InvoiceList onlyDelete removeInvoiceFromMemo={removeInvoice} invoices={invoicesPulled ? invoices : []} />
+      </Spoiler>
     </Paper>
   </div>
 }
@@ -363,7 +369,7 @@ export function AddInvoice({user, setFullUserData}) {
       Invoice.createAndReturnId(href, amount, user, dueDate).then((id) => {
         notifSuccess("Invoice Created", `Invoice sent to ${user.personalData.displayName}`)
         user.invoices.push(id)
-        setFullUserData(user)
+        setFullUserData({...user})
       })
     }
   }
