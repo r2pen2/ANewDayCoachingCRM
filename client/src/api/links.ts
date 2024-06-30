@@ -3,7 +3,7 @@
  */
 export class LinkMaster {
 
-  static venmoUser: string = "r2pen2"
+  static venmoUser: string = "Rachel-Dayanim"
 
   /**
    * Contains payment links.
