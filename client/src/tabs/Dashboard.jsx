@@ -20,8 +20,8 @@ export default function Dashboard() {
   const [homeworkAddMenuOpen, setHomeworkAddMenuOpen] = React.useState(false);
 
   return (
-    <div className="container-fluid px-2 w-100">
-      <div className="row">
+    <div className="container-fluid w-100">
+      <div className="row px-2">
         <div className="d-xxl-none col-12 indicator-container">
           <Carousel height="auto" slideGap={10} withControls={false} withIndicators>
             <CarouselSlide>

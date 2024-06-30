@@ -1,6 +1,6 @@
 // Library Imports
 import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Anchor, Button, Divider, Group, LoadingOverlay, Paper, PasswordInput, SegmentedControl, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
@@ -11,6 +11,7 @@ import { auth } from '../api/firebase';
 import { upperFirst } from '@mantine/hooks';
 import { notifFail, notifSuccess } from '../components/Notifications';
 import { User } from '../api/db/dbUser.ts';
+import { BackgroundBeams } from '../components/ui/background-beams.tsx';
 
 
 // const GoogleIcon = () => <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Logo" style={{ width: 30, aspectRatio: "1/1", marginRight: 10, userSelect: "none" }} />
@@ -21,7 +22,8 @@ export default function Login() {
   async function signIn() {
     // Sign in with Google
     return new Promise((resolve, reject) => {
-      signInWithPopup(auth, new GoogleAuthProvider()).then((result) => { resolve(result); }).catch((error) => { console.error(error); })
+      signInWithPopup(auth, new GoogleAuthProvider()).then((result) => {
+        setLoading(true); resolve(result);  }).catch((error) => { console.error(error); setLoading(false) })
     })
   }
 
@@ -41,15 +43,21 @@ export default function Login() {
     },
   });
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const [type, setType] = useState('login');
+  useEffect(() => {
+    auth.authStateReady().then(() => setLoading(false))
+  })
 
+  const [type, setType] = useState('login')
+  
   return (
-    <div className='d-flex flex-column align-items-center justify-content-center vh-100 bg-gray-1'>
-      
+    
+    <div className='relative antialiased d-flex flex-column align-items-center justify-content-center vh-100 bg-gray-1'>
+      <BackgroundBeams />
       <LoadingOverlay visible={loading} />
-      <Paper radius="md" p="xl" withBorder>
+      {/* {loading && <Text mb="1rem">Attempting to log you in...</Text>} */}
+      <Paper radius="md" p="xl" withBorder className="bg-light-platform" style={{zIndex: 2}}>
       <Text size="lg" fw={500}>
         Welcome to A New Day Coaching, {type} with
       </Text>
