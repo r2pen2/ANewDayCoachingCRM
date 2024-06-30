@@ -36,9 +36,6 @@ export class User {
   formAssignments: FormAssignment[] = [];
   id: string;
   docRef: DocumentReference;
-  email: string;
-  displayName: string;
-  pfpUrl: string;
   tools: any[] = [];
   numUnpaidInvoices: number = 0;
   syncCode: string | null = null;
@@ -200,9 +197,6 @@ export class User {
     this.admin = data.admin;
     this.formAssignments = data.formAssignments;
     this.id = data.id;
-    this.email = data.email;
-    this.displayName = data.displayName;
-    this.pfpUrl = data.pfpUrl;
     this.personalData = data.personalData;
     this.tools = data.tools;
     this.numUnpaidInvoices = data.numUnpaidInvoices;
@@ -249,12 +243,15 @@ export class User {
 
   async linkAccount(id: string, role: UserRole): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.linkedAccounts.push(id);
-      this.setData().then(() => {
-        resolve();
-      }).catch((error) => {
-        reject(error);
-      });
+      if (this.linkedAccounts.includes(id)) { reject("Account already linked"); } else {
+        this.linkedAccounts.push(id);
+        this.linkedAccounts = this.linkedAccounts.filter(a => a !== undefined);
+        this.setData().then(() => {
+          resolve();
+        }).catch((error) => {
+          reject(error);
+        });
+      }
     })
   }
 

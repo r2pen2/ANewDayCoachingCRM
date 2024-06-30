@@ -1,5 +1,5 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Group, Loader, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconHome, IconPencil, IconPhoneCall, IconRefresh, IconSchool, IconStar, IconUserCog, IconUserUp, IconX } from "@tabler/icons-react";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, Loader, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAt, IconCheck, IconHome, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconSchool, IconStar, IconUserCog, IconUserUp, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -217,6 +217,47 @@ export const SyncData = ({user, changeSelectedUser}) => {
     return string.match(/[^A-Z0-9]/ig) === null
   }
 
+  const [linking, setLinking] = useState(false)
+
+  const link = () => {
+    const code = getCodeString(document.getElementById("sync-input").value)
+    if (!code || code.length <= 0) {
+      notifFail("Invalid Sync Code", "Sync code cannot be empty.")
+      setLinking(false);
+      return;
+    }
+    if (code === user.syncCode) {
+      notifFail("Cannot Link", "You cannot link your own account.")
+      setLinking(false);
+      return;
+    }
+    if (!checkThatCodeStringIsValid(code)) {
+      notifFail("Invalid Sync Code", "Sync code can only contain capital letters and numbers.")
+      setLinking(false);
+      return;
+    }
+    setLinking(false)
+    User.getSyncCodeOwner(code).then((u) => {
+      if (u) {
+
+        dbUser.linkAccount(u.id).then(() => {
+          notifSuccess("Account Linked", `Account linked to ${u.personalData.displayName}.`)
+        })
+      
+        const otherUser = User.getInstanceById(u.id)
+        otherUser.fillData(u)
+        otherUser.linkAccount(dbUser.id)
+      }
+    })
+
+    dbUser.linkAccount()
+  }
+
+  const copySync = () => {
+    navigator.clipboard.writeText(tempSyncCode)
+    notifSuccess("Sync Code Copied", `Sync code for ${user.personalData.displayName} copied to clipboard.`)
+  }
+
   if (!user) { return; }
   return (
     <div className="col-12 col-lg-6 p-1 py-2">
@@ -235,7 +276,7 @@ export const SyncData = ({user, changeSelectedUser}) => {
               </Center>
             </Tooltip>}
           </div>
-          {!editSyncCode && <Text fz="lg" fw={500}>{tempSyncCode}</Text>}
+          {!editSyncCode && <Text fz="lg" fw={500} style={{cursor: "pointer"}} onClick={copySync}>{tempSyncCode}</Text>}
           <div className="d-flex gap-2">
             {editSyncCode && <TextInput size="xs" c="dimmed" value={tempSyncCode} onKeyDown={handleSyncCodeKeyDown} onBlur={updateSyncCode} onChange={e => setTempSyncCode(getCodeString(e.target.value))}/>}
             {editSyncCode && 
@@ -251,6 +292,10 @@ export const SyncData = ({user, changeSelectedUser}) => {
         <div className="w-100 d-flex flex-column align-items-center justify-content-start h-100 pt-2">
           <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>Linked Accounts</Text>
           {user?.linkedAccounts.map((id, index) => <LinkedAccount changeSelectedUser={changeSelectedUser} key={index} id={id} />)}
+          {!linking && <Tooltip position="bottom" label="Link Account" onClick={() => setLinking(true)}>
+            <IconPlus stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>
+          </Tooltip>}
+          {linking && <div className="d-flex align-items-center justify-content-center w-100 gap-2"><TextInput id="sync-input" size="xs" c="dimmed" placeholder="Sync Code" onKeyDown={(e) => { if (e.key === "Enter") { link() } }} /><Tooltip label="Done"><IconCheck size="1rem" onClick={link} className="text-dimmed" /></Tooltip></div>}
         </div>
       </Paper>
     </div>
@@ -267,6 +312,7 @@ const LinkedAccount = ({id, changeSelectedUser}) => {
     changeSelectedUser(id)
   }
   if (!userData) { return <Skeleton /> }
+  if (!userData.personalData) { return; }
   return (
     <Anchor onClick={handleLinkedUserClick} className="gap-2 d-flex flex-row">
       <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
