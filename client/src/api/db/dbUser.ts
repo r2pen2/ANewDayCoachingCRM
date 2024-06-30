@@ -163,6 +163,8 @@ export class User {
       fetch(hostname + `/users/user?id=${id}`).then((response) => {
         response.json().then((data) => {
           resolve(data);
+        }).catch((error) => {
+          reject(error);
         })
       }).catch((error) => {
         reject(error);
@@ -461,6 +463,6 @@ export class User {
    * @param users list of users to sort
    */
   static sortByDisplayName(users: User[]) {
-    users.sort((a, b) => a.personalData.displayName.localeCompare(b.personalData.displayName))
+    users.sort((a, b) => a.personalData.displayName?.localeCompare(b.personalData.displayName))
   }
 }

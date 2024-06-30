@@ -67,7 +67,7 @@ router.get("/search-users", (req, res) => {
 })
 
 router.get("/user", (req, res) => {
-  res.json(allUsers[req.query.id]);
+  res.json(allUsers[req.query.id] ? allUsers[req.query.id] : {});
 })
 
 router.get("/sync", (req, res) => {
