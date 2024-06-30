@@ -1,9 +1,13 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, Loader, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconHome, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconSchool, IconStar, IconUserCog, IconUserUp, IconX } from "@tabler/icons-react";
-import { useContext, useEffect, useState } from "react";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAt, IconCheck, IconHome, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconUserUp, IconX } from "@tabler/icons-react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
 import { CurrentUserContext } from "../../App.jsx";
+import { InvoiceList } from "../../tabs/Invoices.jsx";
+import { Invoice } from "../../api/db/dbInvoice.ts";
+import ModuleHeader from "../dashboard/ModuleHeader.jsx";
+import { DateInput } from "@mantine/dates";
 
 export const PersonalData = ({user}) => {
 
@@ -102,7 +106,7 @@ export const PersonalData = ({user}) => {
 
   if (!user) { return; }
   return (
-    <div className="col-12 col-lg-6 p-1 py-2">
+    <div className="col-12 col-lg-6 p-1">
       <Paper withBorder className="p-2 bg-gray-1 gap-2 d-flex flex-column align-items-center justify-content-lg-start justify-content-center">
         <div className="d-flex gap-2">
           <Avatar src={user.pfpUrl} alt={user.displayName} className="m-0" size={100} style={{marginBottom: "1rem"}} />
@@ -262,7 +266,7 @@ export const SyncData = ({user, changeSelectedUser}) => {
 
   if (!user) { return; }
   return (
-    <div className="col-12 col-lg-6 p-1 py-2">
+    <div className="col-12 col-lg-6 p-1">
       <Paper withBorder className="h-100 p-2 bg-gray-1 gap-2 d-flex flex-row align-items-center justify-content-lg-start justify-content-center">
         <div className="w-100 d-flex flex-column align-items-center justify-content-start h-100 pt-2">
           <div className="d-flex flex-row gap-2">
@@ -320,4 +324,64 @@ const LinkedAccount = ({id, changeSelectedUser}) => {
       <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
     </Anchor>
   )
+}
+
+export function InvoiceData({user}) {
+  
+  const [invoices, setInvoices] = useState([]);
+  const [invoicesPulled, setInvoicesPulled] = useState(false);
+  
+  useEffect(() => {
+    if (!user) { return; }
+    Invoice.getForUser(user.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); })
+  }, [user])
+  
+  if (!user) { return; }
+
+  return <div className="col-md-9 col-12 p-1">
+    <Paper withBorder className="bg-dark-1">
+      <ModuleHeader>Invoices</ModuleHeader>
+      <InvoiceList hideActions invoices={invoicesPulled ? invoices : []} />
+    </Paper>
+  </div>
+}
+
+export function AddInvoice({user, setFullUserData}) {
+  
+  const [dueDate, setDueDate] = useState(null)
+  const [href, setHref] = useState("")
+  const [amount, setAmount] = useState("")
+  
+  function createInvoice(event) {
+    event.preventDefault()
+
+    setHref("")
+    setDueDate(null)
+    setAmount("")
+    
+    if (window.confirm(`Send ${user.personalData.displayName} an invoice for $${amount}?`)) {
+      Invoice.createAndReturnId(href, amount, user, dueDate).then((id) => {
+        notifSuccess("Invoice Created", `Invoice sent to ${user.personalData.displayName}`)
+        user.invoices.push(id)
+        setFullUserData(user)
+      })
+    }
+  }
+
+  const checkDisabled = !user || !dueDate || amount <= 0 || href.length <= 0
+  
+  if (!user) { return; }
+
+  return <div className="col-md-3 col-12 p-1">
+    <Paper withBorder className="bg-dark-1">
+      <ModuleHeader>Send Invoice</ModuleHeader>
+      <div className="p-2 d-flex flex-column gap-2 align-items-end">
+        <TextInput className="w-100" id="href" label="Link" placeholder="Enter a link to the invoice" required value={href} onChange={(e) => setHref(e.target.value)} />
+        <NumberInput className="w-100" id="amount" label="Amount" placeholder="Enter the invoice amount" required value={amount} leftSection="$" onChange={(v) => setAmount(parseInt(v))} />
+        <DateInput className="w-100" value={dueDate} required label="Due Date" placeholder="Due date" onChange={setDueDate} />
+        <Button type="submit" onClick={createInvoice} disabled={checkDisabled}>Send</Button>
+      </div>
+    </Paper>
+  </div>
+
 }

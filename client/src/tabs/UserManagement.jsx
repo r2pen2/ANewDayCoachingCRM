@@ -4,7 +4,7 @@ import { User } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 import { UserSelect } from '../components/userManagement/UserManagementSelectPaper.jsx';
-import { PersonalData, SyncData } from '../components/userManagement/UserData.jsx';
+import { PersonalData, SyncData, InvoiceData, AddInvoice } from '../components/userManagement/UserData.jsx';
 
 
 export default function UserManagement() {
@@ -40,6 +40,8 @@ export default function UserManagement() {
             <div className="row m-0">
               <PersonalData user={fullUserData} />
               <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} />
+              <AddInvoice user={fullUserData} setFullUserData={setFullUserData} />
+              <InvoiceData user={fullUserData} />
             </div>
           </Paper>
         </div>

@@ -137,6 +137,29 @@ export class Invoice {
     })    
   }
 
+  static async createAndReturnId(href: string, amount: number, user: any, dueDate: Date): Promise<string> {
+    
+    const invoice = new Invoice(null, -1, false, amount, new Date(), null, dueDate, href, user.id);
+    
+    return new Promise<any>((resolve, reject) => {
+      fetch(hostname + "/invoices/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoice: invoice.toJson()
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data.id);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })    
+  }
+
   static async getForUser(userId: string): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
       fetch(hostname + `/invoices?userId=${userId}`).then((response) => {

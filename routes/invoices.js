@@ -88,7 +88,7 @@ router.post("/create", (req, res) => {
     const invoiceId = ref.id;
     user.invoices.push(invoiceId);
     setUser(user).then(() => {
-      res.json({ success: true });
+      res.json({ success: true, id: invoiceId });
     }).catch((error) => {
       console.error(error);
       res.json({ success: false });

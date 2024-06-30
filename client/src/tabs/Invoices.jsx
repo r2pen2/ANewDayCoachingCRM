@@ -76,7 +76,7 @@ export default function Invoices() {
   </div>
 }
 
-const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending}) {
+export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending, hideActions = false}) {
 
   function getBadgeColor(invoice) {
     if (invoice.paid) { return "green"; }             // This is paid
@@ -122,7 +122,7 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
             <Table.Th><TableSortButton sorted={sort === "dueAt"} reversed={sortReversed} onClick={handleSortChange("dueAt")}>Due</TableSortButton></Table.Th>
             <Table.Th>Amount</Table.Th>
             <Table.Th>Status</Table.Th>
-            <Table.Th>Actions</Table.Th>
+            {!hideActions && <Table.Th>Actions</Table.Th>}
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -135,10 +135,10 @@ const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setC
               <Table.Td>
                 <Badge color={getBadgeColor(invoice)}>{getPaidMessage(invoice)}</Badge>
               </Table.Td>
-              <Table.Td className='d-flex gap-2'>
+              {!hideActions && <Table.Td className='d-flex gap-2'>
                 <IconButton label="View Invoice" color={viewButtonColor} icon={<IconEye />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(invoice.href), "_blank")} />
                 <IconButton label={invoice.checkPending() ? "Mark Unpaid" : "Pay Invoice"} color={invoice.checkPending() ? unpaidColor : acceptButtonColor} disabled={invoice.paid} icon={invoice.checkPending() ? <IconCreditCardRefund /> : <IconCreditCardPay />} onClick={() => {setCurrentInvoice(invoice); setCancellingPending(invoice.checkPending())} } />
-              </Table.Td>
+              </Table.Td>}
             </Table.Tr>
           ))}
         </Table.Tbody>
