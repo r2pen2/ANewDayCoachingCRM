@@ -1,5 +1,5 @@
 import { Anchor, Avatar, Badge, Button, Center, Divider, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconHome, IconMinus, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
+import { IconAt, IconCheck, IconForms, IconHome, IconMinus, IconNote, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -9,13 +9,11 @@ import { Invoice } from "../../api/db/dbInvoice.ts";
 import ModuleHeader from "../dashboard/ModuleHeader.jsx";
 import { DateInput } from "@mantine/dates";
 import { Tracker } from "../dashboard/HomeworkTrackerV2.jsx";
-import { CRMScrollContainer } from "../Tables.jsx";
 import { FormTableHead } from "../formManagement/formsTable.jsx";
 import IconButton from "../IconButton.jsx";
 import { allForms } from "../../api/forms.ts";
-import { assignButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from "../../api/color.ts";
+import { assignButtonColor, deleteButtonColor, unpaidColor } from "../../api/color.ts";
 import { LinkMaster } from "../../api/links.ts";
-import { FormAssignment } from "../../api/db/dbFormAssignment.ts";
 import { Tool } from "../../api/db/dbTool.ts";
 import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
 
@@ -32,22 +30,30 @@ export const PersonalData = ({user}) => {
     setEditPhone(!editPhone)
   }
 
+  const handleSharedDocEditClick = () => {
+    setEditSharedDoc(!editSharedDoc)
+  }
+
   const [tempEmail, setTempEmail] = useState("")
   const [tempPhone, setTempPhone] = useState("")
   const [tempAdmin, setTempAdmin] = useState(false)
+  const [tempSharedDoc, setTempSharedDoc] = useState("")
 
   useEffect(() => {
     setTempEmail(user?.personalData.email)
     setTempPhone(user?.personalData.phoneNumber)
     setTempRole(user?.personalData.role)
     setTempAdmin(user?.admin)
+    setTempSharedDoc(user?.schoolInfo.sessionNotes.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
   }, [user])
   
   const [editEmail, setEditEmail] = useState(false)
   const [editPhone, setEditPhone] = useState(false)
+  const [editSharedDoc, setEditSharedDoc] = useState(false)
 
   const handleEmailEditKeyDown = (e) => { if (e.key === "Enter") { updateEmail() } }
   const handlePhoneEditKeyDown = (e) => { if (e.key === "Enter") { updatePhoneNumber() } }
+  const handleSharedDocKeyDown = (e) => { if (e.key === "Enter") { updateSharedDoc() } }
 
   const updateEmail = () => {
     if (tempEmail.length <= 0) { return; }
@@ -67,6 +73,22 @@ export const PersonalData = ({user}) => {
     dbUser.setData().then(() => { 
       notifSuccess("Phone Number Updated", `Phone number for ${user.personalData.displayName} updated to ${tempPhone}.`)
     });
+  }
+  
+  const updateSharedDoc = () => {
+    if (tempSharedDoc.length <= 0) { return; }
+    if (tempSharedDoc === user.schoolInfo.sessionNotes) { return; }
+    setEditSharedDoc(false)
+    const absoluteUrl = LinkMaster.ensureAbsoluteUrl(tempSharedDoc);
+    if (LinkMaster.checkValid(absoluteUrl)) {
+      dbUser.schoolInfo.sessionNotes = tempSharedDoc;
+      dbUser.setData().then(() => { 
+        notifSuccess("Session Noted Link Updated", `Session notes link for ${user.personalData.displayName} updated to ${tempSharedDoc}.`)
+      });
+    } else {    
+      setTempSharedDoc(user?.schoolInfo.sessionNotes.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
+      notifFail("Invalid Session Notes Link", "Please enter a valid link to a shared document.")
+    }
   }
 
   const [tempRole, setTempRole] = useState(user?.personalData.role)
@@ -172,6 +194,17 @@ export const PersonalData = ({user}) => {
           <Group wrap="nowrap" gap={10} mt={3}>
             <IconHome stroke={1.5} size="1rem" className="text-dimmed"/>
             <Text fz="xs" c="dimmed">{user.personalData.address}, {user.personalData.city} {user.personalData.state}, {user.personalData.zip}</Text>
+          </Group>
+          <Group wrap="nowrap" gap={10} mt={3}>
+            <IconNote stroke={1.5} size="1rem" className="text-dimmed"/>
+            {!editSharedDoc && <Anchor href={LinkMaster.ensureAbsoluteUrl(tempSharedDoc)} target="_blank"><Text fz="xs" c="dimmed">{tempSharedDoc}</Text></Anchor>}
+            {editSharedDoc && <TextInput size="xs" c="dimmed" value={tempSharedDoc} onKeyDown={handleSharedDocKeyDown} onBlur={updateSharedDoc} onChange={e => setTempSharedDoc(e.target.value)}/>}
+            <Tooltip label={!editSharedDoc ? "Edit Session Notes Link" : "Cancel"}>
+              <Center>
+                {!editSharedDoc && <IconPencil onClick={handleSharedDocEditClick} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>}
+                {editSharedDoc && <IconX onClick={handleSharedDocEditClick} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>}
+              </Center>
+            </Tooltip>
           </Group>
         </div>
       </Paper>
@@ -495,7 +528,9 @@ export const ToolsData = ({user, setFullUserData}) => {
   const [search, setSearch] = useState("")
 
   let filteredTools = (search.length === 0) ? allTools : allTools.filter(tool => tool.title.toLowerCase().includes(search.toLowerCase())); 
-  filteredTools = filteredTools.filter(tool => !Object.keys(user?.tools).includes(tool.id));
+  if (user) {
+    filteredTools = filteredTools.filter(tool => !Object.keys(user.tools).includes(tool.id));
+  }
 
   const ToolResult = ({tool}) => {
 

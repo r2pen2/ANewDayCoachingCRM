@@ -74,6 +74,7 @@ export class User {
     advisorOffice: "",
     LMSHref: "",
     LMSName: "",
+    sessionNotes: "",
   }
 
   settings: any = {
