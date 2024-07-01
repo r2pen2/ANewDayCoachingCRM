@@ -28,10 +28,11 @@ router.get("/events" , (req, res) => {
   calendar.events.list({ 
     calendarId: GOOGLE_CALENDAR_ID, 
     timeMin: (new Date()).toISOString(), 
-    maxResults: 256, 
+    maxResults: 16, 
     singleEvents: true, 
     orderBy: 'startTime', 
     q: inviteeEmail,
+    timeMin: (new Date()).
   }, (error, result) => { 
     if (error) { 
       res.send(JSON.stringify({ error: error })); 
