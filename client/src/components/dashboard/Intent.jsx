@@ -6,6 +6,7 @@ import { notifSuccess, notifWarn } from '../Notifications'
 import { LMSIcon } from '../LMS'
 import { LinkMaster } from '../../api/links.ts'
 import { getCalendarEvents } from '../../api/calendar.ts'
+import { getSlashDateString, getTimeString } from '../../api/strings.js'
 
 export default function Intent({height}) {
 
@@ -22,8 +23,9 @@ export default function Intent({height}) {
 
   React.useEffect(() => {
     getCalendarEvents(delegateUser.personalData.email).then(events => {
-      const d = new Date(events[0]?.start?.date)
-      console.log(events)
+      let d = events.events[0]?.start?.date
+      d = d.substring(5, 10)
+      d = d.replace("-", "/");
       setNextMeetingTime(d);
     })
   }, [delegateUser.personalData.email])
