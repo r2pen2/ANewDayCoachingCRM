@@ -5,6 +5,7 @@ import { IconCheck, IconExternalLink, IconHistory, IconX } from '@tabler/icons-r
 import { notifSuccess, notifWarn } from '../Notifications'
 import { LMSIcon } from '../LMS'
 import { LinkMaster } from '../../api/links.ts'
+import { getCalendarEvents } from '../../api/calendar.ts'
 
 export default function Intent({height}) {
 
@@ -16,6 +17,16 @@ export default function Intent({height}) {
   const intentText = (delegateUser.intents && delegateUser.intents[0]);
 
   const [newIntentText, setNewIntentText] = React.useState(null)
+
+  const [nextMeetingTime, setNextMeetingTime] = React.useState(null)
+
+  React.useEffect(() => {
+    getCalendarEvents(delegateUser.personalData.email).then(events => {
+      const d = new Date(events[0]?.start?.date)
+      console.log(events)
+      setNextMeetingTime(d);
+    })
+  }, [delegateUser.personalData.email])
 
   const IntentTextDisplay = () => {
     if (newIntentText !== null) { return; }
@@ -64,7 +75,7 @@ export default function Intent({height}) {
     </Tooltip>
   )
 
-  const meetingText = "Your next meeting is on 6/25 at 5pm."
+  const meetingText = `${!currentUser.delegate ? "Your" : delegateUser.personalData.displayName + "'s"} next meeting is ${nextMeetingTime}.`
 
   function handleClick(e) {
     if (newIntentText !== null) { return; }

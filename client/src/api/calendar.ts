@@ -2,7 +2,7 @@ import { hostname } from "./db/dbManager.ts";
 
 export async function getCalendarEvents(email) {
   return new Promise<any>((resolve, reject) => {
-    fetch(hostname + `/calendar/events?invitee=${email}`).then((res) => {
+    fetch(hostname + `/calendar/events?assignee=${email}`).then((res) => {
       res.json().then((data) => {
         resolve(data)
       })
