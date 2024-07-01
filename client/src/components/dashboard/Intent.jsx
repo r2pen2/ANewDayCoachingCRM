@@ -95,6 +95,11 @@ export default function Intent({height}) {
             Join Meeting
           </Button>}
         </div>
+        <div className="col-12">
+          {currentUser?.schoolInfo?.sessionNotes && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.sessionNotes, "_blank"))}>
+            Session Notes
+          </Button>}
+        </div>
       </div>
     </Paper>
   )
