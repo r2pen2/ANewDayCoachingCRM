@@ -19,13 +19,14 @@ export default function Intent({height}) {
 
   const IntentTextDisplay = () => {
     if (newIntentText !== null) { return; }
-    if (currentUser.id !== delegateUser.id) {
+    if (currentUser.delegate) {
       return <Text size="lg" className="text-center intent-text">{ intentText || `${delegateUser.personalData.displayName} has not set an intent yet!` }</Text>
     }
     return <Text size="lg" className="text-center intent-text">{ intentText || "You haven't set an intent yet!" }</Text>
   }
 
   function updateIntent() {
+    if (currentUser.delegate) { return; }
     if (newIntentText === null) { return; }
     if (newIntentText.length === 0) {
       notifWarn("Intent Not Updated", "Your intent cannot be empty!");
@@ -70,6 +71,8 @@ export default function Intent({height}) {
     setNewIntentText("");
   }
 
+  const lmsName = delegateUser ? delegateUser.schoolInfo.LMSName : currentUser.schoolInfo.LMSName;
+
   return (
     <Paper withBorder style={{height: height}} className="w-100 p-2 d-flex flex-column text-center align-items-center justify-content-start top-green mb-xl-2">
       <Avatar src={currentUser.personalData.pfpUrl} alt={currentUser.personalData.displayName} size="large" />
@@ -79,7 +82,7 @@ export default function Intent({height}) {
         <div className="col-1 gap-2 d-flex flex-column align-items-center justify-content-between py-2">
           {quoteSvg}
         </div>
-        <div className="col-10 p-2 gap-2 d-flex flex-column intent-edit-container align-items-center justify-content-center">
+        <div className={"col-10 p-2 gap-2 d-flex flex-column intent-edit-container align-items-center justify-content-center " + (currentUser.delegate ? "disable-interaction" : "")}>
           <IntentTextDisplay />
           { newIntentText !== null && <TextInput placeholder="What's your intent?" className="w-100" value={newIntentText} onKeyDown={handleEnter} onChange={(e) => setNewIntentText(e.target.value)} /> }
           { newIntentText !== null && <div className="d-flex gap-2"><IntentSubmit /><IntentCancel /><IntentHistoryButton /></div> }
@@ -90,17 +93,17 @@ export default function Intent({height}) {
       </div>
       <div className="row w-100 gap-2">
         <div className="col-12">
-          <Button rightSection={<LMSIcon name={currentUser.schoolInfo.LMSName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.LMSHref, "_blank"))}>
-            Go to {currentUser.schoolInfo.LMSName !== "Other" ? currentUser.schoolInfo.LMSName : "Your LMS"}
+          <Button rightSection={<LMSIcon name={lmsName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(lmsName, "_blank"))}>
+            Go to {(lmsName !== "Other" && lmsName !== "") ? lmsName : "LMS"}
           </Button>
         </div>
-        <div className="col-12">
+        {!currentUser.delegate && <div className="col-12">
           {currentUser?.settings?.meetingLink && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.settings.meetingLink, "_blank"))}>
             Join Meeting
           </Button>}
-        </div>
+        </div>}
         <div className="col-12">
-          {currentUser?.schoolInfo?.sessionNotes && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.sessionNotes, "_blank"))}>
+          {delegateUser?.schoolInfo?.sessionNotes && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.sessionNotes, "_blank"))}>
             Session Notes
           </Button>}
         </div>
