@@ -44,6 +44,8 @@ export class User {
 
   homework: Homework[] = [];
 
+  delegate: User | null = null;
+
   subjects: { [key: string]: any } = {
     "todo": { 
       color: "#ffffff",
@@ -192,6 +194,36 @@ export class User {
     })
   }
 
+  async getFirstChild(): Promise<User | null> {
+    if (this.personalData.role !== UserRole.PARENT) { return null; }
+    
+    return new Promise<User>((resolve) => {
+      if (this.linkedAccounts.length === 0) { 
+        resolve(this);
+        return;
+      } else {
+        for (let i = 0; i < this.linkedAccounts.length; i++) {
+          User.getById(this.linkedAccounts[i]).then((data) => {
+            if (data.personalData.role === UserRole.STUDENT) {
+              resolve(data);
+              return;
+            }
+          });
+        }
+        return null;
+      }
+    })
+  }
+
+  async assignDelegate(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.getFirstChild().then(c => {
+        this.delegate = c;
+        resolve();
+      })
+    })
+  }
+
   fillData(data: any): User | void {
     if (data === null) { return; }
     this.invoices = data.invoices;
@@ -210,6 +242,7 @@ export class User {
     this.metadata = data.metadata;
     this.syncCode = data.syncCode;
     this.linkedAccounts = data.linkedAccounts;
+    this.delegate = data.delegate;
     return this;
   }
 
@@ -234,10 +267,12 @@ export class User {
     onSnapshot(this.docRef, (doc) => {
       if (doc.exists()) {
         this.fillData(doc.data());
-        // We need to create a clone of this User object so that the state actually updates
-        const cloneUser = this.clone()
-        setter(cloneUser); 
-        setColorScheme(cloneUser?.settings.darkMode ? "dark" : "light");
+        this.assignDelegate().then(() => {
+          // We need to create a clone of this User object so that the state actually updates
+          const cloneUser = this.clone()
+          setter(cloneUser); 
+          setColorScheme(cloneUser?.settings.darkMode ? "dark" : "light");
+        })
       }
     })
   }

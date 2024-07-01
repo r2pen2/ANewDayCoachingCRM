@@ -72,7 +72,6 @@ export default function Login() {
           (values, event) => {
             setLoading(true)
             if (type === "login") {
-              console.log(values.password)
               signInWithEmailAndPassword(auth, values.email, values.password).then((userCredential) => {
                 User.getById(userCredential.user.uid).then((dbUser) => { 
                   notifSuccess("Login Success", "Welcome back, " + dbUser.personalData.displayName);

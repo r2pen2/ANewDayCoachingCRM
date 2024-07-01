@@ -9,16 +9,20 @@ import { LinkMaster } from '../../api/links.ts'
 export default function Intent({height}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
+  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
 
   const welcomeText = `Welcome back, ${currentUser.personalData.displayName.split(" ")[0]}!`
 
-  const intentText = (currentUser.intents && currentUser.intents[0]);
+  const intentText = (delegateUser.intents && delegateUser.intents[0]);
 
   const [newIntentText, setNewIntentText] = React.useState(null)
 
   const IntentTextDisplay = () => {
     if (newIntentText !== null) { return; }
-    return <Text size="lg" className="text-center intent-text">{ intentText || "You haven't set an intent yet!"}</Text>
+    if (currentUser.id !== delegateUser.id) {
+      return <Text size="lg" className="text-center intent-text">{ intentText || `${delegateUser.personalData.displayName} has not set an intent yet!` }</Text>
+    }
+    return <Text size="lg" className="text-center intent-text">{ intentText || "You haven't set an intent yet!" }</Text>
   }
 
   function updateIntent() {

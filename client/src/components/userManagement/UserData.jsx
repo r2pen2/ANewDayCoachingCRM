@@ -44,7 +44,7 @@ export const PersonalData = ({user}) => {
     setTempPhone(user?.personalData.phoneNumber)
     setTempRole(user?.personalData.role)
     setTempAdmin(user?.admin)
-    setTempSharedDoc(user?.schoolInfo.sessionNotes.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
+    setTempSharedDoc(user?.schoolInfo?.sessionNotes?.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
   }, [user])
   
   const [editEmail, setEditEmail] = useState(false)
@@ -86,7 +86,7 @@ export const PersonalData = ({user}) => {
         notifSuccess("Session Noted Link Updated", `Session notes link for ${user.personalData.displayName} updated to ${tempSharedDoc}.`)
       });
     } else {    
-      setTempSharedDoc(user?.schoolInfo.sessionNotes.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
+      setTempSharedDoc(user?.schoolInfo.sessionNotes?.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
       notifFail("Invalid Session Notes Link", "Please enter a valid link to a shared document.")
     }
   }
