@@ -33,6 +33,25 @@ router.get("/search-forms", (req, res) => {
   res.json(resUsers);
 })
 
+router.get("/search-invoices", (req, res) => {
+  const resUsers = {}
+  for (const userId of Object.keys(allUsers)) {
+    const u = allUsers[userId];
+    if (u,personalData.role === "Student") {
+      resUsers[userId] = {
+        personalData: {
+          displayName: u.personalData.displayName,
+          email: u.personalData.email,
+          role: u.personalData.role
+        },
+        id: u.id,
+        formAssignments: u.formAssignments
+      }
+    }
+  }
+  res.json(resUsers);
+})
+
 router.get("/search-tools", (req, res) => {
   const resUsers = {}
   for (const userId of Object.keys(allUsers)) {

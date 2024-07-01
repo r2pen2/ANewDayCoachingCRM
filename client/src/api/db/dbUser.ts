@@ -178,6 +178,8 @@ export class User {
       let endpoint = ""
       if (navPage === navigationItems.ADMINFORMS) {
         endpoint = "search-forms";
+      } else if (navPage === navigationItems.ADMININVOICES) {
+        endpoint = "search-invoices";
       } else if (navPage === navigationItems.ADMINTOOLS) {
         endpoint = "search-tools";
       } else if (navPage === navigationItems.ADMINUSERS) {

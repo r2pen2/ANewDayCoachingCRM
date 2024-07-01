@@ -36,7 +36,7 @@ export default function InvoiceManagement() {
   const [amount, setAmount] = React.useState("")
   React.useEffect(() => {
     fetchInvoices()
-    User.fetchSearch(navigationItems.ADMINFORMS).then((users) => { setAllUsers(users); })
+    User.fetchSearch(navigationItems.ADMININVOICES).then((users) => { setAllUsers(users); })
   }, [])
 
   function createInvoice(event) {
