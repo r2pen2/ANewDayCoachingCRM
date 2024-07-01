@@ -32,7 +32,7 @@ router.get("/events" , (req, res) => {
     singleEvents: true, 
     orderBy: 'startTime', 
     q: inviteeEmail,
-    timeMin: (new Date()).
+    timeMin: (new Date())
   }, (error, result) => { 
     if (error) { 
       res.send(JSON.stringify({ error: error })); 
