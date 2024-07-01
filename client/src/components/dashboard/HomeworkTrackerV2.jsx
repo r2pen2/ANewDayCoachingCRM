@@ -18,15 +18,17 @@ import { CRMGnatt } from "./Gnatt.jsx";
 
 import "../../assets/style/homeworkTracker.css";
 import useWindowDimensions from "../Window.jsx";
+import { User } from "../../api/db/dbUser.ts";
 
 /**
  * A card that displays a subject
  * @param {HomeworkSubject} subject - the subject to display
  **/
-export const SubjectCard = ({subject}) => {
+export const SubjectCard = ({subject, userOverride = null}) => {
   
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
   /** The color of the subject */
   const [c, setC] = React.useState(subject.color);
@@ -34,7 +36,7 @@ export const SubjectCard = ({subject}) => {
   /** When the delete button is pressed, remove the subject on the user's document */
   function handleDelete(skipConfirmation = false) {
     if (skipConfirmation || window.confirm(`Are you sure you want to delete "${subject.title}"?`)) {
-      currentUser.removeSubject(subject.title).then(() => {
+      contextUser.removeSubject(subject.title).then(() => {
         notifSuccess("Subject Removed", `Removed subject "${subject.title}"`)
       });
     }
@@ -43,7 +45,7 @@ export const SubjectCard = ({subject}) => {
   /** When the color is updated, update the subject on the user's document */
   function updateColor(c) {
     if (c === subject.color) { return; }
-    currentUser.updateSubject(new HomeworkSubject(subject.title, c)).then(() => {
+    contextUser.updateSubject(new HomeworkSubject(subject.title, c)).then(() => {
       notifSuccess("Subject Updated", `Changed the color for "${subject.title}"`)
     })
   }
@@ -103,18 +105,19 @@ export const PickerMenu = ({c, setC, popoverOpenOverride, setPopoverOpenOverride
   )
 }
 
-export const QuickEntryResults = ({quickExtract}) => {
+export const QuickEntryResults = ({quickExtract, userOverride = null}) => {
   
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
-  if (!currentUser.subjects[quickExtract.subject] && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate && !quickExtract.href) { return null; } // There's nothing in the quickExtract to display
+  if (!contextUser.subjects[quickExtract.subject] && !quickExtract.priority && !quickExtract.dueDate && !quickExtract.startDate && !quickExtract.href) { return null; } // There's nothing in the quickExtract to display
 
-  const subjectColor = quickExtract.subject ? currentUser.subjects[quickExtract.subject].color : null;
+  const subjectColor = quickExtract.subject ? contextUser.subjects[quickExtract.subject].color : null;
 
   return (
     <div className="align-items-center d-flex gap-2 mt-2">
-      { currentUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: shouldUseBlackText(subjectColor) ? "1px solid #00000022" : null}} className={shouldUseBlackText(subjectColor) ? "text-black" : ""}>Subject: {quickExtract.subject}</Badge> }
+      { contextUser.subjects[quickExtract.subject] && <Badge color={subjectColor} style={{border: shouldUseBlackText(subjectColor) ? "1px solid #00000022" : null}} className={shouldUseBlackText(subjectColor) ? "text-black" : ""}>Subject: {quickExtract.subject}</Badge> }
       { quickExtract.priority && <Badge color={Homework.getPriorityColor(quickExtract.priority)}>!{quickExtract.priority}</Badge> }
       { quickExtract.startDate && <Badge color="gray">Start: {getSlashDateString(quickExtract.startDate)}</Badge> }
       { quickExtract.dueDate && <Badge color="gray">Due: {getSlashDateString(quickExtract.dueDate)}</Badge> }
@@ -123,14 +126,15 @@ export const QuickEntryResults = ({quickExtract}) => {
   )
 }
 
-export function Assignment({homeworkJson}) {
+export function Assignment({homeworkJson, userOverride = null}) {
 
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
   const homework = new Homework(homeworkJson);
 
-  const subject = currentUser.subjects[homework.subject]
+  const subject = contextUser.subjects[homework.subject]
 
   class AssignmentField extends React.Component {
     
@@ -163,7 +167,7 @@ export function Assignment({homeworkJson}) {
       setTimeout(() => { this.setState({editPopoverOpen: false}); })
       if (this.state.targetField === homework[this.targetField]) { return; }
       homework[this.targetField] = this.state.targetField;
-      currentUser.updateHomework(homework).then(() => {
+      contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Changed ${this.sanitizeFieldName()} to: "${this.state.targetField}"`)
       });
     }
@@ -224,7 +228,7 @@ export function Assignment({homeworkJson}) {
         return;
       }
       homework[this.targetField] = f;
-      currentUser.updateHomework(homework).then(() => {
+      contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Set ${this.sanitizeFieldName()} to: "${f}"`)
       });
     }
@@ -236,16 +240,16 @@ export function Assignment({homeworkJson}) {
         case "status":
           return Homework.getStatusColor(homework);
         case "subject":
-          return currentUser.subjects[homework.subject].color;
+          return contextUser.subjects[homework.subject].color;
         default:
           return "#000000";
       }
     }
     
     getBadgeValue() {
-      if (this.targetField === "subject") { return currentUser.subjects[homework.subject].title; }
+      if (this.targetField === "subject") { return contextUser.subjects[homework.subject].title; }
       if (this.targetField === "priority") {
-        return Homework.getPriorityStringBySetting(homework.priority, currentUser.settings.priorityVerbosity)
+        return Homework.getPriorityStringBySetting(homework.priority, contextUser.settings.priorityVerbosity)
       }
       return homework[this.targetField];
     }
@@ -256,7 +260,7 @@ export function Assignment({homeworkJson}) {
     }
     
     getSelectValues() {
-      if (this.targetField === "subject") { return Object.keys(currentUser.subjects); }
+      if (this.targetField === "subject") { return Object.keys(contextUser.subjects); }
       if (this.targetField === "status") { return Object.values(HomeworkStatus); }
       if (this.targetField === "priority") { return Object.values(HomeworkPriority); }
     }
@@ -268,7 +272,7 @@ export function Assignment({homeworkJson}) {
           <Popover.Target>
             <Tooltip label="Edit Priority" position="bottom">
               <div className="p-2 d-flex flex-row align-items-center justify-content-center">
-                <Indicator zIndex={1} processing={Homework.checkPriorityPulseThreshold(homework.priority, currentUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
+                <Indicator zIndex={1} processing={Homework.checkPriorityPulseThreshold(homework.priority, contextUser.settings.priorityPulseThreshold)} color={this.getBadgeColor()} />
               </div>
             </Tooltip>
           </Popover.Target>
@@ -283,7 +287,7 @@ export function Assignment({homeworkJson}) {
           </Tooltip>
         </Popover.Target>
       }
-      if (this.targetField === "priority" && currentUser.settings.priorityVerbosity === HomeworkPriorityVerbosity.COLORS) {
+      if (this.targetField === "priority" && contextUser.settings.priorityVerbosity === HomeworkPriorityVerbosity.COLORS) {
         return <DotPriority />
       }
       return <Popover.Target>
@@ -320,7 +324,7 @@ export function Assignment({homeworkJson}) {
       if (date === homework[this.targetField]) { return; }
       homework[this.targetField] = date;
       const dateType = this.targetField === "startDate" ? "start" : "due";
-      currentUser.updateHomework(homework).then(() => {
+      contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Changed ${dateType} date to: "${getSlashDateString(date)}"`)
       });
     }
@@ -394,11 +398,11 @@ export function Assignment({homeworkJson}) {
   const AssignmentActions = () => {
     return (
       <div className="d-flex gap-2 mt-2 mt-sm-0">
-         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(currentUser)} icon={<IconClock />} className="start-button" color="gray.5" label="Start Assignment" /> }
-         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(currentUser)} icon={<Loader size="sm" type={currentUser.settings.homeworkLoaderType} color="white" />} color="blue.5" label="Click to Pause Assignment" /> }
-        <IconButton onClick={() => homework.handleComplete(currentUser)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
-        <IconButton onClick={() => homework.handlePause(currentUser)} icon={<IconArrowBackUp />} className="incomplete-button" color={unpaidColor} label="Mark Incomplete"  />
-        <IconButton onClick={() => homework.handleRemove(currentUser)} onShiftClick={() => homework.handleRemove(currentUser, true)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(contextUser)} icon={<IconClock />} className="start-button" color="gray.5" label="Start Assignment" /> }
+         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(contextUser)} icon={<Loader size="sm" type={contextUser.settings.homeworkLoaderType} color="white" />} color="blue.5" label="Click to Pause Assignment" /> }
+        <IconButton onClick={() => homework.handleComplete(contextUser)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
+        <IconButton onClick={() => homework.handlePause(contextUser)} icon={<IconArrowBackUp />} className="incomplete-button" color={unpaidColor} label="Mark Incomplete"  />
+        <IconButton onClick={() => homework.handleRemove(contextUser)} onShiftClick={() => homework.handleRemove(contextUser, true)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
       </div>
     )
   }
@@ -413,7 +417,7 @@ export function Assignment({homeworkJson}) {
       if (tempLink === homework.href) { setLinkEdit(false); return; } // No change
       if (tempLink === "") { setLinkEdit(false); return; } // Empty string, don't update
       homework.href = tempLink;
-      currentUser.updateHomework(homework).then(() => {
+      contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Changed link to: "${tempLink}"`)
       });
       setLinkEdit(false);
@@ -422,7 +426,7 @@ export function Assignment({homeworkJson}) {
     function deleteLink() {
       if (!homework.href) { return; }
       homework.href = null;
-      currentUser.updateHomework(homework).then(() => {
+      contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Removed link from assignment: "${homework.description}"`)
       });
     }
@@ -519,7 +523,7 @@ export function Assignment({homeworkJson}) {
   )
 }
 
-export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
+export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOverride = null}) => {
   
   const [unitType, setUnitType] = React.useState("Subject");
 
@@ -538,6 +542,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
   
   /** Get current user from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
   const [showCompleted, setShowCompleted] = React.useState(false)
 
@@ -550,11 +555,11 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     priority: null
   });
 
-  const [selectedSubjects, setSelectedSubjects] = React.useState(Object.keys(currentUser.subjects));
+  const [selectedSubjects, setSelectedSubjects] = React.useState(Object.keys(contextUser.subjects));
 
   useEffect(() => {
-    setSelectedSubjects(Object.keys(currentUser.subjects));
-  }, [currentUser.subjects])
+    setSelectedSubjects(Object.keys(contextUser.subjects));
+  }, [contextUser.subjects])
   
   React.useEffect(() => {
     extractQuickEntry();
@@ -563,7 +568,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
 
   function extractQuickEntry() {
     const props = parseQuickEntry(quickEntryString);
-    for (const key of Object.keys(currentUser.subjects)) {
+    for (const key of Object.keys(contextUser.subjects)) {
       if (key && props.subject) {
         if (key.replace(" ", "").toLowerCase() === props.subject.toLowerCase()) {
           props.subject = key;
@@ -591,16 +596,16 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     newHomework.priority = quickExtract.priority ? quickExtract.priority : HomeworkPriority.LOW;
     
     if (!newHomework.subject) { setQuickEntryError("Please specify a subject."); return; }
-    if (!currentUser.subjects[newHomework.subject]) { 
+    if (!contextUser.subjects[newHomework.subject]) { 
       if (window.confirm(`Subject "${newHomework.subject}" does not exist. Would you like to create it?`)) {
-        currentUser.addSubject(new HomeworkSubject(newHomework.subject, "#ffffff")).then(() => {
+        contextUser.addSubject(new HomeworkSubject(newHomework.subject, "#ffffff")).then(() => {
           notifSuccess("Subject Added", `Added subject "${newHomework.subject}"`)
         });
       } else { return; }
     }
 
     setQuickEntryString("");
-    currentUser.addHomework(newHomework).then(() => {
+    contextUser.addHomework(newHomework).then(() => {
       notifSuccess("Assignment Added", `Added assignment: "${newHomework.description}"`)
     });
   }
@@ -624,8 +629,8 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     }
   }
 
-  const completedHomeworks = currentUser.homework.filter(hw => hw.status === HomeworkStatus.COMPLETED && showCompleted).sort((a, b) => sortingAlg(a, b));
-  const validHomeworks = Object.values(currentUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).filter(hw => selectedSubjects.includes(hw.subject)).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
+  const completedHomeworks = contextUser.homework.filter(hw => hw.status === HomeworkStatus.COMPLETED && showCompleted).sort((a, b) => sortingAlg(a, b));
+  const validHomeworks = Object.values(contextUser.homework).filter(hw => hw.status !== HomeworkStatus.COMPLETED).filter(hw => selectedSubjects.includes(hw.subject)).sort((a, b) => sortingAlg(a, b)).concat(completedHomeworks);
 
   const TrackerControls = () => (
     <div className='tracker-controls gap-2'>
@@ -642,13 +647,13 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
       <Paper withBorder className='p-2 gap-2 chip-container' >
         <IconButton label="Manage Subjects" icon={<IconSchool />} buttonProps={{size: 36}} onClick={() => setSubjectAddMenuOpen(true)} />
         <Divider orientation="vertical" />
-        {Object.keys(currentUser.subjects).map((subject, index) => <SubjectChip selectedSubjects={selectedSubjects} setSelectedSubjects={setSelectedSubjects} subject={subject} key={index} />)}
+        {Object.keys(contextUser.subjects).map((subject, index) => <SubjectChip userOverride={userOverride} selectedSubjects={selectedSubjects} setSelectedSubjects={setSelectedSubjects} subject={subject} key={index} />)}
       </Paper>
   )}
   
   const { height, width } = useWindowDimensions();
 
-  const AssignmentTable = () => validHomeworks.map((homework, index) => !onGnatt && <Assignment key={index} homeworkJson={homework} />)
+  const AssignmentTable = () => validHomeworks.map((homework, index) => !onGnatt && <Assignment userOverride={userOverride} key={index} homeworkJson={homework} />)
   
   const NoDataNotif = () => (
     <div className="d-flex flex-row align-items-center justify-content-cneter p-5 w-100 text-center">
@@ -660,7 +665,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
     <div className="d-flex flex-column" >
       <Paper withBorder className="tracker-header">
         <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center tracker-header-text">
-          My Assignments
+          {userOverride ? `${userOverride.personalData.displayName}'s` : "My"} Assignments
           <IconButton label={onGnatt ? "Switch to Table" : "Switch to Gnatt Chart"} className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={() => setOnGnatt(!onGnatt)} />
         </h3>
         <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} />
@@ -679,7 +684,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
                 <SubjectFilter />
               </Spoiler>
             </div>
-          <QuickEntryResults key="quick-results" quickExtract={quickExtract} />
+          <QuickEntryResults key="quick-results" userOverride={userOverride} quickExtract={quickExtract} />
           </div>
         </div>
       </Paper>
@@ -688,16 +693,17 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen}) => {
         <Paper withBorder className="w-100">
           <AssignmentTable />
           {validHomeworks.length <= 0 &&  !onGnatt && <NoDataNotif />}
-          {onGnatt && <CRMGnatt assignments={validHomeworks} userSubjects={currentUser.subjects} />}
+          {onGnatt && <CRMGnatt assignments={validHomeworks} userSubjects={contextUser.subjects} />}
         </Paper>
       </Spoiler>
     </div>
   )
 }
 
-const SubjectChip = ({subject, selectedSubjects, setSelectedSubjects}) => {
+const SubjectChip = ({subject, selectedSubjects, setSelectedSubjects, userOverride = null}) => {
 
   const {currentUser} = React.useContext(CurrentUserContext);
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
   const selected = selectedSubjects.includes(subject)
 
@@ -709,16 +715,16 @@ const SubjectChip = ({subject, selectedSubjects, setSelectedSubjects}) => {
     }
   }
 
-  const dark = shouldUseBlackText(currentUser.subjects[subject].color);
+  const dark = shouldUseBlackText(contextUser.subjects[subject].color);
 
-  const [color, setColor] = React.useState(currentUser.subjects[subject].color)
+  const [color, setColor] = React.useState(contextUser.subjects[subject].color)
 
   useEffect(() => {
-    setColor(currentUser.subjects[subject].color)
-  }, [currentUser.subjects, subject])
+    setColor(contextUser.subjects[subject].color)
+  }, [contextUser.subjects, subject])
   
   const ChipDivider = () => {
-    const sKeys = Object.keys(currentUser.subjects)
+    const sKeys = Object.keys(contextUser.subjects)
     if (subject === sKeys[sKeys.length - 1]) { return; }
     return <Divider orientation="vertical" />
   }

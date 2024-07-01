@@ -1,5 +1,5 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconHome, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconUserUp, IconX } from "@tabler/icons-react";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAt, IconCheck, IconEye, IconHome, IconMinus, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -8,6 +8,14 @@ import { InvoiceList } from "../../tabs/Invoices.jsx";
 import { Invoice } from "../../api/db/dbInvoice.ts";
 import ModuleHeader from "../dashboard/ModuleHeader.jsx";
 import { DateInput } from "@mantine/dates";
+import { Tracker } from "../dashboard/HomeworkTrackerV2.jsx";
+import { CRMScrollContainer } from "../Tables.jsx";
+import { FormTableHead } from "../formManagement/formsTable.jsx";
+import IconButton from "../IconButton.jsx";
+import { allForms } from "../../api/forms.ts";
+import { assignButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from "../../api/color.ts";
+import { LinkMaster } from "../../api/links.ts";
+import { FormAssignment } from "../../api/db/dbFormAssignment.ts";
 
 export const PersonalData = ({user}) => {
 
@@ -390,4 +398,83 @@ export function AddInvoice({user, setFullUserData}) {
     </Paper>
   </div>
 
+}
+
+export const ManagementTracker = ({user}) => {
+  if (!user) { return; }
+  if (user.personalData.role === UserRole.PARENT) { return; }
+  return <div className="col-12 mt-3">
+    <Tracker userOverride={user} />
+  </div>
+}
+
+export const FormsData = ({user, setFullUserData}) => {
+  
+  if (!user) { return; }
+
+  return <div className="col-12 p-1">
+    <Paper withBorder className="bg-dark-1">
+      <ModuleHeader>Forms</ModuleHeader>
+        <Table striped>
+          <FormTableHead scrolled={false} />
+          <Table.Tbody>
+            {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {  
+              
+              let formData = user.formAssignments.filter(f => f.formId === form.formId);
+              const hasForm = formData.length > 0
+              formData = formData.filter(f => f.status === "complted")
+              const completedForm = formData.length > 0
+
+              const assignForm = () => {
+                form.assignToMultiple([user.id]).then((success) => {
+                  if (success) {
+                    notifSuccess("Form Assigned", `Assigned "${form.formTitle}" to ${user.personalData.displayName}.`)
+                    User.getById(user.id).then((userData) => {
+                      setFullUserData(userData)
+                    })
+                  }
+                })
+              }
+              
+              const unassignForm = () => {
+                form.unassignToMultiple([user.id]).then((success) => {
+                  if (success) {
+                    notifSuccess("Form Unassigned", `Unssigned "${form.formTitle}" from ${user.personalData.displayName}.`)
+                    User.getById(user.id).then((userData) => {
+                      setFullUserData(userData)
+                    })
+                  }
+                })
+              }
+              
+              const markIncomplete = () => {
+                form.incompleteToMultiple([user.id]).then((success) => {
+                  if (success) {
+                    notifSuccess("Form Marked Incomplete", `Marked "${form.formTitle}" as incomplete for ${user.personalData.displayName}.`)
+                    User.getById(user.id).then((userData) => {
+                      setFullUserData(userData)
+                    })
+                  }
+                })
+              }
+
+              return (
+              <Table.Tr key={index}>
+                <Table.Td>
+                  {form.formTitle}
+                </Table.Td>
+                <Table.Td>
+                  {form.formDescription}
+                </Table.Td>
+                <Table.Td className='d-flex gap-2'>
+                  {!hasForm && <IconButton label={`Assign "${form.formTitle}"`} icon={<IconPlus />} color={assignButtonColor} onClick={assignForm} />}
+                  {hasForm && <IconButton label={`Unssign "${form.formTitle}"`} icon={<IconMinus />} color={deleteButtonColor} onClick={unassignForm} />}
+                  {completedForm && <IconButton label={`Mark "${form.formTitle}" Incomplete`} icon={<IconRefresh />} color={unpaidColor} onClick={markIncomplete} />}
+                </Table.Td>
+              </Table.Tr>
+            )})}
+          </Table.Tbody>
+        </Table>
+    </Paper>
+  </div>
 }
