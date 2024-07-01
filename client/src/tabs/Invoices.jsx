@@ -81,17 +81,17 @@ export default function Invoices() {
 export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending, onlyDelete = false, removeInvoiceFromMemo = () => {}}) {
 
   function getBadgeColor(invoice) {
-    if (invoice.paid) { return "green"; }             // This is paid
+    if (invoice.paid) { return "green"; }                 // This is paid
     if (invoice.paidAt) { return pendingColor; }          // This is pending approval
     if (invoice.checkLate()) { return lateColor; }        // This is late
-    return unpaidColor;                                  // This is just unpaid
+    return unpaidColor;                                   // This is just unpaid
   }
 
   function getPaidMessage(invoice) {
     if (invoice.paid) { return `Paid on ${getSlashDateString(invoice.paidAt)}`; }                                     // This is paid
-    if (invoice.paidAt) { return "Pending Approval"; }                                                              // This is pending approval
-    if (invoice.checkLate()) { return `${invoice.getDaysLate()} Day${invoice.getDaysLate() > 1 ? "s" : ""} Late`; } // This is late
-    return "Unpaid";                                                                                                // This is just unpaid
+    if (invoice.paidAt) { return "Pending Approval"; }                                                                // This is pending approval
+    if (invoice.checkLate()) { return `${invoice.getDaysLate()} Day${invoice.getDaysLate() > 1 ? "s" : ""} Late`; }   // This is late
+    return "Unpaid";                                                                                                  // This is just unpaid
   }
 
   const [scrolled, setScrolled] = useState(false)

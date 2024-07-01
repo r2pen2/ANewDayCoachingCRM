@@ -24,9 +24,13 @@ export default function Intent({height}) {
   React.useEffect(() => {
     getCalendarEvents(delegateUser.personalData.email).then(events => {
       let d = events.events[0]?.start?.date
-      d = d.substring(5, 10)
-      d = d.replace("-", "/");
-      setNextMeetingTime(d);
+      if (d) {
+        d = d.substring(5, 10)
+        d = d.replace("-", "/");
+        setNextMeetingTime(d);
+      } else {
+        setNextMeetingTime(null);
+      }
     })
   }, [delegateUser.personalData.email])
 
@@ -77,7 +81,7 @@ export default function Intent({height}) {
     </Tooltip>
   )
 
-  const meetingText = `${!currentUser.delegate ? "Your" : delegateUser.personalData.displayName + "'s"} next meeting is ${nextMeetingTime}.`
+  const meetingText = nextMeetingTime ? `${!currentUser.delegate ? "Your" : delegateUser.personalData.displayName + "'s"} next meeting is ${nextMeetingTime}.` : "No next meeting scheduled."
 
   function handleClick(e) {
     if (newIntentText !== null) { return; }

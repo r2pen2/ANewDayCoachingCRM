@@ -1,11 +1,11 @@
 // Library Imports
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Loader, Paper, Spoiler, Text } from "@mantine/core";
 
 // API Imports
 import { getEventTime, getVerboseDateString } from "../api/strings.js";
 import { LinkMaster } from "../api/links.ts";
-import { mockEvents } from "../api/calendar.ts";
+import { getCalendarEvents, mockEvents } from "../api/calendar.ts";
 
 // Style Imports
 import "../assets/style/schedule.css";
@@ -30,7 +30,15 @@ export default function Schedule() {
  */
 function AppointmentList() {
 
-  const [events, setEvents] = useState(mockEvents);
+  const {currentUser} = useContext(CurrentUserContext)
+  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    getCalendarEvents(delegateUser.personalData.email).then(events => {
+      setEvents(events.events)
+    })
+  }, [delegateUser])
   
   /**
    * Renders an upcoming event in a Paper component. Clicking on the event opens the calendar item in a new tab.
@@ -59,6 +67,7 @@ function AppointmentList() {
         <Spoiler showLabel="Show All Appointments" className="centered-expander" hideLabel="Show Fewer Appointments" maxHeight={400}>
           <div style={{overflowX: "scroll", flexWrap: "nowrap"}} className="d-flex gap-2 flex-row flex-xl-column align-items-start px-2">
             {events.map((event, index) => <EventCard key={index} event={event} />)}
+            {events.length === 0 && <Text className="w-100 text-center">No upcoming events.</Text>}
           </div>
         </Spoiler>
       </Paper>
