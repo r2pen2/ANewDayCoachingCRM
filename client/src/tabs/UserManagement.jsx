@@ -1,4 +1,4 @@
-import { Paper } from '@mantine/core'
+import { Paper, Tabs } from '@mantine/core'
 import React from 'react'
 import { User } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
@@ -40,10 +40,33 @@ export default function UserManagement() {
             <div className="row m-0">
               <PersonalData user={fullUserData} />
               <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} />
-              <ManagementTracker user={fullUserData} />
-              <AddInvoice user={fullUserData} setFullUserData={setFullUserData} />
-              <InvoiceData user={fullUserData} />
-              <FormsData user={fullUserData} setFullUserData={setFullUserData} />
+              <Tabs defaultValue="assignments">
+                <Tabs.List>
+                  <Tabs.Tab value="assignments">
+                    Assignments
+                  </Tabs.Tab>
+                  <Tabs.Tab value="invoices">
+                    Invoices
+                  </Tabs.Tab>
+                  <Tabs.Tab value="forms">
+                    Forms
+                  </Tabs.Tab>
+                </Tabs.List>
+                <Tabs.Panel value="assignments">
+                  <ManagementTracker user={fullUserData} />
+                </Tabs.Panel>
+                <Tabs.Panel value="invoices">
+                  <div className="container-fluid">
+                    <div className="row">
+                      <AddInvoice user={fullUserData} setFullUserData={setFullUserData} />
+                      <InvoiceData user={fullUserData} />
+                    </div>
+                  </div>
+                </Tabs.Panel>
+                <Tabs.Panel value="forms">
+                  <FormsData user={fullUserData} setFullUserData={setFullUserData} />
+                </Tabs.Panel>
+              </Tabs>
             </div>
           </Paper>
         </div>
