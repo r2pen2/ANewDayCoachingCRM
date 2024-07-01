@@ -1,5 +1,5 @@
 import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconEye, IconHome, IconMinus, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
+import { IconAt, IconCheck, IconEye, IconHome, IconMinus, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -16,6 +16,8 @@ import { allForms } from "../../api/forms.ts";
 import { assignButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from "../../api/color.ts";
 import { LinkMaster } from "../../api/links.ts";
 import { FormAssignment } from "../../api/db/dbFormAssignment.ts";
+import { Tool } from "../../api/db/dbTool.ts";
+import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
 
 export const PersonalData = ({user}) => {
 
@@ -475,6 +477,65 @@ export const FormsData = ({user, setFullUserData}) => {
             )})}
           </Table.Tbody>
         </Table>
+    </Paper>
+  </div>
+}
+
+export const ToolsData = ({user, setFullUserData}) => {
+
+  if (!user) { return; }
+
+  const dbUser = User.getInstanceById(user?.id)
+
+  return <div className="col-12 p-1">
+    <Paper withBorder className="bg-dark-1">
+      <ModuleHeader>Tools</ModuleHeader>
+        <Spoiler maxHeight={300} showLabel="Expand Tools" hideLabel="Collapse Tools">
+          <Table striped>
+            <ToolTableHead hideNumber scrolled={false} />
+            <Table.Tbody>
+              {Object.values(user.tools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => {
+
+                const removeTool = () => {
+                  delete user.tools[tool.id]
+                  dbUser.fillData(user)
+                  dbUser.setData().then(() => {
+                    notifSuccess("Tool Removed", `Removed "${tool.title}" from ${user.personalData.displayName}.`)
+                    User.getById(user.id).then((userData) => {
+                      setFullUserData(userData)
+                    })
+                  })
+                }
+
+                const starTool = () => {
+                  tool.starred = !tool.starred
+                  dbUser.fillData(user)
+                  dbUser.setData().then(() => {
+                    if (tool.starred) {
+                      notifSuccess("Tool Starred", `Starred "${tool.title}" for ${user.personalData.displayName}.`)
+                    } else {
+                      notifSuccess("Tool Unstarred", `Unstarred "${tool.title}" for ${user.personalData.displayName}.`)
+                    }
+                    User.getById(user.id).then((userData) => {
+                      setFullUserData(userData)
+                    })
+                  })
+                }
+
+                return (
+                  <Table.Tr>
+                    <Table.Td>{tool.title}</Table.Td>
+                    <Table.Td>{tool.description}</Table.Td>
+                    <Table.Td className='d-flex gap-2'>
+                      {tool.starred && <IconButton icon={<IconStarOff />} onClick={starTool} color={unpaidColor} label={`Unstar "${tool.title}"`} />}
+                      {!tool.starred && <IconButton icon={<IconStar />} onClick={starTool} color={assignButtonColor} label={`Star "${tool.title}"`} />}
+                      <IconButton icon={<IconMinus />} color={deleteButtonColor} onClick={removeTool} label={`Remove "${tool.title}"`} />
+                    </Table.Td>
+                  </Table.Tr>
+                )})}
+            </Table.Tbody>
+          </Table>
+        </Spoiler>
     </Paper>
   </div>
 }

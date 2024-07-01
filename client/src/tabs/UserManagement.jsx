@@ -1,10 +1,10 @@
 import { Paper, Tabs } from '@mantine/core'
 import React from 'react'
-import { User } from '../api/db/dbUser.ts';
+import { User, UserRole } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 import { UserSelect } from '../components/userManagement/UserManagementSelectPaper.jsx';
-import { PersonalData, SyncData, InvoiceData, AddInvoice, ManagementTracker, FormsData } from '../components/userManagement/UserData.jsx';
+import { PersonalData, SyncData, InvoiceData, AddInvoice, ManagementTracker, FormsData, ToolsData } from '../components/userManagement/UserData.jsx';
 
 
 export default function UserManagement() {
@@ -40,17 +40,20 @@ export default function UserManagement() {
             <div className="row m-0">
               <PersonalData user={fullUserData} />
               <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} />
-              <Tabs defaultValue="assignments">
+              {selectedUser && <Tabs defaultValue="assignments">
                 <Tabs.List>
-                  <Tabs.Tab value="assignments">
+                  {selectedUser?.personalData.role !== UserRole.PARENT && <Tabs.Tab value="assignments">
                     Assignments
-                  </Tabs.Tab>
+                  </Tabs.Tab>}
                   <Tabs.Tab value="invoices">
                     Invoices
                   </Tabs.Tab>
                   <Tabs.Tab value="forms">
                     Forms
                   </Tabs.Tab>
+                  {selectedUser?.personalData.role !== UserRole.PARENT && <Tabs.Tab value="tools">
+                    Tools
+                  </Tabs.Tab>}
                 </Tabs.List>
                 <Tabs.Panel value="assignments">
                   <ManagementTracker user={fullUserData} />
@@ -66,7 +69,10 @@ export default function UserManagement() {
                 <Tabs.Panel value="forms">
                   <FormsData user={fullUserData} setFullUserData={setFullUserData} />
                 </Tabs.Panel>
-              </Tabs>
+                <Tabs.Panel value="tools">
+                  <ToolsData user={fullUserData} setFullUserData={setFullUserData} />
+                </Tabs.Panel>
+              </Tabs>}
             </div>
           </Paper>
         </div>
