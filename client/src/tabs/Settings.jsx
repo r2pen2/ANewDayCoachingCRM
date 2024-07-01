@@ -10,6 +10,7 @@ import { GeneralSettings, HomeworkTrackerSettings, InvoiceSettings, PersonalInfo
 export default function Settings() {
 
   const {currentUser} = useContext(CurrentUserContext)
+  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser
 
   const userCardDataMemo = useMemo(() => ({
     displayName: currentUser.personalData.displayName,
@@ -17,8 +18,8 @@ export default function Settings() {
     role: currentUser.personalData.role
   }), [currentUser.personalData.pfpUrl, currentUser.personalData.displayName, currentUser.personalData.role])
   const personalDataMemo = useMemo(() => currentUser.personalData, [currentUser.personalData])
-  const generalMemo = useMemo(() => ({darkMode: currentUser.settings.darkMode, meetingLink: currentUser.settings.meetingLink}), [currentUser.settings.darkMode, currentUser.settings.meetingLink])
-  const schoolInfoMemo = useMemo(() => currentUser.schoolInfo, [currentUser.schoolInfo])
+  const generalMemo = useMemo(() => ({darkMode: currentUser.settings.darkMode, meetingLink: delegateUser.settings.meetingLink}), [currentUser.settings.darkMode, delegateUser.settings.meetingLink])
+  const schoolInfoMemo = useMemo(() => delegateUser.schoolInfo, [delegateUser.schoolInfo])
   const homeworkTrackerMemo = useMemo(() => ({
     priorityVerbosity: currentUser.settings.priorityVerbosity,
     priorityPulseThreshold: currentUser.settings.priorityPulseThreshold,
@@ -36,7 +37,7 @@ export default function Settings() {
             <PersonalInformationSettings personalData={personalDataMemo} />
             <GeneralSettings general={generalMemo} />
             <SchoolSettings schoolInfo={schoolInfoMemo} />
-            <HomeworkTrackerSettings homeworkTrackerSettings={homeworkTrackerMemo} />
+            {!delegateUser && <HomeworkTrackerSettings homeworkTrackerSettings={homeworkTrackerMemo} />}
             <InvoiceSettings invoiceSettings={invoiceSettingsMemo}/>
           </Paper>
         </div>
