@@ -1,5 +1,5 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Flex, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconEye, IconHome, IconMinus, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { IconAt, IconCheck, IconHome, IconMinus, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -483,59 +483,106 @@ export const FormsData = ({user, setFullUserData}) => {
 
 export const ToolsData = ({user, setFullUserData}) => {
 
+  
+  const dbUser = User.getInstanceById(user?.id)
+  
+  const [allTools, setAllTools] = useState([]);
+  
+  useEffect(() => {
+    Tool.fetchAll().then(data => setAllTools(Object.values(data)))
+  }, [])
+
+  const [search, setSearch] = useState("")
+
+  let filteredTools = (search.length === 0) ? allTools : allTools.filter(tool => tool.title.toLowerCase().includes(search.toLowerCase())); 
+  filteredTools = filteredTools.filter(tool => !Object.keys(user?.tools).includes(tool.id));
+
+  const ToolResult = ({tool}) => {
+
+    function pushTool() {
+      Tool.assignToMultiple(tool.title, tool.description, tool.id, [dbUser.id]).then(() => {
+        User.getById(user.id).then((userData) => {
+          setFullUserData(userData)
+        })
+        notifSuccess("Tool Added", `Added "${tool.title}" to ${user.personalData.displayName}.`)
+      });
+    }
+
+    return <Paper onClick={pushTool} className={`d-flex w-100 flex-row justify-content-between align-items-center p-2`} withBorder style={{cursor: "pointer"}} >
+      <div className="d-flex flex-row align-items-center justify-content-center">
+        <Text size="sm">{tool.title}</Text>
+      </div>
+    </Paper>
+  }
+
   if (!user) { return; }
 
-  const dbUser = User.getInstanceById(user?.id)
-
-  return <div className="col-12 p-1">
-    <Paper withBorder className="bg-dark-1">
-      <ModuleHeader>Tools</ModuleHeader>
-        <Spoiler maxHeight={300} showLabel="Expand Tools" hideLabel="Collapse Tools">
-          <Table striped>
-            <ToolTableHead hideNumber scrolled={false} />
-            <Table.Tbody>
-              {Object.values(user.tools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => {
-
-                const removeTool = () => {
-                  delete user.tools[tool.id]
-                  dbUser.fillData(user)
-                  dbUser.setData().then(() => {
-                    notifSuccess("Tool Removed", `Removed "${tool.title}" from ${user.personalData.displayName}.`)
-                    User.getById(user.id).then((userData) => {
-                      setFullUserData(userData)
-                    })
-                  })
-                }
-
-                const starTool = () => {
-                  tool.starred = !tool.starred
-                  dbUser.fillData(user)
-                  dbUser.setData().then(() => {
-                    if (tool.starred) {
-                      notifSuccess("Tool Starred", `Starred "${tool.title}" for ${user.personalData.displayName}.`)
-                    } else {
-                      notifSuccess("Tool Unstarred", `Unstarred "${tool.title}" for ${user.personalData.displayName}.`)
-                    }
-                    User.getById(user.id).then((userData) => {
-                      setFullUserData(userData)
-                    })
-                  })
-                }
-
-                return (
-                  <Table.Tr>
-                    <Table.Td>{tool.title}</Table.Td>
-                    <Table.Td>{tool.description}</Table.Td>
-                    <Table.Td className='d-flex gap-2'>
-                      {tool.starred && <IconButton icon={<IconStarOff />} onClick={starTool} color={unpaidColor} label={`Unstar "${tool.title}"`} />}
-                      {!tool.starred && <IconButton icon={<IconStar />} onClick={starTool} color={assignButtonColor} label={`Star "${tool.title}"`} />}
-                      <IconButton icon={<IconMinus />} color={deleteButtonColor} onClick={removeTool} label={`Remove "${tool.title}"`} />
-                    </Table.Td>
-                  </Table.Tr>
-                )})}
-            </Table.Tbody>
-          </Table>
-        </Spoiler>
-    </Paper>
-  </div>
+  return (
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-md-3 col-12 p-1">
+          <Paper withBorder className="bg-dark-1">
+            <ModuleHeader>Add Tool</ModuleHeader>
+            <div className="p-2 d-flex flex-column gap-2">
+              <TextInput className="w-100" label="Add Tool" placeholder="Filter tools" required value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Spoiler maxHeight={200} showLabel="Expand Tools" hideLabel="Collapse Tools">
+                {filteredTools.map((tool, index) => <ToolResult tool={tool} key={index} />)}
+              </Spoiler>
+            </div>
+          </Paper>
+        </div>
+        <div className="col-12 col-md-9 p-1">
+          <Paper withBorder className="bg-dark-1">
+            <ModuleHeader>Tools</ModuleHeader>
+              <Spoiler maxHeight={300} showLabel="Expand Tools" hideLabel="Collapse Tools">
+                <Table striped>
+                  <ToolTableHead hideNumber scrolled={false} />
+                  <Table.Tbody>
+                    {Object.values(user.tools).sort((a, b) => a.title.localeCompare(b.title)).map((tool, index) => {
+                    
+                      const removeTool = () => {
+                        delete user.tools[tool.id]
+                        dbUser.fillData(user)
+                        dbUser.setData().then(() => {
+                          notifSuccess("Tool Removed", `Removed "${tool.title}" from ${user.personalData.displayName}.`)
+                          User.getById(user.id).then((userData) => {
+                            setFullUserData(userData)
+                          })
+                        })
+                      }
+                    
+                      const starTool = () => {
+                        tool.starred = !tool.starred
+                        dbUser.fillData(user)
+                        dbUser.setData().then(() => {
+                          if (tool.starred) {
+                            notifSuccess("Tool Starred", `Starred "${tool.title}" for ${user.personalData.displayName}.`)
+                          } else {
+                            notifSuccess("Tool Unstarred", `Unstarred "${tool.title}" for ${user.personalData.displayName}.`)
+                          }
+                          User.getById(user.id).then((userData) => {
+                            setFullUserData(userData)
+                          })
+                        })
+                      }
+                    
+                      return (
+                        <Table.Tr>
+                          <Table.Td>{tool.title}</Table.Td>
+                          <Table.Td>{tool.description}</Table.Td>
+                          <Table.Td className='d-flex gap-2'>
+                            {tool.starred && <IconButton icon={<IconStarOff />} onClick={starTool} color="gray.5" label={`Unstar "${tool.title}"`} />}
+                            {!tool.starred && <IconButton icon={<IconStar />} onClick={starTool} color="yellow.5" label={`Star "${tool.title}"`} />}
+                            <IconButton icon={<IconMinus />} color={deleteButtonColor} onClick={removeTool} label={`Remove "${tool.title}"`} />
+                          </Table.Td>
+                        </Table.Tr>
+                      )})}
+                  </Table.Tbody>
+                </Table>
+              </Spoiler>
+          </Paper>
+        </div>
+      </div>
+    </div>
+  )
 }
