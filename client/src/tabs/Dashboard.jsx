@@ -1,5 +1,5 @@
 // Library Imports
-import React from 'react';
+import React, { useContext } from 'react';
 
 // Component Imports
 import { Tracker } from '../components/dashboard/HomeworkTrackerV2.jsx';
@@ -13,11 +13,15 @@ import DocumentsList from '../components/dashboard/DocumentsList.jsx';
 import ExternalToolsList from '../components/dashboard/ExternalToolsList.jsx';
 import Intent from '../components/dashboard/Intent.jsx';
 import { Carousel, CarouselSlide } from '@mantine/carousel';
+import { CurrentUserContext } from '../App.jsx';
+import { Text } from '@mantine/core';
 
 export default function Dashboard() {
   
   const [subjectAddMenuOpen, setSubjectAddMenuOpen] = React.useState(false);
   const [homeworkAddMenuOpen, setHomeworkAddMenuOpen] = React.useState(false);
+
+  const {currentUser} = useContext(CurrentUserContext)
 
   return (
     <div className="container-fluid w-100">
@@ -39,7 +43,10 @@ export default function Dashboard() {
           </Carousel>
         </div>
         <div className="col-12 col-xxl-9 right-panel">      
-          <Tracker setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>
+          {!currentUser.delegate && <Tracker setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen}/>}
+          {currentUser.delegate && <div>
+            <Text>You don't have permission to view {currentUser.delegate.personalData.displayName}'s assignment tracker</Text>
+            </div>}
         </div>
         <div className="d-none d-xxl-block col-xxl-3 left-panel">        
           <Intent />

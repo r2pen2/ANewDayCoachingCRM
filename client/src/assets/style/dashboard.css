@@ -113,19 +113,15 @@
   border-bottom: 1px solid #00000022;
 }
 
-.intent-container {
-  cursor: pointer;
-}
-
 .intent-container .intent-text {
-  cursor: pointer;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.intent-container .intent-text::after {
+.intent-container .intent-text:not(.disable-interaction)::after {
+  cursor: pointer;
   content: '';
   position: absolute;
   top: 0;

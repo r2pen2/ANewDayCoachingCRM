@@ -20,7 +20,7 @@ export default function Intent({height}) {
   const IntentTextDisplay = () => {
     if (newIntentText !== null) { return; }
     if (currentUser.delegate) {
-      return <Text size="lg" className="text-center intent-text">{ intentText || `${delegateUser.personalData.displayName} has not set an intent yet!` }</Text>
+      return <Text size="lg" className="text-center intent-text disable-interaction">{ intentText || `${delegateUser.personalData.displayName} has not set an intent yet!` }</Text>
     }
     return <Text size="lg" className="text-center intent-text">{ intentText || "You haven't set an intent yet!" }</Text>
   }
@@ -82,7 +82,7 @@ export default function Intent({height}) {
         <div className="col-1 gap-2 d-flex flex-column align-items-center justify-content-between py-2">
           {quoteSvg}
         </div>
-        <div className={"col-10 p-2 gap-2 d-flex flex-column intent-edit-container align-items-center justify-content-center " + (currentUser.delegate ? "disable-interaction" : "")}>
+        <div className="col-10 p-2 gap-2 d-flex flex-column intent-edit-container align-items-center justify-content-center">
           <IntentTextDisplay />
           { newIntentText !== null && <TextInput placeholder="What's your intent?" className="w-100" value={newIntentText} onKeyDown={handleEnter} onChange={(e) => setNewIntentText(e.target.value)} /> }
           { newIntentText !== null && <div className="d-flex gap-2"><IntentSubmit /><IntentCancel /><IntentHistoryButton /></div> }
