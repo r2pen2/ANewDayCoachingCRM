@@ -40,7 +40,7 @@ export default function UserManagement() {
             <div className="row m-0">
               <PersonalData user={fullUserData} />
               <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} />
-              {selectedUser && <Tabs defaultValue="assignments">
+              {selectedUser && <Tabs defaultValue={selectedUser?.personalData.role !== UserRole.PARENT ? "assignments" : "invoices"}>
                 <Tabs.List>
                   {selectedUser?.personalData.role !== UserRole.PARENT && <Tabs.Tab value="assignments">
                     Assignments
@@ -62,7 +62,7 @@ export default function UserManagement() {
                   <div className="container-fluid">
                     <div className="row">
                       <AddInvoice user={fullUserData} setFullUserData={setFullUserData} />
-                      <InvoiceData user={fullUserData} />
+                      <InvoiceData user={fullUserData} changeSelectedUser={changeSelectedUser} />
                     </div>
                   </div>
                 </Tabs.Panel>

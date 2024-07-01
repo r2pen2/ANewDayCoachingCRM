@@ -351,7 +351,7 @@ export const SyncData = ({user, changeSelectedUser}) => {
   )
 }
 
-const LinkedAccount = ({id, changeSelectedUser}) => {
+export const LinkedAccount = ({id, changeSelectedUser}) => {
   const [userData, setUserData] = useState(null)
   useEffect(() => {
     User.getById(id).then((data) => { setUserData(data) })
@@ -369,7 +369,7 @@ const LinkedAccount = ({id, changeSelectedUser}) => {
   )
 }
 
-export function InvoiceData({user}) {
+export function InvoiceData({user, changeSelectedUser}) {
   
   const [invoices, setInvoices] = useState([]);
   const [invoicesPulled, setInvoicesPulled] = useState(false);
@@ -380,6 +380,17 @@ export function InvoiceData({user}) {
   }, [user])
   
   if (!user) { return; }
+
+  if (user.personalData.role !== UserRole.STUDENT) {
+    return (
+      <div className="col-12 p-1">
+        <Paper withBorder className="bg-dark-1 d-flex align-items-center flex-column gap-2">
+          <Text>This is not a student account. Select a student to assign an invoice.</Text>
+          {user?.linkedAccounts.map((id, index) => <LinkedAccount changeSelectedUser={changeSelectedUser} key={index} id={id} />)}
+        </Paper>
+      </div>
+    )
+  }
 
   function removeInvoice(id) {
     setInvoices(invoices.filter(i => i.id !== id))
@@ -420,6 +431,7 @@ export function AddInvoice({user, setFullUserData}) {
   const checkDisabled = !user || !dueDate || amount <= 0 || href.length <= 0
   
   if (!user) { return; }
+  if (user.personalData.role !== UserRole.STUDENT)  { return; }
 
   return <div className="col-md-3 col-12 p-1">
     <Paper withBorder className="bg-dark-1">
