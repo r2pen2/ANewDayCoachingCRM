@@ -1,7 +1,7 @@
 // Library Imports
 import {Paper, Text, Tooltip } from '@mantine/core'
 import React, { memo, useContext, useEffect, useMemo, useState } from 'react'
-import { IconAlertCircle, IconCircleCheckFilled } from '@tabler/icons-react'
+import { IconAlertCircle, IconCircleCheckFilled, IconMoon } from '@tabler/icons-react'
 import Confetti from "react-confetti"
 
 // Component Imports
@@ -56,7 +56,7 @@ const FormsDisplay = memo(function FormsDisplay({forms}) {
 
     if (forms.length < 1) { 
       return <div className="text-center">
-        <Text size='7rem' style={{marginBottom: "2rem"}}>😴</Text>
+        <IconMoon />
         <Text>There's nothing for you to complete!</Text>
       </div>
     }
