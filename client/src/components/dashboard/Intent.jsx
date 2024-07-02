@@ -1,12 +1,14 @@
 import React from 'react'
 import { CurrentUserContext } from '../../App'
-import { ActionIcon, Avatar, Button, Paper, Text, TextInput, Tooltip } from '@mantine/core'
-import { IconCheck, IconExternalLink, IconHistory, IconX } from '@tabler/icons-react'
+import { ActionIcon, Avatar, Button, Divider, Modal, Paper, Text, TextInput, Tooltip } from '@mantine/core'
+import { IconCheck, IconExternalLink, IconHistory, IconTrash, IconX } from '@tabler/icons-react'
 import { notifSuccess, notifWarn } from '../Notifications'
 import { LMSIcon } from '../LMS'
 import { LinkMaster } from '../../api/links.ts'
 import { getCalendarEvents } from '../../api/calendar.ts'
 import { getSlashDateString, getTimeString } from '../../api/strings.js'
+import IconButton from '../IconButton.jsx'
+import { deleteButtonColor } from '../../api/color.ts'
 
 export default function Intent({height}) {
 
@@ -37,9 +39,9 @@ export default function Intent({height}) {
   const IntentTextDisplay = () => {
     if (newIntentText !== null) { return; }
     if (currentUser.delegate) {
-      return <Text size="lg" className="text-center intent-text disable-interaction">{ intentText || `${delegateUser.personalData.displayName} has not set an intent yet!` }</Text>
+      return <Text className="text-center mb-2 intent-text disable-interaction">{ intentText || `${delegateUser.personalData.displayName} has not set an intent yet!` }</Text>
     }
-    return <Text size="lg" className="text-center intent-text">{ intentText || "You haven't set an intent yet!" }</Text>
+    return <Text className="text-center mb-2 intent-text">{ intentText || "You haven't set an intent yet!" }</Text>
   }
 
   function updateIntent() {
@@ -73,9 +75,11 @@ export default function Intent({height}) {
     </Tooltip>  
   )
 
+  const [intentHistoryOpen, setIntentHistoryOpen] = React.useState(false)
+
   const IntentHistoryButton = () => (
     <Tooltip label="See Intent History" position='bottom'>
-      <ActionIcon onClick={() => {}}>
+      <ActionIcon onClick={() => setIntentHistoryOpen(true)}>
         <IconHistory />
       </ActionIcon>
     </Tooltip>
@@ -92,6 +96,28 @@ export default function Intent({height}) {
 
   return (
     <Paper withBorder style={{height: height}} className="w-100 p-2 d-flex flex-column text-center align-items-center justify-content-start top-green mb-xl-2">
+      <Modal opened={intentHistoryOpen} onClose={() => setIntentHistoryOpen(false)} title="Intent History" size="md">
+        {currentUser.intents.map((intent, index) => {
+          
+          function deleteIntent() {
+            currentUser.intents.splice(index, 1);
+            currentUser.setData().then(() => {
+              notifSuccess("Intent Deleted", `"${intent}" has been removed from your history.`);
+            })
+          }
+
+          return (
+            <div className='d-flex flex-column gap-2 w-100 mt-2' key={index}>
+              <div className="d-flex flex-row align-items-center justify-content-between">
+                <Text>{intent}</Text>
+                <IconButton icon={<IconTrash />} label="Delete Intent" color={deleteButtonColor} onClick={deleteIntent} />
+              </div>
+              <Divider />
+            </div>
+            )
+          }
+        )}
+      </Modal>
       <Avatar src={currentUser.personalData.pfpUrl} alt={currentUser.personalData.displayName} size="large" />
       <Text size="xl">{welcomeText}</Text>
       <Text c="dimmed">{meetingText}</Text>
