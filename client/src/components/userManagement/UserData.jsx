@@ -212,7 +212,7 @@ export const PersonalData = ({user}) => {
   )
 }
 
-export const SyncData = ({user, changeSelectedUser}) => {
+export const SyncData = ({user, changeSelectedUser, setFullUserData}) => {
 
   const dbUser = User.getInstanceById(user?.id)
   dbUser.fillData(user);
@@ -291,6 +291,7 @@ export const SyncData = ({user, changeSelectedUser}) => {
 
         dbUser.linkAccount(u.id).then(() => {
           notifSuccess("Account Linked", `Account linked to ${u.personalData.displayName}.`)
+          setFullUserData(dbUser.clone());
         })
       
         const otherUser = User.getInstanceById(u.id)
@@ -298,8 +299,6 @@ export const SyncData = ({user, changeSelectedUser}) => {
         otherUser.linkAccount(dbUser.id)
       }
     })
-
-    dbUser.linkAccount()
   }
 
   const copySync = () => {

@@ -1,12 +1,14 @@
-import { memo, useContext, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { CurrentUserContext } from "../../App";
 import { notifFail, notifSuccess } from "../Notifications";
-import { Badge, Group, Indicator, Select, Switch, Text, TextInput } from "@mantine/core";
+import { Avatar, Badge, Group, Indicator, Paper, Select, Skeleton, Switch, Text, TextInput, Tooltip } from "@mantine/core";
 import { updateAfterSwitchFlip } from "../../api/settings.ts";
 import { LMSIcon } from "../LMS.jsx";
-import { LMS } from "../../api/db/dbUser.ts";
+import { LMS, User } from "../../api/db/dbUser.ts";
 import { HomeworkPriority, HomeworkPriorityVerbosity } from "../../api/db/dbHomework.ts";
 import { LinkMaster } from "../../api/links.ts";
+import { LinkedAccount } from "../userManagement/UserData.jsx";
+import { IconCheck, IconPlus } from "@tabler/icons-react";
 
 export const PersonalInformationSettings = memo(function PersonalInformationSettings({personalData}) {
   
@@ -489,6 +491,82 @@ export const InvoiceSettings = memo(function InvoiceSettings({invoiceSettings}) 
         </div>
         <Switch onLabel="ON" offLabel="OFF" readOnly className="settings-switch" size='lg' checked={tempNewNotificationSetting} onClick={handleNewNotificationChange}/>
       </Group>
+    </div>
+  )
+})
+
+export const LinkSettings = memo(function LinkSettings({linkMemo}) {
+
+  const {currentUser} = useContext(CurrentUserContext)
+
+  const [linking, setLinking] = useState(false)
+
+  function getCodeString(string) {
+    return string.replace(/[^A-Z0-9]/ig, "").toUpperCase()
+  }
+  
+  function checkThatCodeStringIsValid(string) {
+    return string.match(/[^A-Z0-9]/ig) === null
+  }
+
+  const link = () => {
+    const code = getCodeString(document.getElementById("sync-input").value)
+    if (!code || code.length <= 0) {
+      notifFail("Invalid Sync Code", "Sync code cannot be empty.")
+      setLinking(false);
+      return;
+    }
+    if (code === currentUser.syncCode) {
+      notifFail("Cannot Link", "You cannot link your own account.")
+      setLinking(false);
+      return;
+    }
+    if (!checkThatCodeStringIsValid(code)) {
+      notifFail("Invalid Sync Code", "Sync code can only contain capital letters and numbers.")
+      setLinking(false);
+      return;
+    }
+    setLinking(false)
+    User.getSyncCodeOwner(code).then((u) => {
+      if (u) {
+
+        currentUser.linkAccount(u.id).then(() => {
+          notifSuccess("Account Linked", `Account linked to ${u.personalData.displayName}.`)
+        })
+      
+        const otherUser = User.getInstanceById(u.id)
+        otherUser.fillData(u)
+        otherUser.linkAccount(currentUser.id)
+      }
+    })
+
+    currentUser.linkAccount()
+  }
+
+
+  const LinkedAccount = ({id}) => {
+    const [userData, setUserData] = useState(null)
+    useEffect(() => {
+      User.getById(id).then((data) => { setUserData(data) })
+    }, [id])
+    if (!userData) { return <Skeleton /> }
+    if (!userData.personalData) { return; }
+    return <Paper withBorder className='w-100 p-2 d-flex align-items-center justify-content-start gap-2'>
+      <Avatar src={userData.personalData.pfpUrl} size="sm" />
+      <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
+    </Paper>
+  }
+
+  return (
+    <div className="py-2">
+      <Text fz="xl" fw={500}>Linked Accounts</Text>
+      <div className="w-100 d-flex flex-column align-items-center justify-content-start h-100 pt-2">
+        {currentUser?.linkedAccounts.map((id, index) => <LinkedAccount key={index} id={id} />)}
+        {!linking && <Tooltip position="bottom" label="Link Account" onClick={() => setLinking(true)}>
+          <IconPlus stroke={1.5} size="1rem" className="text-dimmed mt-2" style={{cursor: "pointer"}}/>
+        </Tooltip>}
+        {linking && <div className="d-flex align-items-center mt-2 justify-content-center w-100 gap-2"><TextInput id="sync-input" size="xs" c="dimmed" placeholder="Sync Code" onKeyDown={(e) => { if (e.key === "Enter") { link() } }} /><Tooltip label="Done"><IconCheck size="1rem" onClick={link} className="text-dimmed" /></Tooltip></div>}
+      </div>
     </div>
   )
 })

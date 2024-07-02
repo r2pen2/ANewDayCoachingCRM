@@ -39,7 +39,7 @@ export default function UserManagement() {
             <ModuleHeader>{selectedUser ? selectedUser.personalData.displayName : "No User Selected"}</ModuleHeader>
             <div className="row m-0">
               <PersonalData user={fullUserData} />
-              <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} />
+              <SyncData user={fullUserData} changeSelectedUser={changeSelectedUser} setFullUserData={setFullUserData} />
               {selectedUser && <Tabs defaultValue={selectedUser?.personalData.role !== UserRole.PARENT ? "assignments" : "invoices"}>
                 <Tabs.List>
                   {selectedUser?.personalData.role !== UserRole.PARENT && <Tabs.Tab value="assignments">

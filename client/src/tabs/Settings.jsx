@@ -5,7 +5,7 @@ import { Paper } from '@mantine/core'
 // Component Imports
 import { CurrentUserContext } from '../App'
 import { UserCard } from '../components/settings/UserCard.jsx'
-import { GeneralSettings, HomeworkTrackerSettings, InvoiceSettings, PersonalInformationSettings, SchoolSettings } from '../components/settings/SettingAdjustors.jsx'
+import { GeneralSettings, HomeworkTrackerSettings, InvoiceSettings, PersonalInformationSettings, SchoolSettings, LinkSettings } from '../components/settings/SettingAdjustors.jsx'
 
 export default function Settings() {
 
@@ -36,6 +36,7 @@ export default function Settings() {
           <Paper withBorder p="lg" className="d-flex flex-column" bg="var(--mantine-color-body)">
             <PersonalInformationSettings personalData={personalDataMemo} />
             <GeneralSettings general={generalMemo} />
+            <LinkSettings link={generalMemo} />
             <SchoolSettings schoolInfo={schoolInfoMemo} />
             {!delegateUser && <HomeworkTrackerSettings homeworkTrackerSettings={homeworkTrackerMemo} />}
             <InvoiceSettings invoiceSettings={invoiceSettingsMemo}/>
