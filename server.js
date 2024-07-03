@@ -8,7 +8,7 @@ const forms = require("./routes/forms");
 const { router: tools } = require('./routes/tools');
 const { router: users } = require('./routes/users');
 const { router: invoices } = require('./routes/invoices');
-const { router: document } = require('./routes/document');
+const document = require('./routes/document');
 
 // Init express application
 const app = express();

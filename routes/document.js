@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 require("dotenv").config()
 
-const serviceAccountKey = require("../config/cal.json")
-
 const { google } = require('googleapis');
 
 const bodyParser = require('body-parser');
