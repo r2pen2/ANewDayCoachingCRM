@@ -8,7 +8,7 @@ const forms = require("./routes/forms");
 const { router: tools } = require('./routes/tools');
 const { router: users } = require('./routes/users');
 const { router: invoices } = require('./routes/invoices');
-const document = require('./routes/document');
+// const document = require('./routes/document');
 
 // Init express application
 const app = express();
@@ -37,7 +37,7 @@ app.use("/forms", forms)
 app.use("/tools", tools)
 app.use("/users", users)
 app.use("/invoices", invoices)
-app.use("/document", document)
+// app.use("/document", document)
 
 // Allow getting images
 app.get("/images/*", (req, res) => {

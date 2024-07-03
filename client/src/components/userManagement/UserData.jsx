@@ -1,4 +1,4 @@
-import { Anchor, Avatar, Badge, Button, Center, Divider, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
+import { Anchor, Avatar, Badge, Button, Center, Divider, Group, NumberInput, Paper, Popover, Select, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { IconAt, IconCheck, IconForms, IconHome, IconMinus, IconNote, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconTrash, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
@@ -17,7 +17,7 @@ import { LinkMaster } from "../../api/links.ts";
 import { Tool } from "../../api/db/dbTool.ts";
 import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
 import { DocSvg } from "../dashboard/DocumentsList.jsx";
-import { Document } from "../../api/db/dbDocument.ts";
+import { Document, DocumentType } from "../../api/db/dbDocument.ts";
 
 export const PersonalData = ({user}) => {
 
@@ -640,6 +640,7 @@ export const DriveData = ({user, setFullUserData}) => {
   const dbUser = User.getInstanceById(user?.id)
 
   const [newHref, setNewHref] = useState("")
+  const [tempType, setTempType] = useState(null)
 
   if (!user) { return; }
 
@@ -653,18 +654,26 @@ export const DriveData = ({user, setFullUserData}) => {
       notifFail("Invalid Document", "Invalid document link. Please ensure it's a valid URL.")
       return;
     }
+    const existingDocument = user.documents.filter(d => d.href === newHref).length > 0;
+    if (existingDocument) {
+      notifFail("Cannot add Document", "Document already exists in your shared drive.")
+      return;
+    }
     const newDoc = new Document()
     newDoc.href = absoluteUrl;
     newDoc.extractData().then(() => {
-      console.log(newDoc)
+      if (!tempType) {
+        setTempType(newDoc.type)
+      }
+      user.documents.push(newDoc)
+      dbUser.fillData(user)
+      dbUser.setData().then(() => {
+        notifSuccess("Document Added", `Added "${newDoc.title}" to ${user.personalData.displayName}.`)
+        setFullUserData({...user})
+        setNewHref("")
+        setTempType(null)
+      })
     })
-    // dbUser.documents.push(newDoc);
-    // dbUser.setData().then(() => {
-    //   notifSuccess("Document Added", `Added "${title}" to ${user.personalData.displayName}.`)
-    //   User.getById(user.id).then((userData) => {
-    //     setFullUserData(userData)
-    //   })
-    // })
   }
 
   return (
@@ -675,6 +684,7 @@ export const DriveData = ({user, setFullUserData}) => {
             <ModuleHeader>Add File</ModuleHeader>
             <div className="p-2 d-flex flex-column gap-2">
               <TextInput className="w-100" label="Add FIle" placeholder="Link to File" type="link" required value={newHref} onChange={(e) => setNewHref(e.target.value)} />
+              <Select label="Document Type" value={tempType} required data={Object.values(DocumentType)} onChange={(e) => setTempType(e.target.value)} />
               <Button className="mt-2" onClick={addDocument}>Add</Button>
             </div>
           </Paper>
@@ -718,7 +728,7 @@ export const DriveData = ({user, setFullUserData}) => {
                             </div>
                           </Table.Td>
                           <Table.Td className='d-flex gap-2'>
-                            <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={removeDoc} label={`Remove "${document.title}"`} />
+                            <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={removeDoc} label={`Remove "${doc.title}"`} />
                           </Table.Td>
                         </Table.Tr>
                       )})}

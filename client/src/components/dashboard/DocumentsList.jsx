@@ -4,6 +4,7 @@ import { Paper, Spoiler, Text, Tooltip } from '@mantine/core';
 import { DocumentType } from '../../api/db/dbDocument.ts';
 import { LinkMaster } from '../../api/links.ts';
 import ModuleHeader from './ModuleHeader.jsx';
+import { IconBrandGoogleDrive } from '@tabler/icons-react';
 
 export default function DocumentsList({height}) {
   
@@ -55,6 +56,7 @@ export const DocumentCard = ({d}) => {
 
 export const DocSvg = ({doc}) => {
   const fill = doc.getColor();
+  if (doc.type === DocumentType.DRIVE) { return <IconBrandGoogleDrive size={24} /> }
   if (doc.type === DocumentType.DOCUMENT) { return <svg focusable="false" height="24" viewBox="0 0 24 24" width="24" className="H6g39d vf9sSe NMm5M hhikbc"><path d="M0 0h24v24H0z" fill="none"></path><path fill={fill} d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1.99 6H7V7h10.01v2zm0 4H7v-2h10.01v2zm-3 4H7v-2h7.01v2z"></path></svg> }
   if (doc.type === DocumentType.SPREADSHEET) { return <svg focusable="false" height="24" viewBox="0 0 24 24" width="24" className="MRakOe vf9sSe NMm5M"><path d="M0 0h24v24H0z" fill="none"></path><path fill={fill} d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 8v11c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 8h-8v8H9v-8H5V9h4V5h2v4h8v2z"></path></svg> }
   if (doc.type === DocumentType.PRESENTATION) { return <svg focusable="false" height="24" viewBox="0 0 24 24" width="24" className="SzUuf vf9sSe NMm5M"><path d="M0 0h24v24H0z" fill="none"></path><path fill={fill} d="M19 3H5c-1.1 0-1.99.9-1.99 2v14c0 1.1.89 2 1.99 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 13H5V8h14v8z"></path></svg> }
