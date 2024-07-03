@@ -653,16 +653,18 @@ export const DriveData = ({user, setFullUserData}) => {
       notifFail("Invalid Document", "Invalid document link. Please ensure it's a valid URL.")
       return;
     }
-    const title = "New Title"
-    const type = "New Type"
-    const newDoc = new Document({title: title, type: type, href: absoluteUrl})
-    dbUser.documents.push(newDoc);
-    dbUser.setData().then(() => {
-      notifSuccess("Document Added", `Added "${title}" to ${user.personalData.displayName}.`)
-      User.getById(user.id).then((userData) => {
-        setFullUserData(userData)
-      })
+    const newDoc = new Document()
+    newDoc.href = absoluteUrl;
+    newDoc.extractData().then(() => {
+      console.log(newDoc)
     })
+    // dbUser.documents.push(newDoc);
+    // dbUser.setData().then(() => {
+    //   notifSuccess("Document Added", `Added "${title}" to ${user.personalData.displayName}.`)
+    //   User.getById(user.id).then((userData) => {
+    //     setFullUserData(userData)
+    //   })
+    // })
   }
 
   return (
