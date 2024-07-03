@@ -649,7 +649,7 @@ export const DriveData = ({user, setFullUserData}) => {
       notifFail("Cannot add Document", "Document link must not be empty.")
       return;
     }
-    if (!LinkMaster.checkValidUrl(absoluteUrl)) {
+    if (!LinkMaster.checkValid(absoluteUrl)) {
       notifFail("Invalid Document", "Invalid document link. Please ensure it's a valid URL.")
       return;
     }
