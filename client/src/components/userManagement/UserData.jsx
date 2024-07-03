@@ -1,5 +1,5 @@
 import { Anchor, Avatar, Badge, Button, Center, Divider, Group, NumberInput, Paper, Popover, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconForms, IconHome, IconMinus, IconNote, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
+import { IconAt, IconCheck, IconForms, IconHome, IconMinus, IconNote, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconTrash, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -16,6 +16,8 @@ import { assignButtonColor, deleteButtonColor, unpaidColor } from "../../api/col
 import { LinkMaster } from "../../api/links.ts";
 import { Tool } from "../../api/db/dbTool.ts";
 import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
+import { DocSvg } from "../dashboard/DocumentsList.jsx";
+import { Document } from "../../api/db/dbDocument.ts";
 
 export const PersonalData = ({user}) => {
 
@@ -613,13 +615,108 @@ export const ToolsData = ({user, setFullUserData}) => {
                       }
                     
                       return (
-                        <Table.Tr>
+                        <Table.Tr key={index}>
                           <Table.Td>{tool.title}</Table.Td>
                           <Table.Td>{tool.description}</Table.Td>
                           <Table.Td className='d-flex gap-2'>
                             {tool.starred && <IconButton icon={<IconStarOff />} onClick={starTool} color="gray.5" label={`Unstar "${tool.title}"`} />}
                             {!tool.starred && <IconButton icon={<IconStar />} onClick={starTool} color="yellow.5" label={`Star "${tool.title}"`} />}
                             <IconButton icon={<IconMinus />} color={deleteButtonColor} onClick={removeTool} label={`Remove "${tool.title}"`} />
+                          </Table.Td>
+                        </Table.Tr>
+                      )})}
+                  </Table.Tbody>
+                </Table>
+              </Spoiler>
+          </Paper>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const DriveData = ({user, setFullUserData}) => {
+
+  const dbUser = User.getInstanceById(user?.id)
+
+  const [newHref, setNewHref] = useState("")
+
+  if (!user) { return; }
+
+  const addDocument = () => {
+    const absoluteUrl = LinkMaster.ensureAbsoluteUrl(newHref)
+    if (newHref.length <= 0) { 
+      notifFail("Cannot add Document", "Document link must not be empty.")
+      return;
+    }
+    if (!LinkMaster.checkValidUrl(absoluteUrl)) {
+      notifFail("Invalid Document", "Invalid document link. Please ensure it's a valid URL.")
+      return;
+    }
+    const title = "New Title"
+    const type = "New Type"
+    const newDoc = new Document({title: title, type: type, href: absoluteUrl})
+    dbUser.documents.push(newDoc);
+    dbUser.setData().then(() => {
+      notifSuccess("Document Added", `Added "${title}" to ${user.personalData.displayName}.`)
+      User.getById(user.id).then((userData) => {
+        setFullUserData(userData)
+      })
+    })
+  }
+
+  return (
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-md-3 col-12 p-1">
+          <Paper withBorder className="bg-dark-1">
+            <ModuleHeader>Add File</ModuleHeader>
+            <div className="p-2 d-flex flex-column gap-2">
+              <TextInput className="w-100" label="Add FIle" placeholder="Link to File" type="link" required value={newHref} onChange={(e) => setNewHref(e.target.value)} />
+              <Button className="mt-2" onClick={addDocument}>Add</Button>
+            </div>
+          </Paper>
+        </div>
+        <div className="col-12 col-md-9 p-1">
+          <Paper withBorder className="bg-dark-1">
+            <ModuleHeader>Shared Drive</ModuleHeader>
+              <Spoiler maxHeight={300} showLabel="Expand Drive" hideLabel="Collapse Drive">
+                <Table striped>
+                  
+                  
+                  <Table.Thead className="scroll-table-header">
+                    <Table.Tr>
+                      <Table.Th>
+                        Document
+                      </Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+
+                  <Table.Tbody>
+                    {Object.values(user.documents).sort((a, b) => a.title.localeCompare(b.title)).map((doc, index) => {
+                    
+                      const removeDoc = () => {
+                        user.documents = user.documents.filter(d => d.title !== doc.title && d.href !== doc.href);
+                        dbUser.fillData(user)
+                        dbUser.setData().then(() => {
+                          notifSuccess("Document Removed", `Removed "${doc.title}" from ${user.personalData.displayName}.`)
+                          User.getById(user.id).then((userData) => {
+                            setFullUserData(userData)
+                          })
+                        })
+                      }
+                    
+                      return (
+                        <Table.Tr key={index}>
+                          <Table.Td>
+                            <div className="gap-2 d-flex flex-row align-items-center justify-content-start">
+                              <DocSvg doc={new Document(doc)} />
+                              <Text>{doc.title}</Text>
+                            </div>
+                          </Table.Td>
+                          <Table.Td className='d-flex gap-2'>
+                            <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={removeDoc} label={`Remove "${document.title}"`} />
                           </Table.Td>
                         </Table.Tr>
                       )})}

@@ -4,7 +4,7 @@ import { User, UserRole } from '../api/db/dbUser.ts';
 import { navigationItems } from '../components/Navigation';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 import { UserSelect } from '../components/userManagement/UserManagementSelectPaper.jsx';
-import { PersonalData, SyncData, InvoiceData, AddInvoice, ManagementTracker, FormsData, ToolsData } from '../components/userManagement/UserData.jsx';
+import { PersonalData, SyncData, InvoiceData, AddInvoice, ManagementTracker, FormsData, ToolsData, DriveData} from '../components/userManagement/UserData.jsx';
 
 
 export default function UserManagement() {
@@ -54,6 +54,9 @@ export default function UserManagement() {
                   {selectedUser?.personalData.role !== UserRole.PARENT && <Tabs.Tab value="tools">
                     Tools
                   </Tabs.Tab>}
+                  {selectedUser?.personalData.role !== UserRole.PARENT && <Tabs.Tab value="drive">
+                    Google Drive
+                  </Tabs.Tab>}
                 </Tabs.List>
                 <Tabs.Panel value="assignments">
                   <ManagementTracker user={fullUserData} />
@@ -71,6 +74,9 @@ export default function UserManagement() {
                 </Tabs.Panel>
                 <Tabs.Panel value="tools">
                   <ToolsData user={fullUserData} setFullUserData={setFullUserData} />
+                </Tabs.Panel>
+                <Tabs.Panel value="drive">
+                  <DriveData user={fullUserData} setFullUserData={setFullUserData} />
                 </Tabs.Panel>
               </Tabs>}
             </div>

@@ -19,7 +19,6 @@ import { getTab } from './api/browser.ts';
 import ToolManagement from './tabs/ToolManagement.jsx';
 import FormManagement from './tabs/FormManagement.jsx';
 import InvoiceManagement from './tabs/InvoiceManagement.jsx';
-import DriveManagement from './tabs/DriveManagement.jsx';
 import UserManagement from './tabs/UserManagement.jsx';
 import RoleModal from './components/RoleModal.jsx';
 
