@@ -110,4 +110,13 @@ export class Document {
     // if (title.includes("Archive")) { return DocumentType.ARCHIVE; }
     return DocumentType.DRIVE;
   }
+
+  static getTypeFromURL(url: string): DocumentType | null {
+    if (url.includes("docs.google.com")) { return DocumentType.DOCUMENT; }
+    if (url.includes("sheets.google.com")) { return DocumentType.SPREADSHEET; }
+    if (url.includes("slides.google.com")) { return DocumentType.PRESENTATION; }
+    if (url.includes("forms.google.com")) { return DocumentType.FORM; }
+    if (url.includes("sites.google.com")) { return DocumentType.SITE; }
+    return null;
+  }
 }

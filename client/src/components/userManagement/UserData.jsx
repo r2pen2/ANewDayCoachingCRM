@@ -676,6 +676,14 @@ export const DriveData = ({user, setFullUserData}) => {
     })
   }
 
+  const updateHref = (e) => {
+    setNewHref(e.target.value)
+    const docTypeExtracted = Document.getTypeFromURL(e.target.value)
+    if (docTypeExtracted) {
+      setTempType(docTypeExtracted)
+    }
+  }
+
   return (
     <div className="container-fluid">
       <div className="row">
@@ -683,7 +691,7 @@ export const DriveData = ({user, setFullUserData}) => {
           <Paper withBorder className="bg-dark-1">
             <ModuleHeader>Add File</ModuleHeader>
             <div className="p-2 d-flex flex-column gap-2">
-              <TextInput className="w-100" label="Add FIle" placeholder="Link to File" type="link" required value={newHref} onChange={(e) => setNewHref(e.target.value)} />
+              <TextInput className="w-100" label="Add FIle" placeholder="Link to File" type="link" required value={newHref} onChange={updateHref} />
               <Select label="Document Type" value={tempType} required data={Object.values(DocumentType)} onChange={(e) => setTempType(e.target.value)} />
               <Button className="mt-2" onClick={addDocument}>Add</Button>
             </div>
