@@ -551,7 +551,7 @@ export const LinkSettings = memo(function LinkSettings({linkMemo}) {
     }, [id])
     if (!userData) { return <Skeleton /> }
     if (!userData.personalData) { return; }
-    return <Paper withBorder className='w-100 p-2 d-flex align-items-center justify-content-start gap-2'>
+    return <Paper withBorder className='w-100 mb-2 p-2 d-flex align-items-center justify-content-start gap-2'>
       <Avatar src={userData.personalData.pfpUrl} size="sm" />
       <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
     </Paper>
