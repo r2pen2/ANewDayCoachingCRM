@@ -73,13 +73,15 @@ export default function Invoices() {
           <InvoiceSettings settings={invoiceSettings} />
         </div>
         <div className="col-12 col-lg-9 p-1">
-          <InvoiceList invoices={invoicesMemo} setCurrentInvoice={setCurrentInvoice} setCancellingPending={setCancellingPending} />
+          <InvoiceList invoices={invoices} setCurrentInvoice={setCurrentInvoice} setCancellingPending={setCancellingPending} />
         </div>
       </div>
   </div>
 }
 
-export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoice, setCancellingPending, onlyDelete = false, removeInvoiceFromMemo = () => {}}) {
+export const InvoiceList = ({invoices, setCurrentInvoice, setCancellingPending, onlyDelete = false, removeInvoiceFromMemo = () => {}}) => {
+
+  console.log(invoices)
 
   function getBadgeColor(invoice) {
     if (invoice.paid) { return "green"; }                 // This is paid
@@ -158,4 +160,4 @@ export const InvoiceList = memo(function InvoiceList({invoices, setCurrentInvoic
     </CRMScrollContainer>
     </Paper>
   )
-})
+}
