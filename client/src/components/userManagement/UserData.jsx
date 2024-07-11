@@ -730,6 +730,10 @@ export const DriveData = ({user, setFullUserData}) => {
                           })
                         })
                       }
+
+                      const openDoc = () => {
+                        window.open(LinkMaster.ensureAbsoluteUrl(doc.href), "_blank")
+                      }
                     
                       return (
                         <Table.Tr key={index}>
@@ -740,6 +744,7 @@ export const DriveData = ({user, setFullUserData}) => {
                             </div>
                           </Table.Td>
                           <Table.Td className='d-flex gap-2'>
+                            <IconButton icon={<IconEye />} color={viewButtonColor} onClick={openDoc} label={`Open "${doc.title}"`} />
                             <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={removeDoc} label={`Remove "${doc.title}"`} />
                           </Table.Td>
                         </Table.Tr>
