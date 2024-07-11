@@ -525,7 +525,7 @@ export function Assignment({homeworkJson, userOverride = null}) {
 
 export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOverride = null}) => {
   
-  const [unitType, setUnitType] = React.useState("Subject");
+  const [unitType, setUnitType] = React.useState("Forever");
 
   const [onGnatt, setOnGnatt] = React.useState(false);
 

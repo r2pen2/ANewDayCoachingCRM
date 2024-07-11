@@ -32,7 +32,7 @@ function getSections(currentUser, unitType, selectedSubjects) {
 
   let denominator = 1;
 
-  if (unitType === "Subject") {
+  if (unitType === "Forever") {
     denominator = incompleteAssignments.length;
     for (const hw of incompleteAssignments) {
       if (hw.subject in subjects) {

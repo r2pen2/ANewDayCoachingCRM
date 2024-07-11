@@ -6,12 +6,13 @@ import { Paper } from '@mantine/core'
 import { CurrentUserContext } from '../App'
 import { UserCard } from '../components/settings/UserCard.jsx'
 import { GeneralSettings, HomeworkTrackerSettings, InvoiceSettings, PersonalInformationSettings, SchoolSettings, LinkSettings } from '../components/settings/SettingAdjustors.jsx'
-import { sync } from 'framer-motion'
+import { UserRole } from '../api/db/dbUser.ts'
 
 export default function Settings() {
 
   const {currentUser} = useContext(CurrentUserContext)
-  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser
+  const useDelegate = currentUser.delegate && (currentUser.personalData.role !== UserRole.DEVELOPER)
+  const delegateUser = useDelegate ? currentUser.delegate : currentUser
 
   const userCardDataMemo = useMemo(() => ({
     displayName: currentUser.personalData.displayName,
@@ -40,7 +41,7 @@ export default function Settings() {
             <GeneralSettings general={generalMemo} />
             <LinkSettings link={generalMemo} />
             <SchoolSettings schoolInfo={schoolInfoMemo} />
-            {!delegateUser && <HomeworkTrackerSettings homeworkTrackerSettings={homeworkTrackerMemo} />}
+            {!useDelegate && <HomeworkTrackerSettings homeworkTrackerSettings={homeworkTrackerMemo} />}
             <InvoiceSettings invoiceSettings={invoiceSettingsMemo}/>
           </Paper>
         </div>

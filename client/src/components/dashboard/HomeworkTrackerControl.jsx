@@ -38,12 +38,12 @@ export const RingContextSelector = ({unitType, setUnitType}) => {
   return (
     <Paper withBorder className="pt-2 tracker-control-paper">
       <Text className="d-none d-md-block" size="sm" fw={500} mb={3}>
-        Ring Context
+        Focus Ring
       </Text>
       <Text className="d-block d-md-none" size="sm" fw={500} mb={3}>
-        Bar Context
+        Focus Bar
       </Text>
-      <SegmentedControl className="w-100" data={["Subject", `Deadline (${currentUser.settings.ringDeadlineThresholdHours}hrs)`]} value={unitType} onChange={(newUnitType) => setUnitType(newUnitType)} />
+      <SegmentedControl className="w-100" data={["Forever", `Deadline (${currentUser.settings.ringDeadlineThresholdHours}hrs)`]} value={unitType} onChange={(newUnitType) => setUnitType(newUnitType)} />
     </Paper>
   )
 }
