@@ -26,7 +26,6 @@ export default function Schedule() {
 
 /**
  * A list of upcoming appointments from the google calendar API. Each item is a clickable Paper component.
- * todo: This should fetch data from the Google Calendar API.
  */
 function AppointmentList() {
 
@@ -46,7 +45,6 @@ function AppointmentList() {
    */
   const EventCard = ({event}) => {
 
-    console.log(event)
     return (
       <Paper withBorder className="p-2 mb-2 mb-xl-0 w-100" style={{cursor: "pointer", minWidth: 200}} onClick={() => window.open(event.href, "_blank")}>
         <Text fz="lg" fw={500}>

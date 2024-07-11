@@ -19,6 +19,7 @@ import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
 import { CRMScrollContainer, TableSortButton } from '../components/Tables.jsx';
 import { acceptButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from '../api/color.ts';
 import { notifSuccess } from '../components/Notifications.jsx';
+import { UserRole } from '../api/db/dbUser.ts';
 
 export const lateColor = "red"
 export const pendingColor = "cyan.5"
@@ -26,7 +27,7 @@ export const pendingColor = "cyan.5"
 export default function Invoices() {
 
   const {currentUser} = useContext(CurrentUserContext)
-  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
+  const delegateUser = (currentUser.delegate && currentUser.personalData.role !== UserRole.DEVELOPER) ? currentUser.delegate : currentUser;
 
   const [invoices, setInvoices] = useState([]);
   const [invoicesPulled, setInvoicesPulled] = useState(false);
