@@ -88,8 +88,8 @@ export class User {
     ringDeadlineThresholdHours: 24,
     invoices: {
       studentVisibility: false,
-      newInvoiceEmailNotification: false,
-      pendingStatusEmailNotification: false,
+      newInvoiceEmailNotification: true,
+      pendingStatusEmailNotification: true,
     },
     meetingLink: "",
   }
@@ -173,6 +173,7 @@ export class User {
   }
 
   static async fetchSearch(navPage: string): Promise<any[]> {
+
     return new Promise<any[]>((resolve, reject) => {
       
       let endpoint = ""

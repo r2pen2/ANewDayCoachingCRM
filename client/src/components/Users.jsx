@@ -13,6 +13,7 @@ export const UserSearchResults = ({selectedUser, setSelectedUser, allUsers, user
 
   if (users.length === 0) { return <Text>No users found.</Text> }
 
+
   return (
     <Spoiler showLabel="Show More Users" className="centered-expander" hideLabel="Show Fewer Users" maxHeight={400}> 
       <Paper withBorder className="p-2 d-flex flex-column bg-gray-1 align-items-center justify-content-start gap-2">
