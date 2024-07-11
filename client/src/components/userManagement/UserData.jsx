@@ -1,5 +1,5 @@
 import { Anchor, Avatar, Badge, Button, Center, Divider, Group, NumberInput, Paper, Popover, Select, Skeleton, Spoiler, Table, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAt, IconCheck, IconForms, IconHome, IconMinus, IconNote, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconTrash, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
+import { IconAt, IconCheck, IconEye, IconForms, IconHome, IconMinus, IconNote, IconPencil, IconPhoneCall, IconPlus, IconRefresh, IconStar, IconStarOff, IconTrash, IconUserUp, IconUsers, IconX } from "@tabler/icons-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "../../api/db/dbUser.ts";
 import { notifFail, notifSuccess, notifWarn } from "../Notifications.jsx";
@@ -12,7 +12,7 @@ import { Tracker } from "../dashboard/HomeworkTrackerV2.jsx";
 import { FormTableHead } from "../formManagement/formsTable.jsx";
 import IconButton from "../IconButton.jsx";
 import { allForms } from "../../api/forms.ts";
-import { assignButtonColor, deleteButtonColor, unpaidColor } from "../../api/color.ts";
+import { assignButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from "../../api/color.ts";
 import { LinkMaster } from "../../api/links.ts";
 import { Tool } from "../../api/db/dbTool.ts";
 import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
@@ -466,11 +466,10 @@ export const FormsData = ({user, setFullUserData}) => {
         <Table striped>
           <FormTableHead scrolled={false} />
           <Table.Tbody>
-            {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {  
-              
+            {allForms.sort((a, b) => a.formTitle.localeCompare(b.formTitle)).map((form, index) => {
               let formData = user.formAssignments.filter(f => f.formId === form.formId);
               const hasForm = formData.length > 0
-              formData = formData.filter(f => f.status === "complted")
+              formData = formData.filter(f => f.completed)
               const completedForm = formData.length > 0
 
               const assignForm = () => {
@@ -506,6 +505,10 @@ export const FormsData = ({user, setFullUserData}) => {
                 })
               }
 
+              const goToForm = () => {
+                window.open(LinkMaster.ensureAbsoluteUrl(form.href), "_blank")
+              }
+
               return (
               <Table.Tr key={index}>
                 <Table.Td>
@@ -515,6 +518,7 @@ export const FormsData = ({user, setFullUserData}) => {
                   {form.formDescription}
                 </Table.Td>
                 <Table.Td className='d-flex gap-2'>
+                  <IconButton label={`Open "${form.formTitle}"`} icon={<IconEye />} color={viewButtonColor} onClick={goToForm} />
                   {!hasForm && <IconButton label={`Assign "${form.formTitle}"`} icon={<IconPlus />} color={assignButtonColor} onClick={assignForm} />}
                   {hasForm && <IconButton label={`Unssign "${form.formTitle}"`} icon={<IconMinus />} color={deleteButtonColor} onClick={unassignForm} />}
                   {completedForm && <IconButton label={`Mark "${form.formTitle}" Incomplete`} icon={<IconRefresh />} color={unpaidColor} onClick={markIncomplete} />}
