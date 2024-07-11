@@ -7,7 +7,6 @@ import { PickerMenu, SubjectCard } from "./HomeworkTrackerV2.jsx";
 import { IconSend } from "@tabler/icons-react";
 import IconButton from "../IconButton.jsx";
 import { CurrentUserContext } from "../../App.jsx";
-import { assignButtonColor } from "../../api/color.ts";
 
 export const AddHomeworkModal = ({open, close}) => {
 
@@ -24,19 +23,19 @@ export const AddHomeworkModal = ({open, close}) => {
     const estTime = document.getElementById('est-time').value;
     const href = document.getElementById('link').value;
     if (!priority) { priority = HomeworkPriority.LOW; }
-    
-    
+
     const newHomework = new Homework();
     newHomework.subject = subject;
     newHomework.description = description;
-    newHomework.startDate = new Date(startDate);
-    newHomework.dueDate = new Date(dueDate);
+    newHomework.startDate = startDate ? new Date(startDate) : null;
+    newHomework.dueDate = dueDate ? new Date(dueDate) : null;
     newHomework.priority = priority;
     newHomework.estTime = estTime;
     newHomework.href = href.length > 0 ? href : null;
 
     currentUser.addHomework(newHomework).then(() => {
       notifSuccess("Assignment Added", `Added assignment: "${description}"`)
+      close();
     });
   }
 

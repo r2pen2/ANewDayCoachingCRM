@@ -532,9 +532,10 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
   const onQuickEntryChange = (e) => { setQuickEntryString(e.target.value); extractQuickEntry(); } 
 
   function handleAddAssignmentPress() {
-    if (quickEntryString.length > 0) {
+    if (quickEntryString.length > 0 && quickExtract.subject) {
       sendQuickEntry();
     } else {
+      setQuickEntryString("")
       setHomeworkAddMenuOpen(true);
     }
   }
@@ -570,7 +571,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
     const props = parseQuickEntry(quickEntryString);
     for (const key of Object.keys(contextUser.subjects)) {
       if (key && props.subject) {
-        if (key.replace(" ", "").toLowerCase() === props.subject.toLowerCase()) {
+        if (key.replaceAll(" ", "").toLowerCase() === props.subject.toLowerCase()) {
           props.subject = key;
           break;
         }
@@ -594,6 +595,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
     newHomework.startDate = quickExtract.startDate ? new Date(quickExtract.startDate) : null;
     newHomework.dueDate = quickExtract.dueDate ? new Date(quickExtract.dueDate) : null;
     newHomework.priority = quickExtract.priority ? quickExtract.priority : HomeworkPriority.LOW;
+    newHomework.href = quickExtract.href ? quickExtract.href : null;
     
     if (!newHomework.subject) { setQuickEntryError("Please specify a subject."); return; }
     if (!contextUser.subjects[newHomework.subject]) { 

@@ -695,7 +695,7 @@ export const DriveData = ({user, setFullUserData}) => {
           <Paper withBorder className="bg-dark-1">
             <ModuleHeader>Add File</ModuleHeader>
             <div className="p-2 d-flex flex-column gap-2">
-              <TextInput className="w-100" label="Add FIle" placeholder="Link to File" type="link" required value={newHref} onChange={updateHref} />
+              <TextInput className="w-100" label="Add File" placeholder="Link to File" type="link" required value={newHref} onChange={updateHref} />
               <Select label="Document Type" value={tempType} required data={Object.values(DocumentType)} onChange={(e) => setTempType(e.target.value)} />
               <Button className="mt-2" onClick={addDocument}>Add</Button>
             </div>
