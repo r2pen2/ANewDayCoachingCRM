@@ -45,16 +45,18 @@ function AppointmentList() {
    * @param {any} event - Event JSON data from Google Calendar API 
    */
   const EventCard = ({event}) => {
+
+    console.log(event)
     return (
       <Paper withBorder className="p-2 mb-2 mb-xl-0 w-100" style={{cursor: "pointer", minWidth: 200}} onClick={() => window.open(event.href, "_blank")}>
         <Text fz="lg" fw={500}>
           {event.summary}
         </Text>
         <Text fz="sm" c="dimmed" mt={5}>
-          {getVerboseDateString(event.startAt)}
+          {getVerboseDateString(event.start.dateTime)}
         </Text>
         <Text fz="sm" c="dimmed">
-          {getEventTime(event.startAt)} - {getEventTime(event.endAt)}
+          {getEventTime(event.start.dateTime)} - {getEventTime(event.end.dateTime)}
         </Text>
       </Paper>
     )
