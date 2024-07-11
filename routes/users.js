@@ -37,7 +37,7 @@ router.get("/search-invoices", (req, res) => {
   const resUsers = {}
   for (const userId of Object.keys(allUsers)) {
     const u = allUsers[userId];
-    if (u,personalData.role === "Student") {
+    if (u.personalData.role === "Student") {
       resUsers[userId] = {
         personalData: {
           displayName: u.personalData.displayName,
@@ -45,7 +45,6 @@ router.get("/search-invoices", (req, res) => {
           role: u.personalData.role
         },
         id: u.id,
-        formAssignments: u.formAssignments
       }
     }
   }
