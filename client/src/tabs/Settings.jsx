@@ -6,6 +6,7 @@ import { Paper } from '@mantine/core'
 import { CurrentUserContext } from '../App'
 import { UserCard } from '../components/settings/UserCard.jsx'
 import { GeneralSettings, HomeworkTrackerSettings, InvoiceSettings, PersonalInformationSettings, SchoolSettings, LinkSettings } from '../components/settings/SettingAdjustors.jsx'
+import { sync } from 'framer-motion'
 
 export default function Settings() {
 
@@ -15,8 +16,9 @@ export default function Settings() {
   const userCardDataMemo = useMemo(() => ({
     displayName: currentUser.personalData.displayName,
     pfpUrl: currentUser.personalData.pfpUrl,
-    role: currentUser.personalData.role
-  }), [currentUser.personalData.pfpUrl, currentUser.personalData.displayName, currentUser.personalData.role])
+    role: currentUser.personalData.role,
+    syncCode: currentUser.syncCode,
+  }), [currentUser.personalData.pfpUrl, currentUser.personalData.displayName, currentUser.personalData.role, currentUser.syncCode])
   const personalDataMemo = useMemo(() => currentUser.personalData, [currentUser.personalData])
   const generalMemo = useMemo(() => ({darkMode: currentUser.settings.darkMode, meetingLink: delegateUser.settings.meetingLink}), [currentUser.settings.darkMode, delegateUser.settings.meetingLink])
   const schoolInfoMemo = useMemo(() => delegateUser.schoolInfo, [delegateUser.schoolInfo])
