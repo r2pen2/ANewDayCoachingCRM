@@ -27,14 +27,14 @@ export const pendingColor = "cyan.5"
 export default function Invoices() {
 
   const {currentUser} = useContext(CurrentUserContext)
-  const delegateUser = (currentUser.delegate && currentUser.personalData.role !== UserRole.DEVELOPER) ? currentUser.delegate : currentUser;
+  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
 
   const [invoices, setInvoices] = useState([]);
   const [invoicesPulled, setInvoicesPulled] = useState(false);
   const [currentInvoice, setCurrentInvoice] = useState(null);
   const [cancellingPending, setCancellingPending] = useState(false);
   
-  function fetchInvoices() {  Invoice.getForUser(delegateUser.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); }) }
+  function fetchInvoices() { Invoice.getForUser(delegateUser.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); }) }
   
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => fetchInvoices, [currentUser.id])

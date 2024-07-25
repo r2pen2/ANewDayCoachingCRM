@@ -199,7 +199,7 @@ export class User {
   }
 
   async getFirstChild(): Promise<User | null> {
-    if (this.personalData.role !== UserRole.PARENT) { return null; }
+    if (this.personalData.role !== UserRole.PARENT && this.personalData.role !== UserRole.DEVELOPER) { return null; }
     
     return new Promise<User>((resolve) => {
       if (this.linkedAccounts.length === 0) { 
