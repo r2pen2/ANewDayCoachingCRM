@@ -521,6 +521,7 @@ export class User {
         if (!hw.dueDate) { return false; }
         return getOrthodoxDate(hw.dueDate).getTime() > (new Date().getTime() - 15778476000)
       });
+      this.setData()
     })
   }
 }
