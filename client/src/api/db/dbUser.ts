@@ -295,6 +295,17 @@ export class User {
     })
   }
 
+  async unlinkAccount(id: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.linkedAccounts = this.linkedAccounts.filter(a => a !== id);
+      this.setData().then(() => {
+        resolve();
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
   async addSubject(subject: HomeworkSubject): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.subjects[subject.title] = subject.toJson();

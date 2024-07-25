@@ -308,6 +308,23 @@ export const SyncData = ({user, changeSelectedUser, setFullUserData}) => {
     notifSuccess("Sync Code Copied", `Sync code for ${user.personalData.displayName} copied to clipboard.`)
   }
 
+  const removeSync = (otherUserId) => {
+    
+    User.getById(otherUserId).then((u) => {
+      if (u) {
+        
+        dbUser.unlinkAccount(otherUserId).then(() => {
+          notifSuccess("Account Unlinked", `Account unlinked from ${dbUser.personalData.displayName}.`)
+          setFullUserData(dbUser.clone());
+        })
+      
+        const otherUser = User.getInstanceById(u.id)
+        otherUser.fillData(u)
+        otherUser.unlinkAccount(dbUser.id)
+      }
+    })
+  }
+
   if (!user) { return; }
   return (
     <div className="col-12 col-lg-6 p-1">
@@ -341,7 +358,7 @@ export const SyncData = ({user, changeSelectedUser, setFullUserData}) => {
         <Divider orientation="vertical" className="mx-2" />
         <div className="w-100 d-flex flex-column align-items-center justify-content-start h-100 pt-2">
           <Text fz="sm" c="dimmed" tt="uppercase" fw={700}>Linked Accounts</Text>
-          {user?.linkedAccounts.map((id, index) => <LinkedAccount changeSelectedUser={changeSelectedUser} key={index} id={id} />)}
+          {user?.linkedAccounts.map((id, index) => <LinkedAccount removeSync={removeSync} changeSelectedUser={changeSelectedUser} key={index} id={id} />)}
           {!linking && <Tooltip position="bottom" label="Link Account" onClick={() => setLinking(true)}>
             <IconPlus stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>
           </Tooltip>}
@@ -352,7 +369,7 @@ export const SyncData = ({user, changeSelectedUser, setFullUserData}) => {
   )
 }
 
-export const LinkedAccount = ({id, changeSelectedUser}) => {
+export const LinkedAccount = ({id, changeSelectedUser, removeSync}) => {
   const [userData, setUserData] = useState(null)
   useEffect(() => {
     User.getById(id).then((data) => { setUserData(data) })
@@ -364,9 +381,16 @@ export const LinkedAccount = ({id, changeSelectedUser}) => {
   if (!userData) { return <Skeleton /> }
   if (!userData.personalData) { return; }
   return (
-    <Anchor onClick={handleLinkedUserClick} className="gap-2 d-flex flex-row">
-      <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
-    </Anchor>
+    <div className="d-flex flex-row align-items-center gap-2 justify-content-center">
+      <Anchor onClick={handleLinkedUserClick} className="gap-2 d-flex flex-row">
+        <Text fz="sm" fw={500}>{userData.personalData.displayName} ({userData.personalData.role})</Text>
+      </Anchor>
+      <Tooltip label="Unlink">
+        <Center>
+          <IconTrash onClick={() => removeSync(id)} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>
+        </Center>
+      </Tooltip>
+    </div>
   )
 }
 
