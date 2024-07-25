@@ -691,7 +691,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
                       <Text size="sm" c="dimmed">start:(date)</Text>
                       <Text size="sm" c="dimmed">due:(date)</Text>
                       <Text size="sm" c="dimmed">!high !med !low</Text>
-                      <Text size="sm" c="dimmed">>www.link.com</Text>
+                      <Text size="sm" c="dimmed">{">"}www.link.com</Text>
                     </Text>
                   </Popover.Dropdown>
                 </Popover>
