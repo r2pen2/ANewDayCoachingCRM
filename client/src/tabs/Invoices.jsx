@@ -81,8 +81,6 @@ export default function Invoices() {
 
 export const InvoiceList = ({invoices, setCurrentInvoice, setCancellingPending, onlyDelete = false, removeInvoiceFromMemo = () => {}}) => {
 
-  console.log(invoices)
-
   function getBadgeColor(invoice) {
     if (invoice.paid) { return "green"; }                 // This is paid
     if (invoice.paidAt) { return pendingColor; }          // This is pending approval

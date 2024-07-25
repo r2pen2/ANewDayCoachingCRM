@@ -1,7 +1,7 @@
 // Library Imports
 import React, { useEffect } from "react";
 import { Badge, Button, Center, Chip, ColorPicker, Divider, Indicator, Loader, Paper, Popover, Select, Spoiler, Text, TextInput, Tooltip } from "@mantine/core";
-import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconExternalLink, IconHourglassEmpty, IconLink, IconLinkPlus, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
+import { IconAlignJustified, IconArrowBackUp, IconCheck, IconClock, IconClockDown, IconClockUp, IconExternalLink, IconHourglassEmpty, IconInfoCircle, IconLink, IconLinkPlus, IconPlus, IconSchool, IconSend, IconSpeedboat, IconTimeline, IconTrash } from "@tabler/icons-react";
 // API Imports
 import { Homework, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "../../api/db/dbHomework.ts";
 // Component Imports
@@ -680,6 +680,21 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
             <div className="tracker-inputs gap-1" >
               <div className='gap-2 mt-1 d-flex flex-row w-100 justify-content-start' >
                 <TextInput error={quickEntryError} placeholder='Quick Entry' className='w-100' leftSection={<IconSpeedboat />} value={quickEntryString} onChange={onQuickEntryChange} onKeyDown={onQuickEntryKeyDown} />        
+                <Popover>
+                  <Popover.Target>
+                    <Center><IconButton onClick={() => {}} label="Quick Entry Help" icon={<IconInfoCircle />} buttonProps={{size: 32}} /></Center>
+                  </Popover.Target>
+                  <Popover.Dropdown>
+                    <Text>
+                      <Text>How to use Quick Entry</Text>
+                      <Text size="sm" c="dimmed">#subject</Text>
+                      <Text size="sm" c="dimmed">start:(date)</Text>
+                      <Text size="sm" c="dimmed">due:(date)</Text>
+                      <Text size="sm" c="dimmed">!high !med !low</Text>
+                      <Text size="sm" c="dimmed">>www.link.com</Text>
+                    </Text>
+                  </Popover.Dropdown>
+                </Popover>
                 <Center><IconButton label="Add Assignment" icon={<IconPlus />} buttonProps={{size: 32}} onClick={handleAddAssignmentPress} /></Center>
               </div>
               <Spoiler maxHeight={width >= 1000 ? 60 : 130} showLabel="Expand Subjects" hideLabel="Collapse Subjects">

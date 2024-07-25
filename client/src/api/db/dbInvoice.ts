@@ -161,7 +161,6 @@ export class Invoice {
   }
 
   static async getForUser(userId: string): Promise<any[]> {
-    console.log(userId)
     return new Promise<any[]>((resolve, reject) => {
       fetch(hostname + `/invoices?userId=${userId}`).then((response) => {
         response.json().then((data) => {
