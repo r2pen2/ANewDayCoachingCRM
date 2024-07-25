@@ -49,6 +49,7 @@ export default function Invoices() {
       const onThanks = secondPage === "thanks-venmo" || secondPage === "thanks-mark";
       if (!secondPage)              { return <strong>Invoice #{currentInvoice?.invoiceNumber}: <NumberFormatter value={currentInvoice?.amount} prefix='$' /></strong>; } // We're on the first page
       if (secondPage === "venmo")   { return "Paying with Venmo:";            } // We're on the Venmo page
+      if (secondPage === "zelle")   { return "Paying with Zelle:";            } // We're on the Zelle page
       if (secondPage === "mark")    { return "Mark this invoice as paid:";    } // We're trying to mark an invoice as paid
       if (secondPage === "oops")    { return "Undo mark as paid:";            } // We're trying to undo an invoice being marked as paid
       if (secondPage === "cancel")  { return "Mark as unpaid:";               } // We're trying to cancel the approval process of an invoice from a while ago
