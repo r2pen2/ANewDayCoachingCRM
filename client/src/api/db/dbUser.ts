@@ -6,6 +6,7 @@ import { hostname } from "./dbManager.ts";
 import { FormAssignment } from "./dbFormAssignment.ts";
 import { Homework, HomeworkLoaderType, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
 import { Document } from "./dbDocument.ts";
+import { getOrthodoxDate } from "../dates.ts";
 
 export enum UserRole {
   STUDENT = "Student",
@@ -500,5 +501,15 @@ export class User {
    */
   static sortByDisplayName(users: User[]) {
     users.sort((a, b) => a.personalData.displayName?.localeCompare(b.personalData.displayName))
+  }
+
+  async purgeAssignments(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      // Remove homeworks older than 6 months
+      this.homework = this.homework.filter((hw) => {
+        if (!hw.dueDate) { return false; }
+        return getOrthodoxDate(hw.dueDate).getTime() > (new Date().getTime() - 15778476000)
+      });
+    })
   }
 }

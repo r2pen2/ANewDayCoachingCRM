@@ -564,6 +564,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
   
   React.useEffect(() => {
     extractQuickEntry();
+    contextUser.purgeAssignments();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quickEntryString]);  // Dependency array includes quickEntryString
 
