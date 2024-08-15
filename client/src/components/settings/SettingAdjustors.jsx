@@ -285,7 +285,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
           />        
           <TextInput
             className="col-12 col-lg-6 col-md-12 col-sm-6" 
-            label="Adviror Link" 
+            label="Advisor Link" 
             placeholder='https://www.myschool.edu/advisors/talia-wendigo'
             type='url'
             value={tempAdvisorHref}
