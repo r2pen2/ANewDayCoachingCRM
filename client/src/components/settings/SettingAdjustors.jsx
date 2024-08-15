@@ -409,7 +409,7 @@ export const HomeworkTrackerSettings = memo(function HomeworkTrackerSettings({ho
       </Group>
       <Group justify='space-between' className="settings-item" wrap="nowrap" gap="xl">
         <div>
-          <Text>Conform Assignment Deletion</Text>
+          <Text>Confirm Assignment Deletion</Text>
           <Text size="xs" c="dimmed">
             Require confirmation of a popup before assignments are allowed to be deleted
           </Text>
