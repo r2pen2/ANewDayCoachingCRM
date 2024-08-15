@@ -18,7 +18,7 @@ import { InvoiceStats } from '../components/invoices/InvoiceStats.jsx';
 import { InvoiceSettings } from '../components/invoices/InvoiceSettings.jsx';
 import { CRMScrollContainer, TableSortButton } from '../components/Tables.jsx';
 import { acceptButtonColor, deleteButtonColor, unpaidColor, viewButtonColor } from '../api/color.ts';
-import { notifSuccess } from '../components/Notifications.jsx';
+import { notifSuccess, notifWarn } from '../components/Notifications.jsx';
 import { UserRole } from '../api/db/dbUser.ts';
 
 export const lateColor = "red"

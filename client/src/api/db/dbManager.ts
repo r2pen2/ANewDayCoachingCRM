@@ -1,1 +1,1 @@
-export const hostname = "https://www.crm.joed.dev"
+export const hostname = "https://www.bluprint.anewdaycoaching.com"
