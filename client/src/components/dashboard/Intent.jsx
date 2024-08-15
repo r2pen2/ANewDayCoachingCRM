@@ -10,7 +10,7 @@ import { getSlashDateString, getTimeString } from '../../api/strings.js'
 import IconButton from '../IconButton.jsx'
 import { deleteButtonColor } from '../../api/color.ts'
 
-export default function Intent({height}) {
+export default function Intent({height, setTab}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
   const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
@@ -95,6 +95,18 @@ export default function Intent({height}) {
   const lmsName = delegateUser ? delegateUser.schoolInfo.LMSName : currentUser.schoolInfo.LMSName;
   const lmsLink = delegateUser ? delegateUser.schoolInfo.LMSHref : currentUser.schoolInfo.LMSHref;
 
+  const userHasMeetingLink = currentUser?.settings?.meetingLink;
+
+  function handleMeetingLinkClick() {
+    if (currentUser?.settings?.meetingLink) { window.open(LinkMaster.ensureAbsoluteUrl(currentUser.settings.meetingLink, "_blank")); return; }
+    setTab("settings");
+  }
+
+  function handleLMSLinkClick() {
+    if (lmsLink) { window.open(LinkMaster.ensureAbsoluteUrl(lmsLink, "_blank")); return; }
+    setTab("settings");
+  }
+
   return (
     <Paper withBorder style={{height: height}} className="w-100 p-2 d-flex flex-column text-center align-items-center justify-content-start top-green mb-xl-2">
       <Modal opened={intentHistoryOpen} onClose={() => setIntentHistoryOpen(false)} title="Intent History" size="md">
@@ -137,14 +149,14 @@ export default function Intent({height}) {
       </div>
       <div className="row w-100 gap-2">
         <div className="col-12">
-          <Button rightSection={<LMSIcon name={lmsName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(lmsLink, "_blank"))}>
-            Go to {(lmsName !== "Other" && lmsName !== "") ? lmsName : "LMS"}
+          <Button rightSection={lmsLink ? <LMSIcon name={lmsName} /> : ""} onClick={handleLMSLinkClick}>
+            {lmsLink ? `Go to ${(lmsName !== "Other" && lmsName !== "") ? lmsName : "LMS"}` : "Set LMS"}
           </Button>
         </div>
         {!currentUser.delegate && <div className="col-12">
-          {currentUser?.settings?.meetingLink && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.settings.meetingLink, "_blank"))}>
-            Join Meeting
-          </Button>}
+          <Button rightSection={userHasMeetingLink ? <IconExternalLink size="1rem" /> : ""} onClick={handleMeetingLinkClick}>
+            {userHasMeetingLink ? "Join Meeting" : "Set Meeting Link"}
+          </Button>
         </div>}
         <div className="col-12">
           {delegateUser?.schoolInfo?.sessionNotes && <Button rightSection={<IconExternalLink size="1rem" />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(currentUser.schoolInfo.sessionNotes, "_blank"))}>

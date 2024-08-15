@@ -54,7 +54,7 @@ const AppContent = memo(function AppContent({currentUserId}) {
   const CurrentTab = () => {
     switch (currentTab) {
       case navigationItems.DASHBOARD:
-        return <Dashboard />
+        return <Dashboard setTab={setCurrentTab}/>
       case navigationItems.INVOICES:
         return <Invoices />
       case navigationItems.FORMS:

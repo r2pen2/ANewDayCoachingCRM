@@ -16,7 +16,7 @@ import { Carousel, CarouselSlide } from '@mantine/carousel';
 import { CurrentUserContext } from '../App.jsx';
 import { Text } from '@mantine/core';
 
-export default function Dashboard() {
+export default function Dashboard({setTab}) {
   
   const [subjectAddMenuOpen, setSubjectAddMenuOpen] = React.useState(false);
   const [homeworkAddMenuOpen, setHomeworkAddMenuOpen] = React.useState(false);
@@ -49,7 +49,7 @@ export default function Dashboard() {
             </div>}
         </div>
         <div className="d-none d-xxl-block col-xxl-3 left-panel">        
-          <Intent />
+          <Intent setTab={setTab}/>
           <ToolsList />
           <DocumentsList />
           <ExternalToolsList />
