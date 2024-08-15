@@ -31,7 +31,7 @@ export const CRMGnatt = ({isLoading, assignments, userSubjects}) => {
   }
 
   return (
-    <Spoiler maxHeight={400} style={{minHeight: 400}} showLabel="Expand Gnatt Chart" hideLabel="Collapse Gnatt Chart">
+    <Spoiler maxHeight={400} style={{minHeight: 400}} showLabel="Expand Gantt Chart" hideLabel="Collapse Gantt Chart">
       {gnattData.length > 0 && <Scheduler data={gnattData} isLoading={isLoading} zoom={0} dark={colorScheme !== "light"} onTileClick={(hw) => openHomework(hw)}/>}
       {gnattData.length <= 0 && <NoDataNotif />}
     </Spoiler>

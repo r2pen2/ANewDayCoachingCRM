@@ -88,6 +88,11 @@ export const AddSubjectModal = ({open, close}) => {
 
   const [error, setError] = React.useState(null);
 
+  const resetFields = () => {
+    setNewTitle("");
+    setNewColor("#ffffff");
+  }
+
   function handleFormSubmit(e) {
     if (e?.preventDefault) {
       e.preventDefault();
@@ -96,6 +101,7 @@ export const AddSubjectModal = ({open, close}) => {
       setError("Subject already exists.");
       return;
     }
+    resetFields();
     close();
     const newSubject = new HomeworkSubject(newTitle, newColor);
     currentUser.addSubject(newSubject).then(() => {
@@ -105,8 +111,7 @@ export const AddSubjectModal = ({open, close}) => {
 
   function handleClose() {
     if (popoverOpen) { setPopoverOpen(false); return; }
-    setNewTitle("");
-    setNewColor("#ffffff");
+    resetFields();
     close();
   }
 
