@@ -24,7 +24,7 @@ router.get("/getInvoiceById" , (req, res) => {
   });
 })
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
 
   const invoice = getInvoiceById(req.body.id);
   if (!invoice) { return res.status(404).json({error: "Invoice not found"}); }
@@ -40,15 +40,14 @@ router.post("/", (req, res) => {
     quantity: 1
   }
 
-  stripe.checkout.sessions.create({
+  const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: "payment", // could be "subscription"
     success_url: "https://www.bluprint.anewdaycoaching.com/#invoices?status=W",
     cancel_url: "https://www.bluprint.anewdaycoaching.com/#invoices?status=L",
     line_items: [item]
-  }).then(session => {
-    res.json({session: session})
   })
+  res.json({session: session})
 })
 
 module.exports = router;

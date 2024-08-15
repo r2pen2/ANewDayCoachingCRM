@@ -48,10 +48,16 @@ export const FirstPageV2 = ({secondPage, currentInvoice, setSecondPage}) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: currentInvoice.id })
-      }).then((response) => response.json()).then((data) => {
-        window.location = data.session.url;
-      }
-    )
+      }).then(res => {
+        if (res.ok) { return res.json()}
+        return res.json().then(json => Promise.reject(json))
+      }).then(({session}) => {
+        const url = session.url;
+        console.log(session);
+        window.location = url;
+      }).catch(e => {
+        console.error(e.error);
+      })
   }
 
   return (  
