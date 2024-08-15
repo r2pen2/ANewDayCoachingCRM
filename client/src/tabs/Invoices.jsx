@@ -1,6 +1,6 @@
 // Library Imports
 import { Badge, Modal, NumberFormatter, Paper, Table } from '@mantine/core';
-import React, { memo, useContext, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { IconCreditCardPay, IconCreditCardRefund, IconEye, IconTrash } from '@tabler/icons-react';
 
 // API Imports
@@ -34,10 +34,12 @@ export default function Invoices() {
   const [currentInvoice, setCurrentInvoice] = useState(null);
   const [cancellingPending, setCancellingPending] = useState(false);
   
-  function fetchInvoices() { Invoice.getForUser(delegateUser.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); }) }
+  const fetchInvoices = useCallback(() => { Invoice.getForUser(delegateUser.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); }) }, [delegateUser.id, setInvoices, setInvoicesPulled]);
   
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => fetchInvoices, [currentUser.id])
+  useEffect(() => {
+    fetchInvoices();
+  }, [delegateUser.id, currentUser.id, fetchInvoices])
 
   /** Invoice payment modal that appears when {@link currentInvoice} is not null. */
   const PayModal = () => {
@@ -63,14 +65,14 @@ export default function Invoices() {
   }
 
   const invoiceSettings = useMemo(() => currentUser.settings.invoices, [currentUser.settings])
-  const invoicesMemo = useMemo(() => { return invoices; }, [invoices])
-  const invoicesPulledMemo = useMemo(() => invoicesPulled, [invoicesPulled])
+  // const invoicesMemo = useMemo(() => { return invoices; }, [invoices])
+  // const invoicesPulledMemo = useMemo(() => invoicesPulled, [invoicesPulled])
   
   return <div className='d-flex flex-column gap-2 py-2 px-1 align-items-center justify-content-center container-fluid'>
       <PayModal />
       <div className="row w-100">
         <div className="p-1 col-12 col-lg-3 gap-2 d-flex flex-column align-items-start justify-content-start">
-          <InvoiceStats invoices={invoicesMemo} invoicesPulled={invoicesPulledMemo} />
+          <InvoiceStats invoices={invoices} invoicesPulled={invoicesPulled} />
           <InvoiceSettings settings={invoiceSettings} />
         </div>
         <div className="col-12 col-lg-9 p-1">

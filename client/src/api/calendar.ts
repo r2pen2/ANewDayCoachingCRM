@@ -5,7 +5,6 @@ export async function getCalendarEvents(email) {
     fetch(hostname + `/calendar/events?invitee=${email}`).then((res) => {
       res.json().then((data) => {
         resolve(data)
-        console.log(`/calendar/events?invitee=${email}`)
       })
     })
   })
