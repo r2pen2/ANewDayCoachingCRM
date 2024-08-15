@@ -8,6 +8,7 @@ const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
 router.use(bodyParser.json());
 
 const db = require('../firebase.js');
+const { getInvoiceById } = require('./invoices.js');
 
 router.get("/getInvoiceById" , (req, res) => {
   console.log(req.query.id)
@@ -25,77 +26,29 @@ router.get("/getInvoiceById" , (req, res) => {
 
 router.post("/", (req, res) => {
 
-  try {
-    
-    const invoiceRef = db.collection("invoices-JD").doc(req.body.id)
-    invoiceRef.get().then(async (doc) => {
-      if (doc.exists) {
-        // Invoice document is real
+  const invoice = getInvoiceById(req.body.id);
+  if (!invoice) { return res.status(404).json({error: "Invoice not found"}); }
 
-        const data = doc.data();
-        console.log(data)
-        const item = {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: data.name,
-            },
-            unit_amount: data.unitAmount // in cents
-          },
-          quantity: data.quantity
-        }
-
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
-          mode: "payment", // could be "subscription"
-          success_url: "https://www.joed.dev/success",
-          cancel_url: "https://www.joed.dev/cancel",
-          line_items: [item]
-        })
-        res.json({session: session})
-
-      } else {
-        console.error("No such invoice!");
-      }
-    }).catch((error) => {
-      console.log("Error getting document:", error);
-    });
-
-
-
-  } catch (e) {
-    res.status(500).json({error: e.message});
-  }
-})
-
-
-router.post("/invoice", async (req, res) => {
-
-  try {
-
-    const item = {
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: req.body.name,
-        },
-        unit_amount: req.body.unitAmount // in cents
+  const item = {
+    price_data: {
+      currency: "usd",
+      product_data: {
+        name: `A New Day Coaching Invoice #${invoice.invoiceNumber}`,
       },
-      quantity: req.body.quantity
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: "payment", // could be "subscription"
-      success_url: "https://www.joed.dev/success",
-      cancel_url: "https://www.joed.dev/cancel",
-      line_items: [item]
-    })
-    res.json({session: session})
-
-  } catch (e) {
-    res.status(500).json({error: e.message});
+      unit_amount: invoice.amount * 100 // in cents
+    },
+    quantity: 1
   }
+
+  stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    mode: "payment", // could be "subscription"
+    success_url: "https://www.bluprint.anewdaycoaching.com/#invoices?status=W",
+    cancel_url: "https://www.bluprint.anewdaycoaching.com/#invoices?status=L",
+    line_items: [item]
+  }).then(session => {
+    res.json({session: session})
+  })
 })
 
 module.exports = router;

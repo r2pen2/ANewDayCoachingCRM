@@ -127,6 +127,7 @@ router.post("/delete", (req, res) => {
 })
 
 function getAllInvoices() { return allInvoices }
+function getInvoiceById(id) { return allInvoices[id] }
 async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then((ref) => { resolve(ref); }).catch((error) => { reject(error); }); }) }
 
-module.exports = { router, getAllInvoices, setInvoice };
+module.exports = { router, getAllInvoices, getInvoiceById, setInvoice };
