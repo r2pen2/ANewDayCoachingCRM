@@ -43,9 +43,10 @@ router.post("/", async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: "payment", // could be "subscription"
-    success_url: "https://www.bluprint.anewdaycoaching.com/#invoices?status=W",
-    cancel_url: "https://www.bluprint.anewdaycoaching.com/#invoices?status=L",
-    line_items: [item]
+    success_url: `https://www.bluprint.anewdaycoaching.com/invoices/stripe-complete?id=${req.body.id}`,
+    cancel_url: "https://www.bluprint.anewdaycoaching.com/#invoices",
+    line_items: [item],
+    
   })
   res.json({session: session})
 })

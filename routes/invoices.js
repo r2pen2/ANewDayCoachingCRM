@@ -126,6 +126,20 @@ router.post("/delete", (req, res) => {
   });
 })
 
+router.get("/stripe-complete", (req, res) => {
+  const invoiceId = req.query.id;
+  const invoice = allInvoices[invoiceId];
+  if (!invoice) { res.send("Error: Invoice not found"); return; }
+  invoice.paid = true;
+  invoice.paidAt = new Date();
+  setInvoice(invoice).then(() => {
+    res.redirect("https://www.bluprint.anewdaycoaching.com/#thanks");
+  }).catch((error) => {
+    console.error(error);
+    res.send("Error");
+  });
+})
+
 function getAllInvoices() { return allInvoices }
 function getInvoiceById(id) { return allInvoices[id] }
 async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then((ref) => { resolve(ref); }).catch((error) => { reject(error); }); }) }
