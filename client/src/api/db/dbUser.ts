@@ -21,6 +21,7 @@ export enum LMS {
   GOOGLE_CLASSROOM = "Google Classroom",
   SCHOOLOGY = "Schoology",
   BLACKBOARD = "Blackboard",
+  MOODLE = "Moodle",
   OTHER = "Other"
 }
 

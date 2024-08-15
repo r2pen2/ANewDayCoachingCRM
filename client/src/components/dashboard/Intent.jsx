@@ -93,6 +93,7 @@ export default function Intent({height}) {
   }
 
   const lmsName = delegateUser ? delegateUser.schoolInfo.LMSName : currentUser.schoolInfo.LMSName;
+  const lmsLink = delegateUser ? delegateUser.schoolInfo.LMSHref : currentUser.schoolInfo.LMSHref;
 
   return (
     <Paper withBorder style={{height: height}} className="w-100 p-2 d-flex flex-column text-center align-items-center justify-content-start top-green mb-xl-2">
@@ -136,7 +137,7 @@ export default function Intent({height}) {
       </div>
       <div className="row w-100 gap-2">
         <div className="col-12">
-          <Button rightSection={<LMSIcon name={lmsName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(lmsName, "_blank"))}>
+          <Button rightSection={<LMSIcon name={lmsName} />} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(lmsLink, "_blank"))}>
             Go to {(lmsName !== "Other" && lmsName !== "") ? lmsName : "LMS"}
           </Button>
         </div>

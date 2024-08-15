@@ -221,7 +221,8 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
       if (link.toLowerCase().includes("canvas")) { setTempLMSName(LMS.CANVAS); return; }
       if (link.toLowerCase().includes("blackboard")) { setTempLMSName(LMS.BLACKBOARD); return; }
       if (link.toLowerCase().includes("classroom")) { setTempLMSName(LMS.GOOGLE_CLASSROOM); return; }
-      if (link.toLowerCase().includes("schoology")) { setTempLMSName(LMS.SCHOOLOGY); return; }
+      if (link.toLowerCase().includes("schoology")) { setTempLMSName(LMS.SCHOOLOGY); return; } 
+      if (link.toLowerCase().includes("moodle")) { setTempLMSName(LMS.MOODLE); return; } 
       setTempLMSName(LMS.OTHER);
     }
 
@@ -324,7 +325,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             onBlur={handleLMSLinkSubmit}
             onKeyDown={handleLMSLinkKeyDown}
           />
-          <Select label="LMS Name" data={[LMS.BLACKBOARD, LMS.CANVAS, LMS.GOOGLE_CLASSROOM, LMS.SCHOOLOGY, LMS.OTHER]} value={tempLMSName} onChange={handleLMSNameChange}/>
+          <Select label="LMS Name" data={[LMS.BLACKBOARD, LMS.CANVAS, LMS.GOOGLE_CLASSROOM, LMS.SCHOOLOGY, LMS.MOODLE, LMS.OTHER]} value={tempLMSName} onChange={handleLMSNameChange}/>
         </Group>
       </div>
     )
