@@ -669,7 +669,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
       <Paper withBorder className="tracker-header">
         <h3 className="text-md-center text-start p-2 d-flex justify-content-between justify-content-md-center tracker-header-text">
           {userOverride ? `${userOverride.personalData.displayName}'s` : "My"} Assignments
-          <IconButton label={onGnatt ? "Switch to Table" : "Switch to Gnatt Chart"} className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={() => setOnGnatt(!onGnatt)} />
+          <IconButton label={onGnatt ? "Switch to Table" : "Switch to Gantt Chart"} className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={() => setOnGnatt(!onGnatt)} />
         </h3>
         <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} />
         <div className="d-flex flex-row w-100" >
