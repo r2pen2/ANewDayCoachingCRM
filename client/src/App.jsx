@@ -21,6 +21,7 @@ import FormManagement from './tabs/FormManagement.jsx';
 import InvoiceManagement from './tabs/InvoiceManagement.jsx';
 import UserManagement from './tabs/UserManagement.jsx';
 import RoleModal from './components/RoleModal.jsx';
+import ThanksModal from './components/ThanksModal.jsx';
 
 
 export const CurrentUserContext = createContext();
@@ -87,6 +88,7 @@ const AppContent = memo(function AppContent({currentUserId}) {
         <AppShellHeader burgerOpen={burgerOpen} setBurgerOpen={setBurgerOpen}/> 
         <AppShellNavigator currentTab={currentTab} setCurrentTab={(t) => {window.location.hash = t; setCurrentTab(t)}} setBurgerOpen={setBurgerOpen}/>
         <AppShell.Main className="bg-gray-1">
+            <ThanksModal />
             <RoleModal />
             <CurrentTab />
         </AppShell.Main>

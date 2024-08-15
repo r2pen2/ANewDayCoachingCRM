@@ -132,6 +132,7 @@ router.get("/stripe-complete", (req, res) => {
   if (!invoice) { res.send("Error: Invoice not found"); return; }
   invoice.paid = true;
   invoice.paidAt = new Date();
+  invoice.paidAt = getOrthodoxDate(invoice.paidAt).toString();
   setInvoice(invoice).then(() => {
     res.redirect("https://www.bluprint.anewdaycoaching.com/#thanks");
   }).catch((error) => {
@@ -145,3 +146,13 @@ function getInvoiceById(id) { return allInvoices[id] }
 async function setInvoice(invoice) { return new Promise((resolve, reject) => { db.collection("invoices").doc(invoice.id).set(invoice).then((ref) => { resolve(ref); }).catch((error) => { reject(error); }); }) }
 
 module.exports = { router, getAllInvoices, getInvoiceById, setInvoice };
+
+export function getOrthodoxDate(date) {
+  if(date["nanoseconds"] !== undefined && date["seconds"] !== undefined) {
+    return new Date(date["seconds"] * 1000 + date["nanoseconds"] / 1000000)
+  }
+  if(date["_nanoseconds"] !== undefined && date["_seconds"] !== undefined) {
+    return new Date(date["_seconds"] * 1000 + date["_nanoseconds"] / 1000000)
+  }
+  return !date.toDate ? date : date.toDate()
+}
