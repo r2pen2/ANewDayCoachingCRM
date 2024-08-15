@@ -280,7 +280,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             label="Advisor Name" 
             placeholder='Talia Wendigo'
             value={tempAdvisorName}
-            onChange={t => setTempAdvisorName(t)}
+            onChange={t => setTempAdvisorName(t.target.value)}
             onBlur={handleAdvisorNameSubmit}
             onKeyDown={handleAdvisorNameKeyDown}
           />        
@@ -290,7 +290,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             placeholder='https://www.myschool.edu/advisors/talia-wendigo'
             type='url'
             value={tempAdvisorHref}
-            onChange={t => setTempAdvisorHref(t)}
+            onChange={t => setTempAdvisorHref(t.target.value)}
             onBlur={handleAdvisorHrefSubmit}
             onKeyDown={handleAdvisorHrefKeyDown}
           />        
@@ -299,7 +299,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             label="Advisor Email" 
             placeholder='twendigo@myschool.edu'
             value={tempAdvisorEmail}
-            onChange={t => setTempAdvisorEmail(t)}
+            onChange={t => setTempAdvisorEmail(t.target.value)}
             onBlur={handleAdvisorEmailSubmit}
             onKeyDown={handleAdvisorEmailKeyDown}
           />
@@ -308,7 +308,7 @@ export const SchoolSettings = memo(function SchoolSettings({schoolInfo}) {
             label="Advisor Office" 
             placeholder='The Woods and The Prairies'
             value={tempAdvisorOffice}
-            onChange={t => setTempAdvisorOffice(t)}
+            onChange={t => setTempAdvisorOffice(t.target.value)}
             onBlur={handleAdvisorOfficeSubmit}
             onKeyDown={handleAdvisorOfficeKeyDown}
           />
