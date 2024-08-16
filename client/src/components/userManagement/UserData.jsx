@@ -19,6 +19,7 @@ import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
 import { DocSvg } from "../dashboard/DocumentsList.jsx";
 import { Document, DocumentType } from "../../api/db/dbDocument.ts";
 import { AddHomeworkModal, AddSubjectModal } from "../dashboard/HomeworkTrackerModals.jsx";
+import { Resource } from "../../api/db/dbResource.ts";
 
 export const PersonalData = ({user}) => {
 
@@ -856,18 +857,16 @@ export const ExternalData = ({user, setFullUserData}) => {
       return;
     }
 
-    fetch(absoluteUrl).then((response) => {
-      response.text().then((data) => {
-        const title = data.match(/<title>(.*?)<\/title>/);
-        user.resources.push({
-          href: absoluteUrl,
-          title: title
-        });
-        dbUser.setData().then(() => {
-          notifSuccess("Resource Added", `Added "${title}" to ${user.personalData.displayName}.`)
-          setFullUserData({...user})
-          setNewHref("")
-        })
+    
+    const newResource = new Resource()
+    newResource.href = absoluteUrl;
+    newResource.extractData().then(() => {
+      user.resources.push(newResource)
+      dbUser.fillData(user)
+      dbUser.setData().then(() => {
+        notifSuccess("Resource Added", `Added "${newResource.title}" to ${user.personalData.displayName}.`)
+        setFullUserData({...user})
+        setNewHref("")
       })
     })
 
