@@ -1,22 +1,58 @@
 import React from 'react'
 import DashboardSectionHeader from './DashboardSectionHeader'
-import { Paper, Spoiler } from '@mantine/core'
+import { Paper, Spoiler, Text, Tooltip } from '@mantine/core'
 import ModuleHeader from './ModuleHeader'
+import { CurrentUserContext } from '../../App';
+import { LinkMaster } from '../../api/links.ts';
 
 export default function ExternalToolsList({height}) {
+  
+  /** Get currentUser from react context */
+  const {currentUser} = React.useContext(CurrentUserContext);
+
+  /** Every document that belongs to this user */
+  const resources = Object.values(currentUser.resources);
+
+  /** Render a list of resources */
+  const ResourceList = () => {
+    return resources.sort((a,b) => a.title.localeCompare(b.title)).map((resource, index) => <ResourceCard key={index} r={resource} currentUser={currentUser} />)
+  }
+
   return (
-    
     <Paper withBorder className="mb-2" style={{height: height}}>
       <ModuleHeader>My External Resources</ModuleHeader>
       <div className="p-2">
-        <Spoiler maxHeight={180} showLabel="See All Resources" hideLabel="Collapse Resources" className="centered-expander">
+        <Spoiler maxHeight={180} showLabel="See All Shared" hideLabel="Collapse Shared" className="centered-expander">
           <div className="container-fluid">
             <div className="row">
-              {/* <DocList /> */}
+              <ResourceList />
             </div>
           </div>
         </Spoiler>
       </div>
     </Paper>
+  )
+
+}
+
+
+
+
+/** Render a single document in a Carousel */
+export const ResourceCard = ({r}) => {
+
+  return (
+    <div className="col-6 mb-2">
+      <Paper className="p-2 h-100" withBorder style={{cursor: "pointer"}} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(r.href), "_blank")}>
+        <div className="d-flex justify-content-between" style={{overflow: 'hidden'}}>
+          <Text style={{width: "100%", overflow:"hidden", textOverflow: "ellipsis", whiteSpace: 'nowrap'}}>{r.title}</Text>
+          {/* <Tooltip label={d.type}>
+            <div style={{marginLeft:"1rem"}}>
+              <DocSvg doc={d} />
+            </div>
+          </Tooltip> */}
+        </div>
+      </Paper>
+    </div>
   )
 }
