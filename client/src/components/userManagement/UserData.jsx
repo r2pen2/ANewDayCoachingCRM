@@ -36,26 +36,43 @@ export const PersonalData = ({user}) => {
     setEditSharedDoc(!editSharedDoc)
   }
 
+  const handleAddressEditClick = () => {
+    setEditAddress(!editAddress)
+  }
+
   const [tempEmail, setTempEmail] = useState("")
   const [tempPhone, setTempPhone] = useState("")
   const [tempAdmin, setTempAdmin] = useState(false)
   const [tempSharedDoc, setTempSharedDoc] = useState("")
+  const [tempAddress, setTempAddress] = useState("")
+  const [tempCity, setTempCity] = useState("")
+  const [tempState, setTempState] = useState("")
+  const [tempZip, setTempZip] = useState("")
 
   useEffect(() => {
     setTempEmail(user?.personalData.email)
     setTempPhone(user?.personalData.phoneNumber)
     setTempRole(user?.personalData.role)
     setTempAdmin(user?.admin)
+    setTempAddress(user?.personalData.address)
+    setTempCity(user?.personalData.city)
+    setTempState(user?.personalData.state)
+    setTempZip(user?.personalData.zip)
     setTempSharedDoc(user?.schoolInfo?.sessionNotes?.length > 0 ? LinkMaster.ensureAbsoluteUrl(user?.schoolInfo.sessionNotes) : "Not Set")
   }, [user])
   
   const [editEmail, setEditEmail] = useState(false)
   const [editPhone, setEditPhone] = useState(false)
   const [editSharedDoc, setEditSharedDoc] = useState(false)
+  const [editAddress, setEditAddress] = useState(false)
 
   const handleEmailEditKeyDown = (e) => { if (e.key === "Enter") { updateEmail() } }
   const handlePhoneEditKeyDown = (e) => { if (e.key === "Enter") { updatePhoneNumber() } }
   const handleSharedDocKeyDown = (e) => { if (e.key === "Enter") { updateSharedDoc() } }
+  const handleAddressEditKeyDown = (e) => { if (e.key === "Enter") { updateAddress() } }
+  const handleCityEditKeyDown = (e) => { if (e.key === "Enter") { updateAddress() } }
+  const handleStateEditKeyDown = (e) => { if (e.key === "Enter") { updateAddress() } }
+  const handleZipEditKeyDown = (e) => { if (e.key === "Enter") { updateAddress() } }
 
   const updateEmail = () => {
     if (tempEmail.length <= 0) { return; }
@@ -67,6 +84,19 @@ export const PersonalData = ({user}) => {
     });
   }
   
+  const updateAddress = () => {
+    if (tempAddress.length <= 0) { return; }
+    if (tempAddress === user.personalData.address) { return; }
+    setEditAddress(false)
+    dbUser.personalData.address = tempAddress;
+    dbUser.personalData.city = tempCity;
+    dbUser.personalData.state = tempState;
+    dbUser.personalData.zip = tempZip;
+    dbUser.setData().then(() => {
+      notifSuccess("Address Updated", `Address for ${user.personalData.displayName} updated to ${tempAddress}, ${tempCity} ${tempState}, ${tempZip}.`)
+    });
+  }
+
   const updatePhoneNumber = () => {
     if (tempPhone.length <= 0) { return; }
     if (tempPhone === user.personalData.phoneNumber) { return; }
@@ -195,7 +225,17 @@ export const PersonalData = ({user}) => {
           </Group>
           <Group wrap="nowrap" gap={10} mt={3}>
             <IconHome stroke={1.5} size="1rem" className="text-dimmed"/>
-            <Text fz="xs" c="dimmed">{user.personalData.address}, {user.personalData.city} {user.personalData.state}, {user.personalData.zip}</Text>
+            {!editAddress && <Text fz="xs" c="dimmed">{user.personalData.address}, {user.personalData.city} {user.personalData.state}, {user.personalData.zip}</Text>}
+            {editAddress && <TextInput size="xs" label="Address" c="dimmed" value={tempAddress} onKeyDown={handleAddressEditKeyDown} onBlur={updateAddress} onChange={e => setTempAddress(e.target.value)}/>}
+            {editAddress && <TextInput size="xs" label="City" c="dimmed" value={tempCity} onKeyDown={handleCityEditKeyDown} onBlur={updateAddress} onChange={e => setTempCity(e.target.value)}/>}
+            {editAddress && <TextInput size="xs" label="State" c="dimmed" value={tempState} onKeyDown={handleStateEditKeyDown} onBlur={updateAddress} onChange={e => setTempState(e.target.value)}/>}
+            {editAddress && <TextInput size="xs" label="Zip" c="dimmed" value={tempZip} onKeyDown={handleZipEditKeyDown} onBlur={updateAddress} onChange={e => setTempZip(e.target.value)}/>}
+            <Tooltip label={!editAddress ? "Edit Address" : "Cancel"}>
+              <Center>
+                {!editAddress && <IconPencil onClick={handleAddressEditClick} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>}
+                {editAddress && <IconX onClick={handleAddressEditClick} stroke={1.5} size="1rem" className="text-dimmed" style={{cursor: "pointer"}}/>}
+              </Center>
+            </Tooltip>
           </Group>
           <Group wrap="nowrap" gap={10} mt={3}>
             <IconNote stroke={1.5} size="1rem" className="text-dimmed"/>
