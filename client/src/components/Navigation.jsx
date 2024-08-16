@@ -154,7 +154,7 @@ export function AppShellNavigator({currentTab, setCurrentTab, setBurgerOpen}) {
         tabKey={navigationItems.INVOICES} 
       />
       <WiggleClickNavLink
-        label="Schedule"
+        label="Meeting Schedule"
         description="View your upcoming appointments and schedule new ones."
         leftSection={<IconCalendarEvent {...iconProps} />}
         tabKey={navigationItems.SCHEDULE}
