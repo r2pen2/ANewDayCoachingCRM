@@ -141,7 +141,7 @@ export class User {
         schoolInfo: this.schoolInfo,
         syncCode: this.syncCode,
         linkedAccounts: this.linkedAccounts,
-        resources: this.resources,
+        resources: this.resources.map((r) => r.toJson()),
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
