@@ -632,7 +632,7 @@ export const ToolsData = ({user, setFullUserData}) => {
       });
     }
 
-    return <Paper onClick={pushTool} className={`d-flex w-100 flex-row justify-content-between align-items-center p-2`} withBorder style={{cursor: "pointer"}} >
+    return <Paper onClick={pushTool} className={`d-flex w-100 mt-1 flex-row justify-content-between align-items-center p-2`} withBorder style={{cursor: "pointer"}} >
       <div className="d-flex flex-row align-items-center justify-content-center">
         <Text size="sm">{tool.title}</Text>
       </div>
@@ -818,6 +818,122 @@ export const DriveData = ({user, setFullUserData}) => {
                           <Table.Td className='d-flex gap-2'>
                             <IconButton icon={<IconEye />} color={viewButtonColor} onClick={openDoc} label={`Open "${doc.title}"`} />
                             <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={removeDoc} label={`Remove "${doc.title}"`} />
+                          </Table.Td>
+                        </Table.Tr>
+                      )})}
+                  </Table.Tbody>
+                </Table>
+              </Spoiler>
+          </Paper>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
+export const ExternalData = ({user, setFullUserData}) => {
+
+  const dbUser = User.getInstanceById(user?.id)
+
+  const [newHref, setNewHref] = useState("")
+
+  if (!user) { return; }
+
+  const addResource = () => {
+    const absoluteUrl = LinkMaster.ensureAbsoluteUrl(newHref)
+    if (newHref.length <= 0) { 
+      notifFail("Cannot add Resource", "Resource link must not be empty.")
+      return;
+    }
+    if (!LinkMaster.checkValid(absoluteUrl)) {
+      notifFail("Invalid Link", "Invalid resource link. Please ensure it's a valid URL.")
+      return;
+    }
+    const existingResource = user.resources.filter(r => r.href === newHref).length > 0;
+    if (existingResource) {
+      notifFail("Cannot add Resource", "Resource already exists.")
+      return;
+    }
+
+    fetch(absoluteUrl).then((response) => {
+      response.text().then((data) => {
+        const title = data.match(/<title>(.*?)<\/title>/);
+        user.resources.push({
+          href: absoluteUrl,
+          title: title
+        });
+        dbUser.setData().then(() => {
+          notifSuccess("Resource Added", `Added "${title}" to ${user.personalData.displayName}.`)
+          setFullUserData({...user})
+          setNewHref("")
+        })
+      })
+    })
+
+  }
+
+  const updateHref = (e) => {
+    setNewHref(e.target.value)
+  }
+
+  return (
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-md-3 col-12 p-1">
+          <Paper withBorder className="bg-dark-1">
+            <ModuleHeader>Add Resource</ModuleHeader>
+            <div className="p-2 d-flex flex-column gap-2">
+              <TextInput className="w-100" label="Add Resource" placeholder="Link to Resource" type="link" required value={newHref} onChange={updateHref} />
+              <Button className="mt-2" onClick={addResource}>Add</Button>
+            </div>
+          </Paper>
+        </div>
+        <div className="col-12 col-md-9 p-1">
+          <Paper withBorder className="bg-dark-1">
+            <ModuleHeader>External Resources</ModuleHeader>
+              <Spoiler maxHeight={300} showLabel="Expand Resources" hideLabel="Collapse Resources">
+                <Table striped>
+                  
+                  
+                  <Table.Thead className="scroll-table-header">
+                    <Table.Tr>
+                      <Table.Th>
+                        Resource
+                      </Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+
+                  <Table.Tbody>
+                    {Object.values(user.resources).sort((a, b) => a.title.localeCompare(b.title)).map((resource, index) => {
+                    
+                      const removeResource = () => {
+                        user.resources = user.resources.filter(r => r.title !== resource.title && r.href !== resource.href);
+                        dbUser.fillData(user)
+                        dbUser.setData().then(() => {
+                          notifSuccess("Resource Removed", `Removed "${resource.title}" from ${user.personalData.displayName}.`)
+                          User.getById(user.id).then((userData) => {
+                            setFullUserData(userData)
+                          })
+                        })
+                      }
+
+                      const openResource = () => {
+                        window.open(LinkMaster.ensureAbsoluteUrl(resource.href), "_blank")
+                      }
+                    
+                      return (
+                        <Table.Tr key={index}>
+                          <Table.Td>
+                            <div className="gap-2 d-flex flex-row align-items-center justify-content-start">
+                              {/* <DocSvg doc={new Document(doc)} /> */}
+                              <Text>{resource.title}</Text>
+                            </div>
+                          </Table.Td>
+                          <Table.Td className='d-flex gap-2'>
+                            <IconButton icon={<IconEye />} color={viewButtonColor} onClick={openResource} label={`Open "${resource.title}"`} />
+                            <IconButton icon={<IconTrash />} color={deleteButtonColor} onClick={removeResource} label={`Remove "${resource.title}"`} />
                           </Table.Td>
                         </Table.Tr>
                       )})}

@@ -46,6 +46,8 @@ export class User {
 
   homework: Homework[] = [];
 
+  resources: any[] = [];
+
   delegate: User | null = null;
 
   subjects: { [key: string]: any } = {
@@ -139,6 +141,7 @@ export class User {
         schoolInfo: this.schoolInfo,
         syncCode: this.syncCode,
         linkedAccounts: this.linkedAccounts,
+        resources: this.resources,
       }
       setDoc(this.docRef, data).then(() => {
         resolve();
@@ -248,6 +251,7 @@ export class User {
     this.syncCode = data.syncCode;
     this.linkedAccounts = data.linkedAccounts;
     this.delegate = data.delegate;
+    this.resources = data.resources;
     return this;
   }
 
