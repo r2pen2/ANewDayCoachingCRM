@@ -18,6 +18,7 @@ import { Tool } from "../../api/db/dbTool.ts";
 import { ToolTableHead } from "../toolManagement/ToolsTable.jsx";
 import { DocSvg } from "../dashboard/DocumentsList.jsx";
 import { Document, DocumentType } from "../../api/db/dbDocument.ts";
+import { AddHomeworkModal, AddSubjectModal } from "../dashboard/HomeworkTrackerModals.jsx";
 
 export const PersonalData = ({user}) => {
 
@@ -513,10 +514,17 @@ export function AddInvoice({user, setFullUserData}) {
 }
 
 export const ManagementTracker = ({user}) => {
+  const [subjectAddMenuOpen, setSubjectAddMenuOpen] = useState(false)
+  const [homeworkAddMenuOpen, setHomeworkAddMenuOpen] = useState(false)
+  
   if (!user) { return; }
   if (user.personalData.role === UserRole.PARENT) { return; }
+
   return <div className="col-12 mt-3">
-    <Tracker userOverride={user} />
+    
+    <AddSubjectModal open={subjectAddMenuOpen} close={() => setSubjectAddMenuOpen(false)} />
+    <AddHomeworkModal open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
+    <Tracker userOverride={user} setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen} />
   </div>
 }
 
