@@ -147,7 +147,7 @@ async function setInvoice(invoice) { return new Promise((resolve, reject) => { d
 
 module.exports = { router, getAllInvoices, getInvoiceById, setInvoice };
 
-export function getOrthodoxDate(date) {
+function getOrthodoxDate(date) {
   if(date["nanoseconds"] !== undefined && date["seconds"] !== undefined) {
     return new Date(date["seconds"] * 1000 + date["nanoseconds"] / 1000000)
   }
