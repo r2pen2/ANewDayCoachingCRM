@@ -106,6 +106,10 @@ router.get("/sync", (req, res) => {
 
 function getAllUsers() { return allUsers }
 function getUser(id) { return allUsers[id]; }
-async function setUser(user) { return new Promise((resolve, reject) => { db.collection("users").doc(user.id).set(user).then(() => { resolve(); }).catch((error) => { reject(error); }); }) }
+async function setUser(user) { 
+  return new Promise((resolve, reject) => { 
+    db.collection("users").doc(user.id).set(user).then(() => { resolve(); }).catch((error) => { reject(error); }); 
+  }) 
+}
 
 module.exports = { router, getAllUsers, getUser, setUser };

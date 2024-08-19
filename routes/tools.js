@@ -62,18 +62,12 @@ router.post("/assign-multiple", async (req, res) => {
   const title = req.body.title;
   const description = req.body.description;
 
-  console.log({
-    toolId,
-    users,
-    title,
-    description
-  })
-
   for (const userId of users) {
     const user = getUser(userId);
     const tool = { id: toolId, title: title, description: description, starred: false };
     if (!user.tools) { user.tools = {}; }
     user.tools[toolId] = tool;
+    console.log(user.tools);
     await setUser(user);
   }
 
