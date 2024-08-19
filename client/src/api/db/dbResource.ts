@@ -40,6 +40,8 @@ export class Resource {
       }
 
       fetch(this.href).then((response) => {
+        // console.log(response)
+
         response.text().then((data) => {
           const title = data.match(/<title>(.*?)<\/title>/);
           this.title = title ? title[1] : null;
@@ -50,6 +52,6 @@ export class Resource {
   }
 
   static getSource(h:string) {
-    return LinkMaster.ensureAbsoluteUrl(h?.split("/")[0]+"/favicon.ico")
+    return LinkMaster.ensureAbsoluteUrl(h?.split("/")[2]+"/favicon.ico")
   }
 }

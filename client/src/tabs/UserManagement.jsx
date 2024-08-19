@@ -63,7 +63,7 @@ export default function UserManagement() {
                   </Tabs.Tab>}
                 </Tabs.List>
                 <Tabs.Panel value="assignments">
-                  <ManagementTracker user={fullUserData} />
+                  <ManagementTracker user={fullUserData} setFullUserData={setFullUserData} />
                 </Tabs.Panel>
                 <Tabs.Panel value="invoices">
                   <div className="container-fluid">

@@ -7,6 +7,7 @@ import { FormAssignment } from "./dbFormAssignment.ts";
 import { Homework, HomeworkLoaderType, HomeworkPriority, HomeworkPriorityVerbosity, HomeworkStatus, HomeworkSubject } from "./dbHomework.ts";
 import { Document } from "./dbDocument.ts";
 import { getOrthodoxDate } from "../dates.ts";
+import { Resource } from "./dbResource.ts";
 
 export enum UserRole {
   STUDENT = "Student",
@@ -251,7 +252,7 @@ export class User {
     this.syncCode = data.syncCode;
     this.linkedAccounts = data.linkedAccounts;
     this.delegate = data.delegate;
-    this.resources = data.resources;
+    this.resources = data.resources.map((r: any) => Resource.load(r)) ;
     return this;
   }
 

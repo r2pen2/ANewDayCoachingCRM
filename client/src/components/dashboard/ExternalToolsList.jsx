@@ -4,6 +4,7 @@ import { Paper, Spoiler, Text, Tooltip } from '@mantine/core'
 import ModuleHeader from './ModuleHeader'
 import { CurrentUserContext } from '../../App';
 import { LinkMaster } from '../../api/links.ts';
+import { Resource } from '../../api/db/dbResource.ts';
 
 export default function ExternalToolsList({height}) {
   
@@ -44,8 +45,9 @@ export const ResourceCard = ({r}) => {
   return (
     <div className="col-6 mb-2">
       <Paper className="p-2 h-100" withBorder style={{cursor: "pointer"}} onClick={() => window.open(LinkMaster.ensureAbsoluteUrl(r.href), "_blank")}>
-        <div className="d-flex justify-content-between" style={{overflow: 'hidden'}}>
+        <div className="d-flex justify-content-between gap-2" style={{overflow: 'hidden'}}>
           <Text style={{width: "100%", overflow:"hidden", textOverflow: "ellipsis", whiteSpace: 'nowrap'}}>{r.title}</Text>
+          <img src={Resource.getSource(r.href)} alt={r.title} style={{width: 20, height: 20}} />
           {/* <Tooltip label={d.type}>
             <div style={{marginLeft:"1rem"}}>
               <DocSvg doc={d} />

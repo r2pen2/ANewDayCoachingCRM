@@ -514,7 +514,7 @@ export function AddInvoice({user, setFullUserData}) {
 
 }
 
-export const ManagementTracker = ({user}) => {
+export const ManagementTracker = ({user, setFullUserData}) => {
   const [subjectAddMenuOpen, setSubjectAddMenuOpen] = useState(false)
   const [homeworkAddMenuOpen, setHomeworkAddMenuOpen] = useState(false)
   
@@ -525,7 +525,7 @@ export const ManagementTracker = ({user}) => {
     
     <AddSubjectModal open={subjectAddMenuOpen} close={() => setSubjectAddMenuOpen(false)} />
     <AddHomeworkModal open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
-    <Tracker userOverride={user} setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen} />
+    <Tracker userOverride={user} setFullUserData={setFullUserData} setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen} />
   </div>
 }
 
@@ -625,7 +625,7 @@ export const ToolsData = ({user, setFullUserData}) => {
   const ToolResult = ({tool}) => {
 
     function pushTool() {
-      Tool.assignToMultiple(tool.title, tool.description, tool.id, [dbUser.id]).then(() => {
+      Tool.assignToMultiple(tool.title, tool.description, tool.id, [dbUser.id]).then((r) => {
         User.getById(user.id).then((userData) => {
           setFullUserData(userData)
         })
@@ -838,6 +838,7 @@ export const ExternalData = ({user, setFullUserData}) => {
   const dbUser = User.getInstanceById(user?.id)
 
   const [newHref, setNewHref] = useState("")
+  const [newTitle, setNewTitle] = useState("")
 
   if (!user) { return; }
 
@@ -860,20 +861,24 @@ export const ExternalData = ({user, setFullUserData}) => {
     
     const newResource = new Resource()
     newResource.href = absoluteUrl;
-    newResource.extractData().then(() => {
-      user.resources.push(newResource)
-      dbUser.fillData(user)
-      dbUser.setData().then(() => {
-        notifSuccess("Resource Added", `Added "${newResource.title}" to ${user.personalData.displayName}.`)
-        setFullUserData({...user})
-        setNewHref("")
-      })
+    newResource.title = newTitle;
+    user.resources.push(newResource)
+    dbUser.fillData(user)
+    dbUser.setData().then(() => {
+      notifSuccess("Resource Added", `Added "${newResource.title}" to ${user.personalData.displayName}.`)
+      setFullUserData({...user})
+      setNewHref("")
+      setNewTitle("")
     })
 
   }
 
   const updateHref = (e) => {
     setNewHref(e.target.value)
+  }
+
+  const updateTitle = (e) => {
+    setNewTitle(e.target.value)
   }
 
   return (
@@ -884,6 +889,7 @@ export const ExternalData = ({user, setFullUserData}) => {
             <ModuleHeader>Add Resource</ModuleHeader>
             <div className="p-2 d-flex flex-column gap-2">
               <TextInput className="w-100" label="Add Resource" placeholder="Link to Resource" type="link" required value={newHref} onChange={updateHref} />
+              <TextInput className="w-100" label="Title" placeholder="Resource Title" required value={newTitle} onChange={updateTitle} />
               <Button className="mt-2" onClick={addResource}>Add</Button>
             </div>
           </Paper>
@@ -926,7 +932,7 @@ export const ExternalData = ({user, setFullUserData}) => {
                         <Table.Tr key={index}>
                           <Table.Td>
                             <div className="gap-2 d-flex flex-row align-items-center justify-content-start">
-                              <img src={Resource.getSource(resource.href)} alt={resource.title} style={{width: 30, height: 30}} />
+                              <img src={Resource.getSource(resource.href)} alt={resource.title} style={{width: 20, height: 20}} />
                               <Text>{resource.title}</Text>
                             </div>
                           </Table.Td>

@@ -126,7 +126,7 @@ export const QuickEntryResults = ({quickExtract, userOverride = null}) => {
   )
 }
 
-export function Assignment({homeworkJson, userOverride = null}) {
+export function Assignment({homeworkJson, userOverride = null, setFullUserData = null}) {
 
   /** Get currentUser from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
@@ -169,6 +169,7 @@ export function Assignment({homeworkJson, userOverride = null}) {
       homework[this.targetField] = this.state.targetField;
       contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Changed ${this.sanitizeFieldName()} to: "${this.state.targetField}"`)
+        if (setFullUserData) { setFullUserData(contextUser.data); }
       });
     }
 
@@ -398,11 +399,11 @@ export function Assignment({homeworkJson, userOverride = null}) {
   const AssignmentActions = () => {
     return (
       <div className="d-flex gap-2 mt-2 mt-sm-0">
-         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(contextUser)} icon={<IconClock />} className="start-button" color="gray.5" label="Start Assignment" /> }
-         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(contextUser)} icon={<Loader size="sm" type={contextUser.settings.homeworkLoaderType} color="white" />} color="blue.5" label="Click to Pause Assignment" /> }
-        <IconButton onClick={() => homework.handleComplete(contextUser)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
-        <IconButton onClick={() => homework.handlePause(contextUser)} icon={<IconArrowBackUp />} className="incomplete-button" color={unpaidColor} label="Mark Incomplete"  />
-        <IconButton onClick={() => homework.handleRemove(contextUser)} onShiftClick={() => homework.handleRemove(contextUser, true)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
+         { homework.status !== HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handleStart(contextUser, setFullUserData)} icon={<IconClock />} className="start-button" color="gray.5" label="Start Assignment" /> }
+         { homework.status === HomeworkStatus.IN_PROGRESS && <IconButton onClick={() => homework.handlePause(contextUser, setFullUserData)} icon={<Loader size="sm" type={contextUser.settings.homeworkLoaderType} color="white" />} color="blue.5" label="Click to Pause Assignment" /> }
+        <IconButton onClick={() => homework.handleComplete(contextUser, setFullUserData)} icon={<IconCheck />} className="complete-button" color={acceptButtonColor} label="Complete Assignment" />
+        <IconButton onClick={() => homework.handlePause(contextUser, setFullUserData)} icon={<IconArrowBackUp />} className="incomplete-button" color={unpaidColor} label="Mark Incomplete"  />
+        <IconButton onClick={() => homework.handleRemove(contextUser, false, setFullUserData)} onShiftClick={() => homework.handleRemove(contextUser, true, setFullUserData)} icon={<IconTrash />} color={deleteButtonColor} label="Delete Assignment" />
       </div>
     )
   }
@@ -419,6 +420,7 @@ export function Assignment({homeworkJson, userOverride = null}) {
       homework.href = tempLink;
       contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Changed link to: "${tempLink}"`)
+        if (setFullUserData) { setFullUserData(contextUser) }
       });
       setLinkEdit(false);
     }
@@ -428,6 +430,7 @@ export function Assignment({homeworkJson, userOverride = null}) {
       homework.href = null;
       contextUser.updateHomework(homework).then(() => {
         notifSuccess("Assignment Updated", `Removed link from assignment: "${homework.description}"`)
+        if (setFullUserData) { setFullUserData(contextUser) }
       });
     }
 
@@ -523,7 +526,7 @@ export function Assignment({homeworkJson, userOverride = null}) {
   )
 }
 
-export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOverride = null}) => {
+export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOverride = null, setFullUserData = null}) => {
   
   const [unitType, setUnitType] = React.useState("Forever");
 
@@ -656,7 +659,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
   
   const { height, width } = useWindowDimensions();
 
-  const AssignmentTable = () => validHomeworks.map((homework, index) => !onGnatt && <Assignment userOverride={userOverride} key={index} homeworkJson={homework} />)
+  const AssignmentTable = () => validHomeworks.map((homework, index) => !onGnatt && <Assignment setFullUserData={setFullUserData} userOverride={userOverride} key={index} homeworkJson={homework} />)
   
   const NoDataNotif = () => (
     <div className="d-flex flex-row align-items-center justify-content-cneter p-5 w-100 text-center">

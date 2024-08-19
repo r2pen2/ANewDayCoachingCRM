@@ -139,33 +139,48 @@ export class Homework {
   }
 
   /** Remove this homework assignment from a user */
-  handleRemove(currentUser: User, skipConfirmation: boolean = false) {
+  handleRemove(currentUser: User, skipConfirmation: boolean = false, updateUserOptimistic: any = null) {
     if (!currentUser) { console.error("No user found for homework assignment"); return; }    
     if (!currentUser.settings.requireHomeworkDeleteConfirmation) {
-      currentUser.removeHomework(this).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`))
+      currentUser.removeHomework(this).then(() => {
+        notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`)
+        if (updateUserOptimistic) { updateUserOptimistic(currentUser); }
+      })
       return;
     }
     if (skipConfirmation || window.confirm(`Are you sure you want to delete "${this.description}"?`)) {
-      currentUser.removeHomework(this).then(() => notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`))
+      currentUser.removeHomework(this).then(() => {
+        notifSuccess("Assignment Removed", `Removed assignment: "${this.description}"`)
+        if (updateUserOptimistic) { updateUserOptimistic(currentUser); }
+      })
     }
   }
 
   /** Start this homework assignment on a user */
-  handleStart(currentUser: User) {
+  handleStart(currentUser: User, updateUserOptimistic: any = null) {
     if (!currentUser) { console.error("No user found for homework assignment"); return; }
-    currentUser.startHomework(this).then(() => notifSuccess("Assignment Started", `Started assignment: "${this.description}"`));
+    currentUser.startHomework(this).then(() => {
+      notifSuccess("Assignment Started", `Started assignment: "${this.description}"`)
+      if (updateUserOptimistic) { updateUserOptimistic(currentUser); }
+    });
   }
 
   /** Complete this homework assignment on a user */
-  handleComplete(currentUser: User) {
+  handleComplete(currentUser: User, updateUserOptimistic: any = null) {
     if (!currentUser) { console.error("No user found for homework assignment"); return; }
-    currentUser.completeHomework(this).then(() => notifSuccess("Assignment Completed", `Completed assignment: "${this.description}"`));
+    currentUser.completeHomework(this).then(() => {
+      notifSuccess("Assignment Completed", `Completed assignment: "${this.description}"`)
+      if (updateUserOptimistic) { updateUserOptimistic(currentUser); }
+    });
   }
 
   /** Pause this homework assignment on a user */
-  handlePause(currentUser: User) {
+  handlePause(currentUser: User, updateUserOptimistic: any = null) {
     if (!currentUser) { console.error("No user found for homework assignment"); return; }
-    currentUser.pauseHomework(this).then(() => notifSuccess("Assignment Paused", `Paused assignment: "${this.description}"`));
+    currentUser.pauseHomework(this).then(() => {
+      notifSuccess("Assignment Paused", `Paused assignment: "${this.description}"`)
+      if (updateUserOptimistic) { updateUserOptimistic(currentUser); }
+    });
   }
 
   static openLink(homework: any): void {
