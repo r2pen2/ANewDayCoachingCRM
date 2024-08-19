@@ -39,7 +39,7 @@ export class User {
   formAssignments: FormAssignment[] = [];
   id: string;
   docRef: DocumentReference;
-  tools: any[] = [];
+  tools: any = {};
   numUnpaidInvoices: number = 0;
   syncCode: string | null = null;
 
