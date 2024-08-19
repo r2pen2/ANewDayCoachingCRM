@@ -108,7 +108,11 @@ function getAllUsers() { return allUsers }
 function getUser(id) { return allUsers[id]; }
 async function setUser(user) { 
   return new Promise((resolve, reject) => { 
-    db.collection("users").doc(user.id).set(user).then(() => { resolve(); }).catch((error) => { reject(error); }); 
+    console.log("Setting user: ", user.id);
+    db.collection("users").doc(user.id).set(user).then(() => { 
+      resolve();
+      console.log(user)
+    }).catch((error) => { reject(error); }); 
   }) 
 }
 
