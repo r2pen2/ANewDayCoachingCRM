@@ -34,7 +34,7 @@ export class LinkMaster {
         // If not, prepend "https://" to the URL
         url = "https://" + url;
     }
-    return url;
+    return url.replace(" ", "");
   }
 
   static async getPageTitle(url: string): Promise<string> {

@@ -926,7 +926,7 @@ export const ExternalData = ({user, setFullUserData}) => {
                         <Table.Tr key={index}>
                           <Table.Td>
                             <div className="gap-2 d-flex flex-row align-items-center justify-content-start">
-                              {/* <DocSvg doc={new Document(doc)} /> */}
+                              <img src={Resource.getSource(resource.href)} alt={resource.title} style={{width: 30, height: 30}} />
                               <Text>{resource.title}</Text>
                             </div>
                           </Table.Td>

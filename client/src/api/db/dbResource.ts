@@ -48,4 +48,8 @@ export class Resource {
       })
     })
   }
+
+  static getSource(h:string) {
+    return LinkMaster.ensureAbsoluteUrl(h?.split("/")[0]+"/favicon.ico")
+  }
 }
