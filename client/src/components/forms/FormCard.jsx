@@ -60,6 +60,8 @@ export function FormCard({form}) {
         return <IconShieldCheckered style={{color: "var(--mantine-color-dimmed)"}}/>;
       case "studentForm":
         return <IconBackpack style={{color: "var(--mantine-color-dimmed)"}}/>;
+      case "studentApplicationForm":
+        return <IconBackpack style={{color: "var(--mantine-color-dimmed)"}}/>;
       default:
         return null;
     }
