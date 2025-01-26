@@ -12,6 +12,8 @@ export const AddHomeworkModal = ({open, close}) => {
 
   /** Get current user from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
+  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
+  
 
   function handleFormSubmit(e) {
     e.preventDefault();
@@ -33,7 +35,7 @@ export const AddHomeworkModal = ({open, close}) => {
     newHomework.estTime = estTime;
     newHomework.href = href.length > 0 ? href : null;
 
-    currentUser.addHomework(newHomework).then(() => {
+    delegateUser.addHomework(newHomework).then(() => {
       notifSuccess("Assignment Added", `Added assignment: "${description}"`)
       close();
     });
@@ -46,7 +48,7 @@ export const AddHomeworkModal = ({open, close}) => {
   return (
     <Modal opened={open} onClose={handleClose} title="Add Assignment">
       <form className="d-flex flex-column gap-2 mt-1 mb-2" onSubmit={handleFormSubmit}>
-        <Select label="Subject" id="subject" placeholder="Pick a subject" data={Object.keys(currentUser.subjects).sort((a, b) => a.localeCompare(b))} searchable />
+        <Select label="Subject" id="subject" placeholder="Pick a subject" data={Object.keys(delegateUser.subjects).sort((a, b) => a.localeCompare(b))} searchable />
         <TextInput label="Description" id="description" required placeholder="What is this assignment?" />
         <div className="d-flex gap-2">
           <DateInput label="Start Date" id="start-date" w={"100%"} placeholder='When will you start?'/>

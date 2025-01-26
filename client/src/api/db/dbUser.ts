@@ -148,6 +148,7 @@ export class User {
         resolve();
       }).catch((error) => {
         reject(error);
+        console.log(error);
       })
     })
   }
@@ -523,11 +524,20 @@ export class User {
   async purgeAssignments(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       // Remove homeworks older than 6 months
+      const cutoff = new Date().getTime() - 15778476000;
+      const initialLength = this.homework.length;
       this.homework = this.homework.filter((hw) => {
-        if (!hw.dueDate) { return false; }
-        return getOrthodoxDate(hw.dueDate).getTime() > (new Date().getTime() - 15778476000)
+        if (hw.dueDate) {
+          return getOrthodoxDate(hw.dueDate).getTime() > cutoff
+        }
+        if (hw.timestamp) {
+          return new Date(hw.timestamp).getTime() > cutoff
+        }
+        return true;
       });
-      this.setData()
+      if (initialLength > this.homework.length) {
+        this.setData()
+      }
     })
   }
 }

@@ -613,6 +613,7 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
     setQuickEntryString("");
     contextUser.addHomework(newHomework).then(() => {
       notifSuccess("Assignment Added", `Added assignment: "${newHomework.description}"`)
+      if (setFullUserData) { setFullUserData(contextUser) }
     });
   }
 
