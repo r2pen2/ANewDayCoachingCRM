@@ -1,6 +1,5 @@
 import React from 'react'
-import DashboardSectionHeader from './DashboardSectionHeader'
-import { Paper, Spoiler, Text, Tooltip } from '@mantine/core'
+import { Paper, Spoiler, Text } from '@mantine/core'
 import ModuleHeader from './ModuleHeader'
 import { CurrentUserContext } from '../../App';
 import { LinkMaster } from '../../api/links.ts';

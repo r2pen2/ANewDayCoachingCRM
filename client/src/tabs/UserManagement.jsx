@@ -5,7 +5,6 @@ import { navigationItems } from '../components/Navigation';
 import ModuleHeader from '../components/dashboard/ModuleHeader.jsx';
 import { UserSelect } from '../components/userManagement/UserManagementSelectPaper.jsx';
 import { PersonalData, SyncData, InvoiceData, AddInvoice, ManagementTracker, FormsData, ToolsData, DriveData, ExternalData} from '../components/userManagement/UserData.jsx';
-import ExternalToolsList from '../components/dashboard/ExternalToolsList.jsx';
 
 
 export default function UserManagement() {

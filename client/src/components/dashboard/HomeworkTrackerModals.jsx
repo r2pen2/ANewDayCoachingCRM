@@ -7,12 +7,13 @@ import { PickerMenu, SubjectCard } from "./HomeworkTrackerV2.jsx";
 import { IconSend } from "@tabler/icons-react";
 import IconButton from "../IconButton.jsx";
 import { CurrentUserContext } from "../../App.jsx";
+import { User } from "../../api/db/dbUser.ts";
 
-export const AddHomeworkModal = ({open, close}) => {
+export const AddHomeworkModal = ({userOverride = null, setFullUserData = null, open, close}) => {
 
   /** Get current user from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
-  const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
   
 
   function handleFormSubmit(e) {
@@ -35,9 +36,12 @@ export const AddHomeworkModal = ({open, close}) => {
     newHomework.estTime = estTime;
     newHomework.href = href.length > 0 ? href : null;
 
-    delegateUser.addHomework(newHomework).then(() => {
+    contextUser.addHomework(newHomework).then(() => {
       notifSuccess("Assignment Added", `Added assignment: "${description}"`)
       close();
+      if (setFullUserData) {
+        setFullUserData(contextUser);
+      }
     });
   }
 
@@ -48,7 +52,7 @@ export const AddHomeworkModal = ({open, close}) => {
   return (
     <Modal opened={open} onClose={handleClose} title="Add Assignment">
       <form className="d-flex flex-column gap-2 mt-1 mb-2" onSubmit={handleFormSubmit}>
-        <Select label="Subject" id="subject" placeholder="Pick a subject" data={Object.keys(delegateUser.subjects).sort((a, b) => a.localeCompare(b))} searchable />
+        <Select label="Subject" id="subject" placeholder="Pick a subject" data={Object.keys(contextUser.subjects).sort((a, b) => a.localeCompare(b))} searchable />
         <TextInput label="Description" id="description" required placeholder="What is this assignment?" />
         <div className="d-flex gap-2">
           <DateInput label="Start Date" id="start-date" w={"100%"} placeholder='When will you start?'/>
@@ -72,12 +76,13 @@ export const AddHomeworkModal = ({open, close}) => {
   )
 }
 
-export const AddSubjectModal = ({open, close}) => {
+export const AddSubjectModal = ({userOverride = null, setFullUserData = null, open, close}) => {
   
   /** Get current user from react context */
   const {currentUser} = React.useContext(CurrentUserContext);
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
-  const subjects = Object.values(currentUser.subjects).sort((a, b) => a.title.localeCompare(b.title));
+  const subjects = Object.values(contextUser.subjects).sort((a, b) => a.title.localeCompare(b.title));
   const hasSubjects = subjects.length > 0;
 
   const [newTitle, setNewTitle] = React.useState("");
@@ -99,15 +104,18 @@ export const AddSubjectModal = ({open, close}) => {
     if (e?.preventDefault) {
       e.preventDefault();
     }
-    if (Object.keys(currentUser.subjects).includes(newTitle)) { 
+    if (Object.keys(contextUser.subjects).includes(newTitle)) { 
       setError("Subject already exists.");
       return;
     }
     resetFields();
     close();
     const newSubject = new HomeworkSubject(newTitle, newColor);
-    currentUser.addSubject(newSubject).then(() => {
+    contextUser.addSubject(newSubject).then(() => {
       notifSuccess("Subject Added", `Added subject "${newTitle}"`)
+      if (setFullUserData) {
+        setFullUserData(contextUser);
+      }
     });
   }
 

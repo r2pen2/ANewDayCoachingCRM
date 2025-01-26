@@ -523,8 +523,8 @@ export const ManagementTracker = ({user, setFullUserData}) => {
 
   return <div className="col-12 mt-3">
     
-    <AddSubjectModal open={subjectAddMenuOpen} close={() => setSubjectAddMenuOpen(false)} />
-    <AddHomeworkModal open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
+    <AddSubjectModal userOverride={user} setFullUserData={setFullUserData} open={subjectAddMenuOpen} close={() => setSubjectAddMenuOpen(false)} />
+    <AddHomeworkModal userOverride={user} setFullUserData={setFullUserData} open={homeworkAddMenuOpen} close={() => setHomeworkAddMenuOpen(false)} />
     <Tracker userOverride={user} setFullUserData={setFullUserData} setHomeworkAddMenuOpen={setHomeworkAddMenuOpen} setSubjectAddMenuOpen={setSubjectAddMenuOpen} />
   </div>
 }
