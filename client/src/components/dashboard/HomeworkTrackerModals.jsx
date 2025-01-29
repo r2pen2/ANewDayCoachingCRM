@@ -90,7 +90,7 @@ export const AddSubjectModal = ({userOverride = null, setFullUserData = null, op
 
   const SubjectList = () => {
     if (!hasSubjects) { return <Text>No subjects found. Add some to get started!</Text> }
-    return subjects.map((subject, index) => <SubjectCard subject={subject} key={index} />)
+    return subjects.map((subject, index) => <SubjectCard subject={subject} key={index} userOverride={userOverride} />)
   }
 
   const [error, setError] = React.useState(null);

@@ -3,6 +3,7 @@ import { IconColumns, IconRefresh, IconTimeline } from '@tabler/icons-react'
 import React from 'react'
 import { CurrentUserContext } from '../../App'
 import { HomeworkStatus } from '../../api/db/dbHomework.ts'
+import { User } from '../../api/db/dbUser.ts'
 
 
 const innerCircleRadius = 240
@@ -61,9 +62,10 @@ function getSections(currentUser, unitType, selectedSubjects) {
   return sections;
 }
 
-export default function TrackerRing({selectedSubjects, unitType, onGnatt, setOnGnatt}) {
+export default function TrackerRing({selectedSubjects, unitType, onGnatt, setOnGnatt, userOverride = null}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
   return [
     <WhiteSpace key="white"/>,
@@ -82,18 +84,19 @@ export default function TrackerRing({selectedSubjects, unitType, onGnatt, setOnG
           </Tooltip>
         </Center>
       }
-      sections={getSections(currentUser, unitType, selectedSubjects)}
+      sections={getSections(contextUser, unitType, selectedSubjects)}
     />
     ]
 }
 
-export function TrackerBar({selectedSubjects, unitType}) {
+export function TrackerBar({selectedSubjects, unitType, userOverride = null}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
+  const contextUser = userOverride ? User.getInstanceById(userOverride.id).fillData(userOverride) : currentUser;
 
   return <Paper withBorder className="d-block d-md-none" style={{marginTop: "-0.5rem", marginBottom: "0.5rem"}}>
     <Progress.Root >
-      {getSections(currentUser, unitType, selectedSubjects).map((section, index) => <Progress.Section key={index} value={section.value} color={section.color}></Progress.Section>)}
+      {getSections(contextUser, unitType, selectedSubjects).map((section, index) => <Progress.Section key={index} value={section.value} color={section.color}></Progress.Section>)}
     </Progress.Root>
   </Paper>
 }

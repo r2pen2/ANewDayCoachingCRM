@@ -6,7 +6,6 @@ import { notifSuccess, notifWarn } from '../Notifications'
 import { LMSIcon } from '../LMS'
 import { LinkMaster } from '../../api/links.ts'
 import { getCalendarEvents } from '../../api/calendar.ts'
-import { getSlashDateString, getTimeString } from '../../api/strings.js'
 import IconButton from '../IconButton.jsx'
 import { deleteButtonColor } from '../../api/color.ts'
 
@@ -14,6 +13,7 @@ export default function Intent({height, setTab}) {
 
   const {currentUser} = React.useContext(CurrentUserContext)
   const delegateUser = currentUser.delegate ? currentUser.delegate : currentUser;
+
 
   const welcomeText = `Welcome back, ${currentUser.personalData.displayName.split(" ")[0]}!`
 

@@ -675,10 +675,10 @@ export const Tracker = ({setSubjectAddMenuOpen, setHomeworkAddMenuOpen, userOver
           {userOverride ? `${userOverride.personalData.displayName}'s` : "My"} Assignments
           <IconButton label={onGnatt ? "Switch to Table" : "Switch to Gantt Chart"} className="d-block d-md-none" icon={<IconTimeline />} buttonProps={{size: 36}} onClick={() => setOnGnatt(!onGnatt)} />
         </h3>
-        <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} />
+        <TrackerBar unitType={unitType} selectedSubjects={selectedSubjects} userOverride={userOverride}/>
         <div className="d-flex flex-row w-100" >
           <div className="ring-container d-none d-md-flex" >
-            <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} onGnatt={onGnatt} setOnGnatt={setOnGnatt}/>
+            <TrackerRing unitType={unitType} selectedSubjects={selectedSubjects} onGnatt={onGnatt} setOnGnatt={setOnGnatt} userOverride={userOverride}/>
           </div>
           <div className="d-flex w-100 flex-column px-2 align-items-start">
             <TrackerControls />
