@@ -61,17 +61,24 @@ export const FirstPageV2 = ({secondPage, currentInvoice, setSecondPage}) => {
   }
 
   return (  
-    <Card withBorder radius="md" className="pay-modal-card">
-      <Group justify="space-between">
-        <Text className="pay-modal-title">Choose how to pay:</Text>
-      </Group>
-      <SimpleGrid cols={2} mt="md">
-        <PayButtonV2 method="venmo"   color="#008CFF"   link={venmoLink}  onClick={() => setSecondPage("venmo")}  />
-        <PayButtonV2 method="zelle"   color="#6D1ED4"   link={LinkMaster.payments.zelle} onClick={() => setSecondPage("zelle")} />
-        <PayButtonV2 method="stripe"  color="#003087"   link={LinkMaster.payments.stripe} onClick={handleStripe} />
-        <PayButtonV2 method="paid"    color="#00BF6F"                    onClick={() => setSecondPage("mark")}   />
-      </SimpleGrid>
-    </Card>
+    <>
+      <Card withBorder radius="md" className="pay-modal-card">
+        <Group justify="space-between">
+          <Text className="pay-modal-title">Choose how to pay:</Text>
+        </Group>
+        <SimpleGrid cols={2} mt="md">
+          <PayButtonV2 method="venmo"   color="#008CFF"   link={venmoLink}  onClick={() => setSecondPage("venmo")}  />
+          {/* <PayButtonV2 method="zelle"   color="#6D1ED4"   link={LinkMaster.payments.zelle} onClick={() => setSecondPage("zelle")} /> */}
+          {/* <PayButtonV2 method="stripe"  color="#003087"   link={LinkMaster.payments.stripe} onClick={handleStripe} /> */}
+          <PayButtonV2 method="paid"    color="#00BF6F"                    onClick={() => setSecondPage("mark")}   />
+        </SimpleGrid>
+      </Card>
+      <div style={{ marginTop: '0.5rem', textAlign: 'left' }}>
+        <Anchor style={{ fontSize: '0.95em', color: '#007bff', cursor: 'pointer', textDecoration: 'underline' }} onClick={handleStripe}>
+          or pay with your card
+        </Anchor>
+      </div>
+    </>
   )
 }
   
