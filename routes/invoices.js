@@ -3,8 +3,18 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const db = require('../firebase');
 const { getUser, getAllUsers, setUser } = require('./users');
+const nodemailer = require('nodemailer');
 
 router.use(bodyParser.json());
+
+// Email configuration
+const transporter = nodemailer.createTransporter({
+  service: 'gmail', // Can be changed to GoDaddy SMTP later
+  auth: {
+    user: process.env.EMAIL_USER || 'your-email@gmail.com',
+    pass: process.env.EMAIL_PASS || 'your-app-password'
+  }
+});
 
 let allInvoices = {};
 
@@ -25,6 +35,27 @@ router.get("/", (req, res) => {
 
   const retInvoices = Object.values(allInvoices).filter(invoice => user.invoices.includes(invoice.id));
   res.json(retInvoices);
+});
+
+// Get invoice by ID (for email links)
+router.get("/by-id/:id", (req, res) => {
+  const invoiceId = req.params.id;
+  const invoice = allInvoices[invoiceId];
+  
+  if (!invoice) {
+    res.status(404).json({ error: "Invoice not found" });
+    return;
+  }
+  
+  // Return invoice with user display name if assigned
+  if (invoice.assignedTo) {
+    const user = getUser(invoice.assignedTo);
+    if (user) {
+      invoice.userDisplayName = user.personalData.displayName;
+    }
+  }
+  
+  res.json(invoice);
 });
 
 router.get("/limbo", (req, res) => {
@@ -75,29 +106,101 @@ router.post("/limbo", (req, res) => {
   });
 })
 
+// Function to send invoice email
+async function sendInvoiceEmail(recipientEmail, invoiceId, amount, invoiceNumber) {
+  const paymentUrl = `https://www.bluprint.anewdaycoaching.com/#invoices?invoice=${invoiceId}`;
+  
+  const mailOptions = {
+    from: process.env.EMAIL_USER || 'billing@anewdaycoaching.com',
+    to: recipientEmail,
+    subject: `A New Day Coaching - Invoice #${invoiceNumber}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #2c3e50;">A New Day Coaching</h2>
+        <h3>Invoice #${invoiceNumber}</h3>
+        <p>You have received an invoice for <strong>$${amount}</strong>.</p>
+        <p>Click the button below to view and pay your invoice:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${paymentUrl}" style="background-color: #3498db; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Click Here to Pay</a>
+        </div>
+        <p style="color: #666; font-size: 14px;">If you don't have an account yet, you'll be prompted to create one to view your invoice.</p>
+        <p style="color: #666; font-size: 12px;">If you have any questions, please contact us at billing@anewdaycoaching.com</p>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    return false;
+  }
+}
+
 router.post("/create", (req, res) => {
   const invoice = req.body.invoice;
+  const recipientEmail = req.body.recipientEmail; // New field for email-only invoices
 
-  const user = getUser(invoice.assignedTo);
-  user.numUnpaidInvoices++;
-  if (invoice.invoiceNumber === -1) {
-    invoice.invoiceNumber = user.invoices.length + 1;
-  }
-  db.collection("invoices").add(invoice).then((ref) => {
-    // We have a ref to the invoice
-    const invoiceId = ref.id;
-    user.invoices.push(invoiceId);
-    setUser(user).then(() => {
-      res.json({ success: true, id: invoiceId });
+  // Check if this is an email-only invoice (no user assigned yet)
+  if (!invoice.assignedTo && recipientEmail) {
+    // Create invoice without user assignment
+    invoice.assignedTo = null;
+    invoice.recipientEmail = recipientEmail;
+    
+    if (invoice.invoiceNumber === -1) {
+      // Generate a unique invoice number based on total invoices
+      invoice.invoiceNumber = Object.keys(allInvoices).length + 1;
+    }
+    
+    db.collection("invoices").add(invoice).then(async (ref) => {
+      const invoiceId = ref.id;
+      
+      // Send email notification
+      const emailSent = await sendInvoiceEmail(recipientEmail, invoiceId, invoice.amount, invoice.invoiceNumber);
+      
+      res.json({ 
+        success: true, 
+        id: invoiceId, 
+        emailSent: emailSent,
+        message: emailSent ? 'Invoice created and email sent successfully' : 'Invoice created but email failed to send'
+      });
     }).catch((error) => {
       console.error(error);
       res.json({ success: false });
     });
-  }).catch((error) => {
-    console.error(error);
-    res.json({ success: false });
-  });
-  
+    
+  } else if (invoice.assignedTo) {
+    // Existing flow for user-assigned invoices
+    const user = getUser(invoice.assignedTo);
+    user.numUnpaidInvoices++;
+    if (invoice.invoiceNumber === -1) {
+      invoice.invoiceNumber = user.invoices.length + 1;
+    }
+    db.collection("invoices").add(invoice).then(async (ref) => {
+      // We have a ref to the invoice
+      const invoiceId = ref.id;
+      user.invoices.push(invoiceId);
+      
+      // Send email if user has email notification enabled
+      let emailSent = false;
+      if (user.settings?.invoices?.newInvoiceEmailNotification && user.personalData?.email) {
+        emailSent = await sendInvoiceEmail(user.personalData.email, invoiceId, invoice.amount, invoice.invoiceNumber);
+      }
+      
+      setUser(user).then(() => {
+        res.json({ success: true, id: invoiceId, emailSent: emailSent });
+      }).catch((error) => {
+        console.error(error);
+        res.json({ success: false });
+      });
+    }).catch((error) => {
+      console.error(error);
+      res.json({ success: false });
+    });
+  } else {
+    res.json({ success: false, error: 'Either assignedTo user ID or recipientEmail must be provided' });
+  }
 })
 
 router.post("/update", (req, res) => {
@@ -125,6 +228,50 @@ router.post("/delete", (req, res) => {
     res.json({ success: false });
   });
 })
+
+// Link invoice to user (when user creates account from email)
+router.post("/link-to-user", (req, res) => {
+  const { invoiceId, userId } = req.body;
+  
+  if (!invoiceId || !userId) {
+    res.json({ success: false, error: 'Invoice ID and User ID are required' });
+    return;
+  }
+  
+  const invoice = allInvoices[invoiceId];
+  const user = getUser(userId);
+  
+  if (!invoice) {
+    res.json({ success: false, error: 'Invoice not found' });
+    return;
+  }
+  
+  if (!user) {
+    res.json({ success: false, error: 'User not found' });
+    return;
+  }
+  
+  // Check if invoice email matches user email (security check)
+  if (invoice.recipientEmail && invoice.recipientEmail.toLowerCase() !== user.personalData.email.toLowerCase()) {
+    res.json({ success: false, error: 'Email mismatch' });
+    return;
+  }
+  
+  // Link the invoice to the user
+  invoice.assignedTo = userId;
+  user.invoices.push(invoiceId);
+  user.numUnpaidInvoices++;
+  
+  // Remove the recipientEmail field since it's now assigned
+  delete invoice.recipientEmail;
+  
+  Promise.all([setInvoice(invoice), setUser(user)]).then(() => {
+    res.json({ success: true });
+  }).catch((error) => {
+    console.error(error);
+    res.json({ success: false, error: 'Failed to link invoice' });
+  });
+});
 
 router.get("/stripe-complete", (req, res) => {
   const invoiceId = req.query.id;

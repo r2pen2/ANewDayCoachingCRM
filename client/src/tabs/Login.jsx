@@ -11,6 +11,7 @@ import { auth } from '../api/firebase';
 import { upperFirst } from '@mantine/hooks';
 import { notifFail, notifSuccess } from '../components/Notifications';
 import { User } from '../api/db/dbUser.ts';
+import { Invoice } from '../api/db/dbInvoice.ts';
 import { BackgroundBeams } from '../components/ui/background-beams.tsx';
 
 
@@ -44,10 +45,18 @@ export default function Login() {
   });
 
   const [loading, setLoading] = useState(true)
+  const [invoiceRedirect, setInvoiceRedirect] = useState(null)
 
   useEffect(() => {
     auth.authStateReady().then(() => setLoading(false))
-  })
+    
+    // Check if there's an invoice ID in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const invoiceId = urlParams.get('invoice');
+    if (invoiceId) {
+      setInvoiceRedirect(invoiceId);
+    }
+  }, [])
 
   const [type, setType] = useState('login')
   
@@ -59,8 +68,16 @@ export default function Login() {
       {/* {loading && <Text mb="1rem">Attempting to log you in...</Text>} */}
       <Paper radius="md" p="xl" withBorder className="bg-light-platform" style={{zIndex: 2}}>
       <Text size="lg" fw={500}>
-        Welcome to A New Day Coaching, {type} with
+        {invoiceRedirect ? 
+          `Create an account to view your invoice` : 
+          `Welcome to A New Day Coaching, ${type} with`
+        }
       </Text>
+      {invoiceRedirect && (
+        <Text size="sm" c="dimmed" mt="xs">
+          You've been sent a payment link. Create an account or sign in to continue.
+        </Text>
+      )}
 
       <Group grow mb="md" mt="md">
         <GoogleButton radius="xl" onClick={signIn}>Google</GoogleButton>
@@ -75,6 +92,11 @@ export default function Login() {
               signInWithEmailAndPassword(auth, values.email, values.password).then((userCredential) => {
                 User.getById(userCredential.user.uid).then((dbUser) => { 
                   notifSuccess("Login Success", "Welcome back, " + dbUser.personalData.displayName);
+                  
+                  // If there's an invoice to redirect to, go there
+                  if (invoiceRedirect) {
+                    window.location.hash = `#invoices?invoice=${invoiceRedirect}`;
+                  }
                 });
               }).catch((error) => {
                 if (error.code === 'auth/user-not-found') {
@@ -94,6 +116,16 @@ export default function Login() {
                 dbUser.personalData.pfpUrl = "https://www.gravatar.com/avatar/" + Math.floor(Math.random() * 1000000) + "?d=identicon"
                 dbUser.setData().then((user) => {
                   notifSuccess("Registration Success", "Welcome to A New Day Coaching, " + values.name);
+                  
+                  // If there's an invoice to link, do it now
+                  if (invoiceRedirect) {
+                    Invoice.linkToUser(invoiceRedirect, userCredential.user.uid).then((success) => {
+                      if (success) {
+                        // Redirect to invoices page with the invoice ID
+                        window.location.hash = `#invoices?invoice=${invoiceRedirect}`;
+                      }
+                    });
+                  }
                 })
               }).catch((error) => {
                 if (error.code === 'auth/email-already-in-use') {

@@ -36,6 +36,33 @@ export default function Invoices() {
   
   const fetchInvoices = useCallback(() => { Invoice.getForUser(delegateUser.id).then((invoices) => { setInvoices(invoices); setInvoicesPulled(true); }) }, [delegateUser.id, setInvoices, setInvoicesPulled]);
   
+  // Check for invoice ID in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const invoiceId = urlParams.get('invoice');
+    
+    if (invoiceId && currentUser.id) {
+      // Check if this invoice belongs to the current user
+      Invoice.getById(invoiceId).then((invoice) => {
+        if (invoice) {
+          if (invoice.assignedTo === delegateUser.id) {
+            // Invoice belongs to current user, open payment modal
+            setCurrentInvoice(invoice);
+          } else if (!invoice.assignedTo) {
+            // Invoice not assigned yet, try to link it to current user
+            Invoice.linkToUser(invoiceId, delegateUser.id).then((success) => {
+              if (success) {
+                // Successfully linked, refresh invoices and open modal
+                fetchInvoices();
+                setCurrentInvoice(invoice);
+              }
+            });
+          }
+        }
+      });
+    }
+  }, [currentUser.id, delegateUser.id, fetchInvoices]);
+  
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchInvoices();

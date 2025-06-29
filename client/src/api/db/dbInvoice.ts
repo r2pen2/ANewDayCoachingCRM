@@ -160,6 +160,67 @@ export class Invoice {
     })    
   }
 
+  static async createWithEmail(href: string, amount: number, recipientEmail: string, dueDate: Date): Promise<any> {
+    
+    const invoice = new Invoice(null, -1, false, amount, new Date(), null, dueDate, href, "");
+    
+    return new Promise<any>((resolve, reject) => {
+      fetch(hostname + "/invoices/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoice: invoice.toJson(),
+          recipientEmail: recipientEmail
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })    
+  }
+
+  static async getById(invoiceId: string): Promise<Invoice | null> {
+    return new Promise<Invoice | null>((resolve, reject) => {
+      fetch(hostname + `/invoices/by-id/${invoiceId}`).then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            resolve(new Invoice(data.id, data.invoiceNumber, data.paid, data.amount, data.createdAt, data.paidAt, data.dueAt, data.href, data.assignedTo));
+          })
+        } else {
+          resolve(null);
+        }
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
+  static async linkToUser(invoiceId: string, userId: string): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      fetch(hostname + "/invoices/link-to-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invoiceId: invoiceId,
+          userId: userId
+        })
+      }).then((response) => {
+        response.json().then((data) => {
+          resolve(data.success);
+        })
+      }).catch((error) => {
+        reject(error);
+      })
+    })
+  }
+
   static async getForUser(userId: string): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
       fetch(hostname + `/invoices?userId=${userId}`).then((response) => {
