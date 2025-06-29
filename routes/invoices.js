@@ -7,14 +7,11 @@ const nodemailer = require('nodemailer');
 
 router.use(bodyParser.json());
 
-// Email configuration
-const transporter = nodemailer.createTransporter({
-  service: 'gmail', // Can be changed to GoDaddy SMTP later
-  auth: {
-    user: process.env.EMAIL_USER || 'your-email@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your-app-password'
-  }
-});
+// Email configuration using Server-Legos pattern
+const emailConfig = {
+  email: process.env.EMAIL_USER || 'your-email@gmail.com',
+  password: process.env.EMAIL_PASS || 'your-app-password'
+};
 
 let allInvoices = {};
 
@@ -106,36 +103,76 @@ router.post("/limbo", (req, res) => {
   });
 })
 
-// Function to send invoice email
+// Function to send invoice email using Server-Legos
 async function sendInvoiceEmail(recipientEmail, invoiceId, amount, invoiceNumber) {
   const paymentUrl = `https://www.bluprint.anewdaycoaching.com/#invoices?invoice=${invoiceId}`;
   
-  const mailOptions = {
-    from: process.env.EMAIL_USER || 'billing@anewdaycoaching.com',
-    to: recipientEmail,
-    subject: `A New Day Coaching - Invoice #${invoiceNumber}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2c3e50;">A New Day Coaching</h2>
-        <h3>Invoice #${invoiceNumber}</h3>
-        <p>You have received an invoice for <strong>$${amount}</strong>.</p>
-        <p>Click the button below to view and pay your invoice:</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${paymentUrl}" style="background-color: #3498db; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Click Here to Pay</a>
-        </div>
-        <p style="color: #666; font-size: 14px;">If you don't have an account yet, you'll be prompted to create one to view your invoice.</p>
-        <p style="color: #666; font-size: 12px;">If you have any questions, please contact us at billing@anewdaycoaching.com</p>
+  const emailText = `
+A New Day Coaching - Invoice #${invoiceNumber}
+
+You have received an invoice for $${amount}.
+
+Click the link below to view and pay your invoice:
+${paymentUrl}
+
+If you don't have an account yet, you'll be prompted to create one to view your invoice.
+
+If you have any questions, please contact us at billing@anewdaycoaching.com
+  `;
+
+  const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2c3e50;">A New Day Coaching</h2>
+      <h3>Invoice #${invoiceNumber}</h3>
+      <p>You have received an invoice for <strong>$${amount}</strong>.</p>
+      <p>Click the button below to view and pay your invoice:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${paymentUrl}" style="background-color: #3498db; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Click Here to Pay</a>
       </div>
-    `
-  };
+      <p style="color: #666; font-size: 14px;">If you don't have an account yet, you'll be prompted to create one to view your invoice.</p>
+      <p style="color: #666; font-size: 12px;">If you have any questions, please contact us at billing@anewdaycoaching.com</p>
+    </div>
+  `;
 
   try {
-    await transporter.sendMail(mailOptions);
-    return true;
+    // Use the Server-Legos mail manager
+    return await sendEmailWithMailManager(recipientEmail, `A New Day Coaching - Invoice #${invoiceNumber}`, emailText, emailHtml);
   } catch (error) {
     console.error('Email sending failed:', error);
     return false;
   }
+}
+
+// Helper function to send email using Server-Legos pattern
+function sendEmailWithMailManager(toAddress, subject, text, html) {
+  return new Promise((resolve, reject) => {
+    // Using the same pattern as Server-Legos SiteMailManager
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: emailConfig.email,
+        pass: emailConfig.password
+      }
+    });
+    
+    const mailOptions = {
+      from: `A New Day Coaching <${emailConfig.email}>`,
+      to: toAddress,
+      subject: subject,
+      text: text,
+      html: html
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log('Email error:', error);
+        resolve(false);
+      } else {
+        console.log('Email sent: ' + info.response);
+        resolve(true);
+      }
+    });
+  });
 }
 
 router.post("/create", (req, res) => {

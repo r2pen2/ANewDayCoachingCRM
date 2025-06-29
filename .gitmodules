@@ -1,0 +1,3 @@
+[submodule "Server-Legos"]
+	path = Server-Legos
+	url = https://github.com/r2pen2/Server-Legos.git

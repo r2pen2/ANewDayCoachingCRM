@@ -8,6 +8,7 @@ const forms = require("./routes/forms");
 const { router: tools } = require('./routes/tools');
 const { router: users } = require('./routes/users');
 const { router: invoices } = require('./routes/invoices');
+const SiteMailManager = require('./Server-Legos/siteMail');
 // const document = require('./routes/document');
 
 // Init express application
@@ -15,6 +16,12 @@ const app = express();
 
 // Init env files
 dotenv.config();
+
+// Initialize Server-Legos mail manager
+const mailManager = new SiteMailManager(
+    process.env.EMAIL_USER || 'your-email@gmail.com',
+    process.env.EMAIL_PASS || 'your-app-password'
+);
 
 // Start listening on defined port
 app.listen(3008, () => {
@@ -37,6 +44,7 @@ app.use("/forms", forms)
 app.use("/tools", tools)
 app.use("/users", users)
 app.use("/invoices", invoices)
+app.use("/mail", mailManager.getRouter())
 // app.use("/document", document)
 
 // Allow getting images
