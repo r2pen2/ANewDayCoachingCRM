@@ -88,9 +88,14 @@ export default function InvoiceManagement() {
         if (response.emailSent) {
           notifSuccess("Invoice Created", `Invoice created and email sent to ${pendingEmailInvoice.email}`)
         } else {
-          notifSuccess("Invoice Created", `Invoice created but email failed to send to ${pendingEmailInvoice.email}`)
+          notifFail("Email Failed", `Invoice created but email failed to send to ${pendingEmailInvoice.email}`)
         }
         resetForm()
+        setShowEmailModal(false)
+        setPendingEmailInvoice(null)
+      }).catch((error) => {
+        console.error('Invoice creation failed:', error)
+        notifFail("Invoice Creation Failed", "There was an error creating the invoice. Please try again.")
         setShowEmailModal(false)
         setPendingEmailInvoice(null)
       })
@@ -129,13 +134,19 @@ export default function InvoiceManagement() {
               <AssignmentConfirmation />
             </form>
             
-            <Modal opened={showEmailModal} onClose={() => setShowEmailModal(false)} title="No User Found">
+            <Modal opened={showEmailModal} onClose={() => {
+              setShowEmailModal(false)
+              setPendingEmailInvoice(null)
+            }} title="No User Found">
               <Text mb="md">
                 No user account was found for "{pendingEmailInvoice?.email}". 
                 Would you like to send this invoice as an email? The recipient will be able to create an account to view and pay the invoice.
               </Text>
               <div className="d-flex gap-2 justify-content-end">
-                <Button variant="outline" onClick={() => setShowEmailModal(false)}>Cancel</Button>
+                <Button color="gray" onClick={() => {
+                  setShowEmailModal(false)
+                  setPendingEmailInvoice(null)
+                }}>Cancel</Button>
                 <Button onClick={handleEmailInvoiceConfirm}>Send Email Invoice</Button>
               </div>
             </Modal>
