@@ -147,16 +147,29 @@ If you have any questions, please contact us at billing@anewdaycoaching.com
 function sendEmailWithMailManager(toAddress, subject, text, html) {
   return new Promise((resolve, reject) => {
     // Using the same pattern as Server-Legos SiteMailManager
-    const transporter = nodemailer.createTransport({
+    const transporterConfig = process.env.EMAIL_SERVICE === 'godaddy' ? {
+      host: 'smtpout.secureserver.net',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: emailConfig.email,
+        pass: emailConfig.password
+      }
+    } : {
       service: 'gmail',
       auth: {
         user: emailConfig.email,
         pass: emailConfig.password
       }
-    });
+    };
+    
+    const transporter = nodemailer.createTransport(transporterConfig);
+    
+    // Use domain email as "from" address, but Gmail credentials for sending
+    const fromAddress = process.env.DOMAIN_EMAIL || `A New Day Coaching <${emailConfig.email}>`;
     
     const mailOptions = {
-      from: `A New Day Coaching <${emailConfig.email}>`,
+      from: fromAddress,
       to: toAddress,
       subject: subject,
       text: text,
